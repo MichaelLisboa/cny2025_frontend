@@ -3,3 +3,19 @@ from = "/*"
 to = "/index.html"
 status = 200
 force = true
+conditions = {Language = ["en"]}
+
+[[headers]]
+for = "/*.js"
+[headers.values]
+Content-Type = "application/javascript"
+
+[[headers]]
+for = "/manifest.webmanifest"
+[headers.values]
+Content-Type = "application/manifest+json"
+
+[[headers]]
+for = "/*.css"
+[headers.values]
+Content-Type = "text/css"
