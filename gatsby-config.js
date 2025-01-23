@@ -9,7 +9,6 @@ module.exports = {
     siteUrl: 'https://cny2025.michaellisboa.com'
   },
   plugins: [
-    "gatsby-plugin-postcss",
     'gatsby-plugin-styled-components',
     // "gatsby-plugin-google-gtag",
     'gatsby-plugin-layout',
@@ -50,16 +49,16 @@ module.exports = {
         },
       },
     },
-    {
-      resolve: `gatsby-plugin-netlify`,
-      options: {
-        headers: {
-          "/*.js": [
-            "Content-Type: application/javascript",
-          ],
-        },
-      },
-    },
+    // {
+    //   resolve: `gatsby-plugin-netlify`,
+    //   options: {
+    //     headers: {
+    //       "/*.js": [
+    //         "Content-Type: application/javascript",
+    //       ],
+    //     },
+    //   },
+    // },
     // {
     //   resolve: `gatsby-plugin-netlify`,
     //   options: {
