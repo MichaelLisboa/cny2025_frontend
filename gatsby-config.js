@@ -1,6 +1,3 @@
-/**
- * @type {import('gatsby').GatsbyConfig}
- */
 module.exports = {
   siteMetadata: {
     title: 'Welcome to the Year of the Snake',
