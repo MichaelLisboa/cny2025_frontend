@@ -1,14 +1,14 @@
-import * as React from "react"
+// import * as React from "react"
 
-export const onRenderBody = ({ setHeadComponents }) => {
-  setHeadComponents([
-    <link
-      rel="preload"
-      href="/fonts/HoganBrush.woff"
-      as="font"
-      type="font/woff"
-      crossOrigin="anonymous"
-      key="HoganBrushFont"
-    />,
-  ])
-}
+// export const onRenderBody = ({ setHeadComponents }) => {
+//   setHeadComponents([
+//     <link
+//       rel="preload"
+//       href="/fonts/HoganBrush.woff"
+//       as="font"
+//       type="font/woff"
+//       crossOrigin="anonymous"
+//       key="HoganBrushFont"
+//     />,
+//   ])
+// }

@@ -44,7 +44,7 @@ picture {
 
 /* Custom font HoganBrush */
 h1 {
-  font-family: 'HoganBrush', sans-serif;
+  /* font-family: 'HoganBrush', sans-serif; */
   font-size: 3.5em;
   font-weight: 400;
   line-height: 1;
@@ -54,7 +54,7 @@ h1 {
 
 /* Custom font HoganBrush */
 h2 {
-  font-family: 'HoganBrush', sans-serif;
+  /* font-family: 'HoganBrush', sans-serif; */
   font-size: 3em;
   font-weight: 400;
   line-height: 1;
