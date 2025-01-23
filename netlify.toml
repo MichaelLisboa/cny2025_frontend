@@ -1,3 +1,7 @@
+[build]
+  command = "gatsby build"
+  publish = "public"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"

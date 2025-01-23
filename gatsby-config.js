@@ -14,14 +14,14 @@ module.exports = {
     'gatsby-plugin-layout',
     "gatsby-plugin-image",
     "gatsby-plugin-sitemap",
-    // {
-    //   resolve: `gatsby-plugin-offline`,
-    //   options: {
-    //     workboxConfig: {
-    //       globPatterns: ['**/*.{js,css,html,webp}'],
-    //     },
-    //   },
-    // },
+    {
+      resolve: `gatsby-plugin-offline`,
+      options: {
+        workboxConfig: {
+          globPatterns: ['**/*.{js,css,html,webp}'],
+        },
+      },
+    },
     // {
     //   resolve: 'gatsby-plugin-manifest',
     //   options: {
