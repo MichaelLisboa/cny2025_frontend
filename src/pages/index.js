@@ -6,7 +6,7 @@ import { SEO } from "../components/seo"
 import { navigate } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 import threeSkyScene from "../components/threeSkyScene"
-import Button from "../components/Button"
+import Button from "../components/button"
 import CrowdScene from "../components/crowdScene"
 
 const ContentContainer = styled.div`
