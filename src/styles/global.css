@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap');
+@font-face {
+  font-family: 'HoganBrush'; /* Custom font name */
+  src: url('/fonts/HoganBrush.woff') format('woff'); /* Path starts with '/' for public assets */
+  font-weight: normal; /* Normal weight */
+  font-style: normal;  /* Normal style */
+  font-display: swap;  /* Ensure text is displayed immediately using a fallback font until the custom font is loaded */
+}
+
+/* Main stylesheet */
+body {
+  margin: 0;
+  font-family: 'Karla', 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  background-color: #120f29;
+}
+
+a,
+button,
+div {
+  -webkit-tap-highlight-color: transparent; /* No gray highlight on tap */
+  outline: none; /* Remove outline */
+  user-select: none; /* Prevent text selection */
+}
+
+.lantern-layer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.lantern {
+  position: absolute;
+  transform-origin: center;
+}
