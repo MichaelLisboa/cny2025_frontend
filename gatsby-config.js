@@ -14,7 +14,16 @@ module.exports = {
     // "gatsby-plugin-google-gtag",
     'gatsby-plugin-layout',
     "gatsby-plugin-image",
-    "gatsby-plugin-sitemap", {
+    "gatsby-plugin-sitemap",
+    {
+      resolve: `gatsby-plugin-offline`,
+      options: {
+        workboxConfig: {
+          globPatterns: ['**/*.{js,css,html,webp}'],
+        },
+      },
+    },
+    {
       resolve: 'gatsby-plugin-manifest',
       options: {
         "icon": "src/images/icon.png"
@@ -32,6 +41,16 @@ module.exports = {
           webpOptions: {
             quality: 80, // Quality for WebP format.
           },
+        },
+      },
+    },
+    {
+      resolve: `gatsby-plugin-netlify`,
+      options: {
+        headers: {
+          "/*.js": [
+            "Content-Type: application/javascript",
+          ],
         },
       },
     },
