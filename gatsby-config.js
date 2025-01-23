@@ -26,7 +26,13 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
-        "icon": "src/images/icon.png"
+        name: `Wishes in the Sky`,
+        short_name: `Wishes in the Sky`,
+        start_url: `/`,
+        background_color: `#AE504F`,
+        theme_color: `#AE504F`,
+        display: `standalone`,
+        icon: `src/images/icon.png`,
       }
     },
     {
