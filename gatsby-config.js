@@ -32,7 +32,7 @@ module.exports = {
         background_color: `#AE504F`,
         theme_color: `#AE504F`,
         display: `standalone`,
-        icon: `src/images/icon.png`,
+        icon: `src/images/logo.png`,
       }
     },
     {
@@ -60,6 +60,17 @@ module.exports = {
         },
       },
     },
+    // {
+    //   resolve: `gatsby-plugin-netlify`,
+    //   options: {
+    //     headers: {}, // option to add more headers. `Link` headers are transformed by the below criteria
+    //     allPageHeaders: [], // option to add headers for all pages. `Link` headers are transformed by the below criteria
+    //     mergeSecurityHeaders: true, // boolean to turn off the default security headers
+    //     mergeCachingHeaders: true, // boolean to turn off the default caching headers
+    //     transformHeaders: (headers, path) => headers, // optional transform for manipulating headers under each path (e.g.sorting), etc.
+    //     generateMatchPathRewrites: true, // boolean to turn off automatic creation of redirect rules for client only paths
+    //   }
+    // },
     "gatsby-transformer-sharp", {
       resolve: 'gatsby-source-filesystem',
       options: {
