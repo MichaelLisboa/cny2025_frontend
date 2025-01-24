@@ -3,13 +3,13 @@ import styled from "styled-components";
 import Layout from "../components/layout";
 import SEO from "../components/seo"; // Corrected import statement
 // import DatePicker from "../components/datePicker"; // Corrected import statement
-import Button from "../components/button";
+// import Button from "../components/button";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import { gsap } from "gsap";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
-import useFloatingAnimation from '../hooks/useFloatingAnimation'; // Corrected import statement
+// import useFloatingAnimation from '../hooks/useFloatingAnimation'; // Corrected import statement
 import { useLanternsApi } from "../hooks/useLanternsApi";
 
 const DatePickerContainer = styled.div`
@@ -141,11 +141,11 @@ const LanternPresentation = ({ zodiac }) => {
   );
 
   const lanternImage = zodiac ? getImageByName(`lantern-${zodiac.toLowerCase()}.png`) : null;
-  const floatingRef = useFloatingAnimation({ minX: -10, maxX: 10, minY: -20, maxY: 20 });
+  // const floatingRef = useFloatingAnimation({ minX: -10, maxX: 10, minY: -20, maxY: 20 });
 
   return (
     <LanternContainer>
-      <LanternImageWrapper ref={floatingRef}>
+      <LanternImageWrapper>
         {lanternImage ? (
           <GatsbyImage
             image={lanternImage}

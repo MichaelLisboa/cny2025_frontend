@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { GatsbyImage } from 'gatsby-plugin-image';
-import useFloatingAnimation from '../hooks/useFloatingAnimation';
+// import useFloatingAnimation from '../hooks/useFloatingAnimation';
 
 const LanternWrapper = styled.div`
   position: absolute;
@@ -39,7 +39,7 @@ const LanternWrapper = styled.div`
 `;
 
 const Lantern = ({ x, y, scale, zindex, opacity, image, alt }) => {
-  const floatingRef = useFloatingAnimation({ minX: -35, maxX: 35, minY: -45, maxY: 45 });
+  // const floatingRef = useFloatingAnimation({ minX: -35, maxX: 35, minY: -45, maxY: 45 });
 
   return (
     <LanternWrapper
@@ -48,7 +48,6 @@ const Lantern = ({ x, y, scale, zindex, opacity, image, alt }) => {
       scale={scale}
       zindex={zindex}
       opacity={opacity}
-      ref={floatingRef}
     >
       <GatsbyImage image={image} alt={alt} />
     </LanternWrapper>
