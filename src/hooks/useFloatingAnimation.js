@@ -1,9 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { gsap } from 'gsap';
 
-const useFloatingAnimation = ({ minX, maxX, minY, maxY }) => {
-  const ref = useRef(null);
-
+const useFloatingAnimation = (ref, { minX, maxX, minY, maxY }) => {
   useEffect(() => {
     if (ref.current) {
       gsap.to(ref.current, {
@@ -15,9 +13,7 @@ const useFloatingAnimation = ({ minX, maxX, minY, maxY }) => {
         ease: 'power1.inOut',
       });
     }
-  }, [minX, maxX, minY, maxY]);
-
-  return ref;
+  }, [ref, minX, maxX, minY, maxY]);
 };
 
 export default useFloatingAnimation;

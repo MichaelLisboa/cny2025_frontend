@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { StaticImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
+import useDeviceInfo from '../hooks/useDeviceInfo';
 
 const ParallaxImageContainer = styled.div`
   position: absolute;
@@ -11,6 +12,7 @@ const ParallaxImageContainer = styled.div`
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  pointer-events: none; /* Ensure this container does not block mouse events */
 `;
 
 const ImageWrapper = styled.div`
@@ -20,6 +22,7 @@ const ImageWrapper = styled.div`
   transform: translateX(-50%);
   width: 300vw; /* Extend beyond the width of the viewport */
   height: auto;
+  pointer-events: auto; /* Allow interactions within the image wrapper */
 
   @media (min-width: 769px) {
     width: 120vw; /* Extend beyond the width of the viewport */
@@ -27,6 +30,8 @@ const ImageWrapper = styled.div`
 `;
 
 const CrowdScene = () => {
+  const { isMobile } = useDeviceInfo();
+  const [xOffset, setXOffset] = useState(0);
   const imageWrapperRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +55,7 @@ const CrowdScene = () => {
         (imageWrapperRef.current.clientWidth - window.innerWidth) *
         0.2;
       handleBackgroundMovement(moveX);
+      setXOffset(moveX);
     };
 
     const handleDeviceOrientation = (event) => {
@@ -99,7 +105,6 @@ const CrowdScene = () => {
         <StaticImage
           src="../images/crowd-scene.png"
           alt="Crowd Scene"
-          placeholder="blurred"
           style={{ width: '100%', height: 'auto' }}
         />
       </ImageWrapper>

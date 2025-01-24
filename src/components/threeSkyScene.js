@@ -1,8 +1,8 @@
+import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-// import { requestDeviceOrientation } from '../utils/handleIosPermissions';
 import starrySkyImage from '../images/equirectangular_starry_sky.webp';
 import moonImage from '../images/moon.webp';
 
@@ -107,143 +107,160 @@ function loadMoon(isMobile) {
     return moon;
 }
 
-export default function threeSkyScene(app, isMobile) {
-    // Ensure this runs only in the browser
-    if (typeof window === 'undefined') return;
-    
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.25;
-    app.appendChild(renderer.domElement);
+export default function ThreeSkyScene({isMobile}) {
+    const containerRef = useRef(null);
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-        isMobile ? cameraParams.mobile.fov : cameraParams.desktop.fov,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-    );
+    useEffect(() => {
+        if (typeof window === 'undefined' || !containerRef.current) return;
 
-    camera.position.set(
-        isMobile ? cameraParams.mobile.position.x : cameraParams.desktop.position.x,
-        isMobile ? cameraParams.mobile.position.y : cameraParams.desktop.position.y,
-        isMobile ? cameraParams.mobile.position.z : cameraParams.desktop.position.z
-    );
-
-    addLighting(scene);
-    const starrySky = loadStarrySky(isMobile);
-    const moon = loadMoon(isMobile);
-    scene.add(starrySky);
-    scene.add(moon);
-
-    const maxTiltUp = isMobile ? cameraParams.mobile.maxTiltUp : cameraParams.desktop.maxTiltUp;
-    const maxTiltDown = isMobile ? cameraParams.mobile.maxTiltDown : cameraParams.desktop.maxTiltDown;
-
-    let targetRotationX = 0; // Vertical tilt (X-axis)
-    let targetRotationY = 0; // Horizontal rotation (Y-axis)
-    let lastAlpha = null;
-
-    // Smoothing and sensitivity factors
-    const dampingFactor = 0.15; // Smooth transitions
-    const alphaNoiseThreshold = THREE.MathUtils.degToRad(0.3); // Horizontal sensitivity
-    const betaNoiseThreshold = THREE.MathUtils.degToRad(0.2);  // Vertical sensitivity
-    const rotationSpeedFactor = 1.2; // For large rotations
-
-    const handleDeviceOrientation = (event) => {
-        if (event.alpha !== null && event.beta !== null) {
-            // Horizontal Rotation (Y-axis - alpha)
-            const alpha = THREE.MathUtils.degToRad(event.alpha); // Horizontal rotation (Y-axis)
-            if (lastAlpha !== null) {
-                let deltaAlpha = alpha - lastAlpha;
-
-                // Wrap-around correction for alpha
-                if (deltaAlpha > Math.PI) {
-                    deltaAlpha -= 2 * Math.PI;
-                } else if (deltaAlpha < -Math.PI) {
-                    deltaAlpha += 2 * Math.PI;
-                }
-
-                // Apply smoothing and threshold for alpha (Y-axis)
-                if (Math.abs(deltaAlpha) > alphaNoiseThreshold) {
-                    targetRotationY += deltaAlpha * rotationSpeedFactor; // Sensitivity for large rotations
-                    targetRotationY += deltaAlpha * dampingFactor;       // Smooth the motion
-                }
-            }
-            lastAlpha = alpha; // Update lastAlpha for the next frame
-
-            // Vertical Tilt (X-axis - beta)
-            const beta = THREE.MathUtils.degToRad(event.beta);   // Vertical tilt (X-axis)
-            const clampedBeta = Math.max(
-                Math.min(beta - Math.PI / 2, maxTiltUp), // Clamp to max limits
-                maxTiltDown
-            );
-
-            // Apply smoothing and threshold for beta (X-axis)
-            if (Math.abs(clampedBeta - targetRotationX) > betaNoiseThreshold) {
-                targetRotationX += (clampedBeta - targetRotationX) * dampingFactor;
-            }
-        }
-    };
-
-    const limitVerticalTilt = () => {
-        if (targetRotationX > maxTiltUp) targetRotationX = maxTiltUp;
-        if (targetRotationX < maxTiltDown) targetRotationX = maxTiltDown;
-    };
-
-    if (isMobile) {
-        window.addEventListener('deviceorientation', handleDeviceOrientation);
-
-        let lastTouchX = 0;
-        let lastTouchY = 0;
-        window.addEventListener('touchstart', (event) => {
-            if (event.touches.length === 1) {
-                lastTouchX = event.touches[0].clientX;
-                lastTouchY = event.touches[0].clientY;
-            }
-        });
-        window.addEventListener('touchmove', (event) => {
-            if (event.touches.length === 1) {
-                const deltaX = event.touches[0].clientX - lastTouchX;
-                const deltaY = event.touches[0].clientY - lastTouchY;
-
-                targetRotationY += deltaX * 0.005;
-                targetRotationX += deltaY * 0.005;
-                limitVerticalTilt();
-
-                lastTouchX = event.touches[0].clientX;
-                lastTouchY = event.touches[0].clientY;
-            }
-        });
-
-        // requestDeviceOrientation(() => {
-        //     window.addEventListener('deviceorientation', handleDeviceOrientation);
-        // });
-    } else {
-        window.addEventListener('mousemove', (event) => {
-            targetRotationY = (event.clientX / window.innerWidth - 0.5) * Math.PI * 2;
-            targetRotationX = (event.clientY / window.innerHeight - 0.5) * Math.PI;
-            limitVerticalTilt();
-        });
-    }
-
-    const composer = setupPostProcessing(renderer, scene, camera);
-
-    function animate() {
-        camera.rotation.x += (targetRotationX - camera.rotation.x) * 0.075;
-        camera.rotation.y += (targetRotationY - camera.rotation.y) * 0.075;
-
-        composer.render();
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        composer.setSize(window.innerWidth, window.innerHeight);
-    });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.25;
+        containerRef.current.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            isMobile ? cameraParams.mobile.fov : cameraParams.desktop.fov,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+
+        camera.position.set(
+            isMobile ? cameraParams.mobile.position.x : cameraParams.desktop.position.x,
+            isMobile ? cameraParams.mobile.position.y : cameraParams.desktop.position.y,
+            isMobile ? cameraParams.mobile.position.z : cameraParams.desktop.position.z
+        );
+
+        addLighting(scene);
+        const starrySky = loadStarrySky(isMobile);
+        const moon = loadMoon(isMobile);
+        scene.add(starrySky);
+        scene.add(moon);
+
+        const maxTiltUp = isMobile ? cameraParams.mobile.maxTiltUp : cameraParams.desktop.maxTiltUp;
+        const maxTiltDown = isMobile ? cameraParams.mobile.maxTiltDown : cameraParams.desktop.maxTiltDown;
+
+        let targetRotationX = 0; // Vertical tilt (X-axis)
+        let targetRotationY = 0; // Horizontal rotation (Y-axis)
+        let lastAlpha = null;
+
+        // Smoothing and sensitivity factors
+        const dampingFactor = 0.15; // Smooth transitions
+        const alphaNoiseThreshold = THREE.MathUtils.degToRad(0.3); // Horizontal sensitivity
+        const betaNoiseThreshold = THREE.MathUtils.degToRad(0.2);  // Vertical sensitivity
+        const rotationSpeedFactor = 1.2; // For large rotations
+
+        const handleDeviceOrientation = (event) => {
+            if (event.alpha !== null && event.beta !== null) {
+                // Horizontal Rotation (Y-axis - alpha)
+                const alpha = THREE.MathUtils.degToRad(event.alpha); // Horizontal rotation (Y-axis)
+                if (lastAlpha !== null) {
+                    let deltaAlpha = alpha - lastAlpha;
+
+                    // Wrap-around correction for alpha
+                    if (deltaAlpha > Math.PI) {
+                        deltaAlpha -= 2 * Math.PI;
+                    } else if (deltaAlpha < -Math.PI) {
+                        deltaAlpha += 2 * Math.PI;
+                    }
+
+                    // Apply smoothing and threshold for alpha (Y-axis)
+                    if (Math.abs(deltaAlpha) > alphaNoiseThreshold) {
+                        targetRotationY += deltaAlpha * rotationSpeedFactor; // Sensitivity for large rotations
+                        targetRotationY += deltaAlpha * dampingFactor;       // Smooth the motion
+                    }
+                }
+                lastAlpha = alpha; // Update lastAlpha for the next frame
+
+                // Vertical Tilt (X-axis - beta)
+                const beta = THREE.MathUtils.degToRad(event.beta);   // Vertical tilt (X-axis)
+                const clampedBeta = Math.max(
+                    Math.min(beta - Math.PI / 2, maxTiltUp), // Clamp to max limits
+                    maxTiltDown
+                );
+
+                // Apply smoothing and threshold for beta (X-axis)
+                if (Math.abs(clampedBeta - targetRotationX) > betaNoiseThreshold) {
+                    targetRotationX += (clampedBeta - targetRotationX) * dampingFactor;
+                }
+            }
+        };
+
+        const handleMouseMove = (event) => {
+            const deltaX = (event.clientX / window.innerWidth - 0.5) * 2 * Math.PI;
+            const deltaY = (event.clientY / window.innerHeight - 0.5) * Math.PI;
+
+            targetRotationY = deltaX;
+            targetRotationX = Math.max(Math.min(deltaY, maxTiltUp), maxTiltDown);
+        };
+
+        const limitVerticalTilt = () => {
+            if (targetRotationX > maxTiltUp) targetRotationX = maxTiltUp;
+            if (targetRotationX < maxTiltDown) targetRotationX = maxTiltDown;
+        };
+
+        if (isMobile) {
+            window.addEventListener('deviceorientation', handleDeviceOrientation);
+
+            let lastTouchX = 0;
+            let lastTouchY = 0;
+            window.addEventListener('touchstart', (event) => {
+                if (event.touches.length === 1) {
+                    lastTouchX = event.touches[0].clientX;
+                    lastTouchY = event.touches[0].clientY;
+                }
+            });
+            window.addEventListener('touchmove', (event) => {
+                if (event.touches.length === 1) {
+                    const deltaX = event.touches[0].clientX - lastTouchX;
+                    const deltaY = event.touches[0].clientY - lastTouchY;
+
+                    targetRotationY += deltaX * 0.005;
+                    targetRotationX += deltaY * 0.005;
+                    limitVerticalTilt();
+
+                    lastTouchX = event.touches[0].clientX;
+                    lastTouchY = event.touches[0].clientY;
+                }
+            });
+        } else {
+            window.addEventListener('mousemove', handleMouseMove);
+        }
+
+        const composer = setupPostProcessing(renderer, scene, camera);
+
+        function animate() {
+            camera.rotation.x += (targetRotationX - camera.rotation.x) * 0.075;
+            camera.rotation.y += (targetRotationY - camera.rotation.y) * 0.075;
+
+            composer.render();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Handle window resize
+        const handleResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup on unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('deviceorientation', handleDeviceOrientation);
+            if (containerRef.current) {
+                containerRef.current.removeChild(renderer.domElement);
+            }
+            renderer.dispose();
+        };
+    }, []); // Removed isMobile from dependencies
+
+    return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 }

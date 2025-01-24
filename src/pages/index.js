@@ -1,13 +1,15 @@
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import styled from "styled-components"
 import Layout from "../components/layout"
 import SEO from "../components/seo" // Corrected import statement
 import { navigate } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
-import threeSkyScene from "../components/threeSkyScene"
+import ThreeSkyScene from '../components/threeSkyScene'
 import Button from "../components/button"
 import CrowdScene from "../components/crowdScene"
+import useDeviceInfo from '../hooks/useDeviceInfo';
+import useFloatingAnimation from '../hooks/useFloatingAnimation';
 
 const ContentContainer = styled.div`
   position: absolute;
@@ -62,55 +64,42 @@ const IndexPage = () => {
   const buttonWrapperRef = useRef(null);
   const mainContainerRef = useRef(null);
 
-  // Use a state variable to determine if it's mobile
-  const [isMobile, setIsMobile] = React.useState(false);
+  const { isMobile } = useDeviceInfo();
+  const [xOffset, setXOffset] = useState(0);
+
+  useFloatingAnimation(contentContainerRef, {
+    minX: -5,
+    maxX: 5,
+    minY: -10,
+    maxY: 10,
+  });
 
   useEffect(() => {
-    // This logic will only run in the browser
-    if (typeof window !== 'undefined') {
-      setIsMobile(window.innerWidth <= 768);
+    if (typeof window === 'undefined') return;
 
-      const mainContainer = mainContainerRef.current;
+    // Create GSAP timeline for animations
+    const tl = gsap.timeline();
 
-      // Initialize the Three.js scene
-      threeSkyScene(mainContainer, window.innerWidth <= 768);
+    // Fade in the main container using GSAP
+    tl.fromTo(contentContainerRef.current, { opacity: 0 }, { opacity: 1, duration: 1.5 })
+      .fromTo(imageWrapperRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75")
+      .fromTo(textDivRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75")
+      .fromTo(buttonWrapperRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75");
 
-      // Create GSAP timeline for animations
-      const tl = gsap.timeline();
+    // Example: track mouse movement across screen width
+    const handleMouseMove = event => {
+      const offset = event.clientX / window.innerWidth;
+      setXOffset(offset);
+    };
 
-      // Fade in the main container using GSAP
-      tl.fromTo(contentContainerRef.current, { opacity: 0 }, { opacity: 1, duration: 1.5 })
-        .fromTo(imageWrapperRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75")
-        .fromTo(textDivRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75")
-        .fromTo(buttonWrapperRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75");
-
-      // Apply floating animation to the main container
-      const createFloatingAnimation = ({ minX, maxX, minY, maxY }) => {
-        return (element) => {
-          gsap.to(element, {
-            x: `random(${minX}, ${maxX})`,
-            y: `random(${minY}, ${maxY})`,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut",
-          });
-        };
-      };
-
-      const containerAnimation = createFloatingAnimation({
-        minX: -5,
-        maxX: 5,
-        minY: -10,
-        maxY: 10,
-      });
-      containerAnimation(contentContainerRef.current);
-    }
-  }, []);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isMobile]);
 
   return (
     <Layout alignImage="bottom">
       <div id="main-container" ref={mainContainerRef}>
+      <ThreeSkyScene isMobile={isMobile} />
         <CrowdScene />
         <ContentContainer ref={contentContainerRef}>
           <ImageWrapper ref={imageWrapperRef}>
