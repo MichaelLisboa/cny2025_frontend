@@ -8,12 +8,12 @@ module.exports = {
   plugins: [
     'gatsby-plugin-styled-components',
     // "gatsby-plugin-google-gtag",
-    {
-      resolve: `gatsby-plugin-layout`,
-      options: {
-        component: require.resolve(`./src/components/layout.js`),
-      },
-    },
+    // {
+    //   resolve: `gatsby-plugin-layout`,
+    //   options: {
+    //     component: require.resolve(`./src/components/layout.js`),
+    //   },
+    // },
     "gatsby-plugin-image",
     // {
     //   resolve: `gatsby-plugin-offline`,
