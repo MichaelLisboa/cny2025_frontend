@@ -11,18 +11,18 @@ module.exports = {
     {
       resolve: `gatsby-plugin-layout`,
       options: {
-      component: require.resolve(`./src/components/layout.js`),
+        component: require.resolve(`./src/components/layout.js`),
       },
     },
     "gatsby-plugin-image",
-    {
-      resolve: `gatsby-plugin-offline`,
-      options: {
-      workboxConfig: {
-        globPatterns: ['**/*.{js,css,html,webp}'],
-      },
-      },
-    },
+    // {
+    //   resolve: `gatsby-plugin-offline`,
+    //   options: {
+    //     workboxConfig: {
+    //       globPatterns: ['**/*.{js,css,html,webp}'],
+    //     },
+    //   },
+    // },
     // {
     //   resolve: 'gatsby-plugin-manifest',
     //   options: {
