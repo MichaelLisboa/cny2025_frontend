@@ -39,7 +39,7 @@ module.exports = {
       resolve: `gatsby-plugin-sharp`,
       options: {
         defaults: {
-          formats: [`auto`, `webp`, `png`, `jpg`], // Automatically generate images in multiple formats (e.g., WebP, JPEG).
+          formats: [`auto`, `webp`], // Automatically generate images in multiple formats (e.g., WebP, JPEG).
           placeholder: `blurred`,    // Generate a blurred placeholder for lazy loading.
           quality: 80,               // Set the quality of images.
           breakpoints: [750, 1080, 1366, 1920, 2560, 3840], // Include 4K resolution, // Custom breakpoints for responsive images.

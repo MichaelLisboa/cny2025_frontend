@@ -1,51 +1,158 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- *
- * See: https://www.gatsbyjs.com/docs/how-to/querying-data/use-static-query/
- */
+import React, { useEffect, useRef } from "react";
+import styled from "styled-components";
+import { gsap } from "gsap";
+import { graphql, useStaticQuery } from "gatsby";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
+import Navbar from "../components/navbar"; // Import Navbar
+import "./layout.css";
 
-import * as React from "react"
-import { useStaticQuery, graphql } from "gatsby"
+// Styled-components
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+`;
 
-import Header from "./header"
-import "./layout.css"
+const Content = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  z-index: 1;
+  overflow-x: hidden;
+  overflow-y: ${props => (props.scrollable ? 'auto' : 'hidden')};
+`;
 
-const Layout = ({ children }) => {
+const ParallaxImageContainer = styled.div`
+  position: absolute;
+  bottom: ${props => (props.alignImage === 'bottom' ? '0' : 'auto')};
+  top: ${props => (props.alignImage === 'top' ? '0' : 'auto')};
+  left: 0;
+  right: 0;
+  width: 200%; // Ensures it's wide enough for parallax
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  z-index: -1;
+
+  @media (min-width: 1440px) {
+    width: 175%;
+  }
+
+  @media (min-width: 1920px) {
+    width: 125%;
+  }
+
+  @media (min-width: 3840px) {
+    width: 110%;
+  }
+`;
+
+const Layout = ({
+  children,
+  image,
+  scrollable,
+  contentContainerStyles,
+  alignImage
+}) => {
+  const backgroundImageRef = useRef(null);
+
   const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
-      site {
-        siteMetadata {
-          title
+    query {
+      allFile(filter: { extension: { regex: "/(jpg|jpeg|png)/" } }) {
+        nodes {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+            formats: [WEBP, AUTO],
+            layout: FULL_WIDTH,
+            breakpoints: [750, 1080, 1366, 1920, 2560, 3840],
+            )
+          }
         }
       }
     }
-  `)
+  `);
+
+  const backgroundImage = image ? getImage(data.allFile.nodes.find(node => node.relativePath === image)) : null;
+
+  useEffect(() => {
+    // Ensure this runs only in the browser
+    if (typeof window === 'undefined') return;
+    if (!backgroundImageRef.current || !backgroundImage) return; // Add check for backgroundImage
+
+    const handleBackgroundMovement = (moveX) => {
+      const maxMoveX = (backgroundImageRef.current.scrollWidth - window.innerWidth) / 2;
+      const constrainedMoveX = Math.max(-maxMoveX, Math.min(maxMoveX, moveX));
+      gsap.to(backgroundImageRef.current, {
+        x: constrainedMoveX,
+        duration: 0.5,
+        ease: 'power2.out',
+      });
+    };
+
+    const handleMouseMove = (event) => {
+      const { clientX } = event;
+      const moveX = ((clientX / window.innerWidth) - 0.5) * (backgroundImageRef.current.scrollWidth - window.innerWidth) * 0.05;
+      handleBackgroundMovement(moveX);
+    };
+
+    const handleDeviceOrientation = (event) => {
+      const { gamma } = event;
+      const moveX = (gamma / 45) * (backgroundImageRef.current.scrollWidth - window.innerWidth) / 8;
+      handleBackgroundMovement(moveX);
+    };
+
+    let touchStartX = 0;
+    const handleTouchStart = (event) => {
+      touchStartX = event.touches[0].clientX;
+    };
+
+    const handleTouchMove = (event) => {
+      const touchMoveX = event.touches[0].clientX;
+      const moveX = ((touchMoveX - touchStartX) / window.innerWidth) * (backgroundImageRef.current.scrollWidth - window.innerWidth) * 0.1;
+      handleBackgroundMovement(moveX);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('deviceorientation', handleDeviceOrientation);
+    backgroundImageRef.current.addEventListener('touchstart', handleTouchStart);
+    backgroundImageRef.current.addEventListener('touchmove', handleTouchMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('deviceorientation', handleDeviceOrientation);
+      backgroundImageRef.current.removeEventListener('touchstart', handleTouchStart);
+      backgroundImageRef.current.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [backgroundImage]);
 
   return (
-    <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: `var(--size-content)`,
-          padding: `var(--size-gutter)`,
-        }}
-      >
-        <main>{children}</main>
-        <footer
-          style={{
-            marginTop: `var(--space-5)`,
-            fontSize: `var(--font-sm)`,
-          }}
+    <Container>
+      <Navbar /> {/* Add Navbar component */}
+      {backgroundImage && (
+        <ParallaxImageContainer
+          ref={backgroundImageRef}
+          className="background-image"
+          alignImage={alignImage}
         >
-          © {new Date().getFullYear()} &middot; Built with
-          {` `}
-          <a href="https://www.gatsbyjs.com">Gatsby</a>
-        </footer>
-      </div>
-    </>
-  )
+          <GatsbyImage image={backgroundImage} alt="Background Image" />
+        </ParallaxImageContainer>
+      )}
+      <Content style={contentContainerStyles} scrollable={scrollable}>
+        {children}
+      </Content>
+    </Container>
+  );
 }
 
-export default Layout
+export default Layout;
