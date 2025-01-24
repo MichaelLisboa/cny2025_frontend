@@ -80,11 +80,3 @@ module.exports = {
       __key: "images"
     }]
 };
-
-exports.onCreateWebpackConfig = ({ actions, stage }) => {
-  if (stage === "build-javascript") {
-    actions.setWebpackConfig({
-      devtool: "source-map", // This generates source maps for production builds
-    });
-  }
-};

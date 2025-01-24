@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
-import Layout from "../components/layout";
+import Layout from "../components/layout"
 import SEO from "../components/seo"; // Corrected import statement
-// import DatePicker from "../components/datePicker"; // Corrected import statement
-// import Button from "../components/button";
+import DatePicker from "../components/datePicker"; // Corrected import statement
+import Button from "../components/button";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import { zodiacData } from "../data/fortune-data";
 import { gsap } from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
 import { Observer } from "gsap/Observer";
-// import { useAnimateTextSequence } from "../hooks/useAnimateTextSequence";
+import { useAnimateTextSequence } from "../hooks/useAnimateTextSequence";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
 
@@ -143,7 +143,8 @@ const FortuneBody = styled.p`
   transition: opacity 0.5s ease-in-out;
 `;
 
-const ZodiacPresentation = ({ zodiac, element }) => {
+const ZodiacPresentation = ({ zodiac, element, elementsRef }) => {
+  
   const data = useStaticQuery(graphql`
     query {
       allFile {
@@ -199,7 +200,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
 
   useEffect(() => {
     const textElements = Array.from(document.querySelectorAll(".fortune-title, .fortune-body"));
-    // elementsRef.current = textElements;
+    elementsRef.current = textElements;
   }, []);
 
   return (
@@ -245,18 +246,18 @@ const ZodiacPresentation = ({ zodiac, element }) => {
   );
 };
 
-// const BirthdatePicker = ({ onDateSelected, birthdateExists, handleNextClick }) => (
-//   <DatePickerContainer className="date-picker">
-//     <HeaderText>Select Your Birthdate</HeaderText>
-//     <TextParagraph className="text-white text-medium">
-//       Enter your birthdate to discover your fortune for the new year!
-//     </TextParagraph>
-//     <DatePicker onDateSelected={onDateSelected} />
-//     {birthdateExists && (
-//       <Button text="Next" onClick={handleNextClick} />
-//     )}
-//   </DatePickerContainer>
-// );
+const BirthdatePicker = ({ onDateSelected, birthdateExists, handleNextClick }) => (
+  <DatePickerContainer className="date-picker">
+    <HeaderText>Select Your Birthdate</HeaderText>
+    <TextParagraph className="text-white text-medium">
+      Enter your birthdate to discover your fortune for the new year!
+    </TextParagraph>
+    <DatePicker onDateSelected={onDateSelected} />
+    {birthdateExists && (
+      <Button text="Next" onClick={handleNextClick} />
+    )}
+  </DatePickerContainer>
+);
 
 const FortunePage = () => {
   const { state, dispatch, birthdateExists } = useAppState();
@@ -275,7 +276,7 @@ const FortunePage = () => {
     setFlowState('transitioning');
   };
 
-  // const elementsRef = useAnimateTextSequence({ waveSpeed: 0.02, fadeDuration: 0.25 });
+  const elementsRef = useAnimateTextSequence({ waveSpeed: 0.02, fadeDuration: 0.25 });
 
   useEffect(() => {
     if (flowState === 'transitioning') {
@@ -323,12 +324,12 @@ const FortunePage = () => {
         "-=2"
       );
 
-      // timeline.call(() => {
-      //   const textElements = document.querySelectorAll(".fortune-title, .fortune-body");
-      //   elementsRef.current = textElements;
-      // }, null, "+=0.3");
+      timeline.call(() => {
+        const textElements = document.querySelectorAll(".fortune-title, .fortune-body");
+        elementsRef.current = textElements;
+      }, null, "+=0.3");
     }
-  }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
+  }, [flowState, localBirthdate, localZodiac, localElement, dispatch, elementsRef]);
 
   const handleDateSelected = (selectedDate) => {
     console.log("Selected Date:", selectedDate);
@@ -347,17 +348,18 @@ const FortunePage = () => {
       alignImage={alignImage}
       scrollable="true"
     >
-      {/* {flowState !== 'done' && (
+      {flowState !== 'done' && (
         <BirthdatePicker
           onDateSelected={handleDateSelected}
           birthdateExists={!!localBirthdate} // Ensure birthdateExists is a boolean
           handleNextClick={handleNextClick}
         />
-      )} */}
+      )}
       {flowState !== 'idle' && (
         <ZodiacPresentation
           zodiac={flowState === 'done' ? state.zodiac : localZodiac}
           element={flowState === 'done' ? state.element : localElement}
+          elementsRef={elementsRef}
         />
       )}
     </Layout>

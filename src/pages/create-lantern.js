@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import Layout from "../components/layout";
 import SEO from "../components/seo"; // Corrected import statement
-// import DatePicker from "../components/datePicker"; // Corrected import statement
-// import Button from "../components/button";
+import DatePicker from "../components/datePicker"; // Corrected import statement
+import Button from "../components/button";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import { gsap } from "gsap";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
-// import useFloatingAnimation from '../hooks/useFloatingAnimation'; // Corrected import statement
+import useFloatingAnimation from '../hooks/useFloatingAnimation'; // Corrected import statement
 import { useLanternsApi } from "../hooks/useLanternsApi";
 
 const DatePickerContainer = styled.div`
@@ -141,11 +141,11 @@ const LanternPresentation = ({ zodiac }) => {
   );
 
   const lanternImage = zodiac ? getImageByName(`lantern-${zodiac.toLowerCase()}.png`) : null;
-  // const floatingRef = useFloatingAnimation({ minX: -10, maxX: 10, minY: -20, maxY: 20 });
+  const floatingRef = useFloatingAnimation({ minX: -10, maxX: 10, minY: -20, maxY: 20 });
 
   return (
     <LanternContainer>
-      <LanternImageWrapper>
+      <LanternImageWrapper ref={floatingRef}>
         {lanternImage ? (
           <GatsbyImage
             image={lanternImage}
@@ -162,18 +162,18 @@ const LanternPresentation = ({ zodiac }) => {
   );
 };
 
-// const BirthdatePicker = ({ onDateSelected, birthdateExists, handleNextClick }) => (
-//   <DatePickerContainer className="date-picker">
-//     <HeaderText>Select Your Birthdate</HeaderText>
-//     <TextParagraph className="text-white text-medium">
-//       Enter your birthdate to create your custom lantern!
-//     </TextParagraph>
-//     <DatePicker onDateSelected={onDateSelected} />
-//     {birthdateExists && (
-//       <Button text="Next" onClick={handleNextClick} />
-//     )}
-//   </DatePickerContainer>
-// );
+const BirthdatePicker = ({ onDateSelected, birthdateExists, handleNextClick }) => (
+  <DatePickerContainer className="date-picker">
+    <HeaderText>Select Your Birthdate</HeaderText>
+    <TextParagraph className="text-white text-medium">
+      Enter your birthdate to create your custom lantern!
+    </TextParagraph>
+    <DatePicker onDateSelected={onDateSelected} />
+    {birthdateExists && (
+      <Button text="Next" onClick={handleNextClick} />
+    )}
+  </DatePickerContainer>
+);
 
 const CreateLanternPage = () => {
   const { state, dispatch, birthdateExists } = useAppState();
@@ -280,13 +280,13 @@ const CreateLanternPage = () => {
       alignImage={alignImage}
       scrollable="true"
     >
-      {/* {flowState !== 'done' && (
+      {flowState !== 'done' && (
         <BirthdatePicker
           onDateSelected={handleDateSelected}
           birthdateExists={!!localBirthdate} // Ensure birthdateExists is a boolean
           handleNextClick={handleNextClick}
         />
-      )} */}
+      )}
       {flowState !== 'idle' && (
         <LanternPresentation
           zodiac={flowState === 'done' ? state.zodiac : localZodiac}
