@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
-import Layout from "../components/layout"
+import Layout from "../components/layout";
 import SEO from "../components/seo"; // Corrected import statement
 import DatePicker from "../components/datePicker"; // Corrected import statement
 import Button from "../components/button";
