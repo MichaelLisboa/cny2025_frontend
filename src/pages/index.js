@@ -1,141 +1,128 @@
-import React, { useEffect, useRef } from "react"
-import { gsap } from "gsap"
-import styled from "styled-components"
-import Layout from "../layouts"
-import { SEO } from "../components/seo"
-import { navigate } from "gatsby"
+import * as React from "react"
+import { Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
-import threeSkyScene from "../components/threeSkyScene"
-import Button from "../components/button"
-import CrowdScene from "../components/crowdScene"
 
-const ContentContainer = styled.div`
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translate(-50%, 0);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 80%;
-  padding: 128px 0;
-  max-width: 600px;
-  opacity: 1; /* Set initial opacity to 1 */
-  z-index: 2;
-  overflow: hidden;
-`;
+import Layout from "../components/layout"
+import Seo from "../components/seo"
+import * as styles from "../components/index.module.css"
 
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
+const links = [
+  {
+    text: "Tutorial",
+    url: "https://www.gatsbyjs.com/docs/tutorial",
+    description:
+      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
+  },
+  {
+    text: "Examples",
+    url: "https://github.com/gatsbyjs/gatsby/tree/master/examples",
+    description:
+      "A collection of websites ranging from very basic to complex/complete that illustrate how to accomplish specific tasks within your Gatsby sites.",
+  },
+  {
+    text: "Plugin Library",
+    url: "https://www.gatsbyjs.com/plugins",
+    description:
+      "Learn how to add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
+  },
+  {
+    text: "Build and Host",
+    url: "https://www.gatsbyjs.com/cloud",
+    description:
+      "Now you’re ready to show the world! Give your Gatsby site superpowers: Build and host on Gatsby Cloud. Get started for free!",
+  },
+]
 
-  @media (max-width: 768px) {
-    width: 80vw;
-  }
+const samplePageLinks = [
+  {
+    text: "Page 2",
+    url: "page-2",
+    badge: false,
+    description:
+      "A simple example of linking to another page within a Gatsby site",
+  },
+  { text: "TypeScript", url: "using-typescript" },
+  { text: "Server Side Rendering", url: "using-ssr" },
+  { text: "Deferred Static Generation", url: "using-dsg" },
+]
 
-  @media (min-width: 769px) {
-    width: 30vw;
-  }
-`;
+const moreLinks = [
+  { text: "Join us on Discord", url: "https://gatsby.dev/discord" },
+  {
+    text: "Documentation",
+    url: "https://gatsbyjs.com/docs/",
+  },
+  {
+    text: "Starters",
+    url: "https://gatsbyjs.com/starters/",
+  },
+  {
+    text: "Showcase",
+    url: "https://gatsbyjs.com/showcase/",
+  },
+  {
+    text: "Contributing",
+    url: "https://www.gatsbyjs.com/contributing/",
+  },
+  { text: "Issues", url: "https://github.com/gatsbyjs/gatsby/issues" },
+]
 
-const TextDiv = styled.div`
-  text-align: center;
-  margin-top: 1rem;
-  opacity: 0;
-`;
+const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
 
-const ButtonWrapper = styled.div`
-  opacity: 0;
-  margin-top: 1rem;
-`;
+const IndexPage = () => (
+  <Layout>
+    <div className={styles.textCenter}>
+      <StaticImage
+        src="../images/example.png"
+        loading="eager"
+        width={64}
+        quality={95}
+        formats={["auto", "webp", "avif"]}
+        alt=""
+        style={{ marginBottom: `var(--space-3)` }}
+      />
+      <h1>
+        Welcome to <b>Gatsby!</b>
+      </h1>
+      <p className={styles.intro}>
+        <b>Example pages:</b>{" "}
+        {samplePageLinks.map((link, i) => (
+          <React.Fragment key={link.url}>
+            <Link to={link.url}>{link.text}</Link>
+            {i !== samplePageLinks.length - 1 && <> · </>}
+          </React.Fragment>
+        ))}
+        <br />
+        Edit <code>src/pages/index.js</code> to update this page.
+      </p>
+    </div>
+    <ul className={styles.list}>
+      {links.map(link => (
+        <li key={link.url} className={styles.listItem}>
+          <a
+            className={styles.listItemLink}
+            href={`${link.url}${utmParameters}`}
+          >
+            {link.text} ↗
+          </a>
+          <p className={styles.listItemDescription}>{link.description}</p>
+        </li>
+      ))}
+    </ul>
+    {moreLinks.map((link, i) => (
+      <React.Fragment key={link.url}>
+        <a href={`${link.url}${utmParameters}`}>{link.text}</a>
+        {i !== moreLinks.length - 1 && <> · </>}
+      </React.Fragment>
+    ))}
+  </Layout>
+)
 
-const IndexPage = () => {
-  const contentContainerRef = useRef(null);
-  const imageWrapperRef = useRef(null);
-  const textDivRef = useRef(null);
-  const buttonWrapperRef = useRef(null);
-  const mainContainerRef = useRef(null);
-
-  // Use a state variable to determine if it's mobile
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  useEffect(() => {
-    // This logic will only run in the browser
-    if (typeof window !== 'undefined') {
-      setIsMobile(window.innerWidth <= 768);
-
-      const mainContainer = mainContainerRef.current;
-
-      // Initialize the Three.js scene
-      threeSkyScene(mainContainer, window.innerWidth <= 768);
-
-      // Create GSAP timeline for animations
-      const tl = gsap.timeline();
-
-      // Fade in the main container using GSAP
-      tl.fromTo(contentContainerRef.current, { opacity: 0 }, { opacity: 1, duration: 1.5 })
-        .fromTo(imageWrapperRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75")
-        .fromTo(textDivRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75")
-        .fromTo(buttonWrapperRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, "-=0.75");
-
-      // Apply floating animation to the main container
-      const createFloatingAnimation = ({ minX, maxX, minY, maxY }) => {
-        return (element) => {
-          gsap.to(element, {
-            x: `random(${minX}, ${maxX})`,
-            y: `random(${minY}, ${maxY})`,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut",
-          });
-        };
-      };
-
-      const containerAnimation = createFloatingAnimation({
-        minX: -5,
-        maxX: 5,
-        minY: -10,
-        maxY: 10,
-      });
-      containerAnimation(contentContainerRef.current);
-    }
-  }, []);
-
-  return (
-    <Layout alignImage="bottom">
-      <div id="main-container" ref={mainContainerRef}>
-        <CrowdScene />
-        <ContentContainer ref={contentContainerRef}>
-          <ImageWrapper ref={imageWrapperRef}>
-            <StaticImage
-              src="../images/logo-text.png"
-              alt="Logo Text"
-              placeholder="none"
-            />
-          </ImageWrapper>
-          <TextDiv ref={textDivRef}>
-            <p className="text-medium text-white">
-              Share wishes with your loved ones, slithering into the new year with hope, wisdom, and lucky fortunes.
-            </p>
-          </TextDiv>
-          <ButtonWrapper ref={buttonWrapperRef}>
-            <Button text="Continue" onClick={() => navigate('/create-lantern')} />
-          </ButtonWrapper>
-        </ContentContainer>
-      </div>
-    </Layout>
-  );
-};
+/**
+ * Head export to define metadata for the page
+ *
+ * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
+ */
+export const Head = () => <Seo title="Home" />
 
 export default IndexPage
-
-export const Head = () => (
-  <SEO />
-)
