@@ -6,7 +6,6 @@ import { useLanternsApi } from "../hooks/useLanternsApi";
 import styled from "styled-components";
 import { gsap } from "gsap";
 // import Lantern from "../components/Lantern";
-import useDeviceInfo from "../hooks/useDeviceInfo"; // Import the custom hook
 
 // Configuration for lantern rendering and positioning
 const LanternConfig = {
@@ -21,7 +20,6 @@ const LanternConfig = {
     y: 0.2, // Vertical parallax sensitivity
   },
   throttleInterval: 16, // Throttling interval (~60 FPS)
-  debugBorders: false, // Debugging flag to show element borders
 };
 
 /**
@@ -64,7 +62,6 @@ const ParallaxContainer = styled.div`
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  ${LanternConfig.debugBorders ? "border: 1px solid red;" : ""} /* Optional debug borders */
 `;
 
 const LanternLayer = styled.div`
@@ -84,7 +81,6 @@ const LanternLayer = styled.div`
 const ViewLanterns = () => {
   const [lanternsData, setLanternsData] = useState([]); // State to store lanterns fetched from API
   const { getRandomLanterns } = useLanternsApi(); // Custom hook to fetch lantern data
-  const deviceInfo = useDeviceInfo(); // Device information hook (e.g., isMobile)
 
   // Query to fetch lantern images
   const data = useStaticQuery(graphql`
@@ -103,6 +99,8 @@ const ViewLanterns = () => {
     }
   `);
 
+  console.log(data);
+
   // Memoize image mapping for performance
   const images = useMemo(() => {
     const imageMap = {};
@@ -117,6 +115,7 @@ const ViewLanterns = () => {
 
   useEffect(() => {
     const fetchLanterns = async () => {
+      console.log("fetching lanterns"); // This will only log once
       try {
         const data = await getRandomLanterns(20); // Fetch 20 lanterns
         setLanternsData(data);
@@ -124,82 +123,78 @@ const ViewLanterns = () => {
         console.error("Error fetching lanterns:", error);
       }
     };
-    fetchLanterns();
-  }, [getRandomLanterns]);
+  
+    fetchLanterns(); // Call the fetch function on mount
+  }, []);
 
   const lanternDataRef = useRef(null); // Ref to store generated lantern data
 
-  // Generate positions and add image references for the lanterns
-  if (!lanternDataRef.current && lanternsData.length > 0) {
-    const positions = generateLanternData(lanternsData.length);
-    lanternDataRef.current = lanternsData
-      .map((lantern, index) => {
-        const { x, y, scale, zindex, opacity } = positions[index];
-        const animalName = lantern.animal_sign.trim().toLowerCase();
-        const image = images[animalName] || defaultImage;
-        if (!image) {
-          console.warn(`Image not found for animal_sign: ${lantern.animal_sign}`);
-          return null; // Skip rendering lanterns without valid images
-        }
-        return { ...lantern, position: { x, y }, scale, zindex, opacity, image };
-      })
-      .filter(Boolean); // Remove invalid entries
-  }
+  // // Generate positions and add image references for the lanterns
+  // if (!lanternDataRef.current && lanternsData.length > 0) {
+  //   const positions = generateLanternData(lanternsData.length);
+  //   lanternDataRef.current = lanternsData
+  //     .map((lantern, index) => {
+  //       const { x, y, scale, zindex, opacity } = positions[index];
+  //       const animalName = lantern.animal_sign.trim().toLowerCase();
+  //       const image = images[animalName] || defaultImage;
+  //       if (!image) {
+  //         console.warn(`Image not found for animal_sign: ${lantern.animal_sign}`);
+  //         return null; // Skip rendering lanterns without valid images
+  //       }
+  //       return { ...lantern, position: { x, y }, scale, zindex, opacity, image };
+  //     })
+  //     .filter(Boolean); // Remove invalid entries
+  // }
 
-  const lanternData = lanternDataRef.current || []; // Fallback to an empty array if no data
+  // const lanternData = lanternDataRef.current || []; // Fallback to an empty array if no data
 
-  const layerRef = useRef(); // Ref for the parallax layer
-  const lastMove = useRef(0); // Ref to throttle mouse movement events
+  // const layerRef = useRef(); // Ref for the parallax layer
+  // const lastMove = useRef(0); // Ref to throttle mouse movement events
 
-  // Handle mouse movement for parallax effect
-  const handleMouseMove = (e) => {
-    if (typeof window === "undefined") return;
+  // // Handle mouse movement for parallax effect
+  // const handleMouseMove = (e) => {
+  //   if (typeof window === "undefined") return;
 
-    const now = Date.now();
-    if (now - lastMove.current < LanternConfig.throttleInterval) return; // Throttle the events
-    lastMove.current = now;
+  //   const now = Date.now();
+  //   if (now - lastMove.current < LanternConfig.throttleInterval) return; // Throttle the events
+  //   lastMove.current = now;
 
-    const { clientX, clientY } = e;
-    const x = (clientX - window.innerWidth / 2) * LanternConfig.parallaxSpeed.x;
-    const y = (clientY - window.innerHeight / 2) * LanternConfig.parallaxSpeed.y;
-    if (layerRef.current) {
-      gsap.to(layerRef.current, { x, y, duration: 0.5, ease: "power2.out" });
-    }
-  };
+  //   const { clientX, clientY } = e;
+  //   const x = (clientX - window.innerWidth / 2) * LanternConfig.parallaxSpeed.x;
+  //   const y = (clientY - window.innerHeight / 2) * LanternConfig.parallaxSpeed.y;
+  //   if (layerRef.current) {
+  //     gsap.to(layerRef.current, { x, y, duration: 0.5, ease: "power2.out" });
+  //   }
+  // };
 
-  // Handle device orientation for parallax effect
-  const handleDeviceOrientation = (e) => {
-    if (typeof window === "undefined") return;
+  // // Handle device orientation for parallax effect
+  // const handleDeviceOrientation = (e) => {
+  //   if (typeof window === "undefined") return;
 
-    const x = e.gamma * LanternConfig.parallaxSpeed.x; // Horizontal movement
-    const y = e.beta * LanternConfig.parallaxSpeed.y; // Vertical movement
-    if (layerRef.current) {
-      gsap.to(layerRef.current, { x, y, duration: 0.5, ease: "power2.out" });
-    }
-  };
+  //   const x = e.gamma * LanternConfig.parallaxSpeed.x; // Horizontal movement
+  //   const y = e.beta * LanternConfig.parallaxSpeed.y; // Vertical movement
+  //   if (layerRef.current) {
+  //     gsap.to(layerRef.current, { x, y, duration: 0.5, ease: "power2.out" });
+  //   }
+  // };
 
-  // Attach and clean up event listeners for mouse and device orientation
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("deviceorientation", handleDeviceOrientation);
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("deviceorientation", handleDeviceOrientation);
-      };
-    }
-  }, []);
+  // // Attach and clean up event listeners for mouse and device orientation
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     window.addEventListener("mousemove", handleMouseMove);
+  //     window.addEventListener("deviceorientation", handleDeviceOrientation);
+  //     return () => {
+  //       window.removeEventListener("mousemove", handleMouseMove);
+  //       window.removeEventListener("deviceorientation", handleDeviceOrientation);
+  //     };
+  //   }
+  // }, []);
 
   return (
     <Layout image="background-zodiac-sky.jpg" alignImage="top" scrollable="false">
       <ParallaxContainer>
-        <LanternLayer ref={layerRef}>
-          {lanternData.map((lantern, index) => (
-            <>
-              {console.log(lantern.animal_sign)}
-              <p key={index}>{lantern.animal_sign}</p>
-            </>
-          ))}
+        <LanternLayer>
+          <p>View Lanterns</p>
         </LanternLayer>
       </ParallaxContainer>
     </Layout>

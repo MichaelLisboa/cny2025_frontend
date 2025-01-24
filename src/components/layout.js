@@ -29,13 +29,13 @@ const Content = styled.div`
   box-sizing: border-box;
   z-index: 1;
   overflow-x: hidden;
-  overflow-y: ${props => (props.scrollable ? 'auto' : 'hidden')};
+  overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
 `;
 
 const ParallaxImageContainer = styled.div`
   position: absolute;
-  bottom: ${props => (props.alignImage === 'bottom' ? '0' : 'auto')};
-  top: ${props => (props.alignImage === 'top' ? '0' : 'auto')};
+  bottom: ${({ alignImage }) => (alignImage === 'bottom' ? '0' : 'auto')};
+  top: ${({ alignImage }) => (alignImage === 'top' ? '0' : 'auto')};
   left: 0;
   right: 0;
   width: 200%; // Ensures it's wide enough for parallax
@@ -57,13 +57,7 @@ const ParallaxImageContainer = styled.div`
   }
 `;
 
-const Layout = ({
-  children,
-  image,
-  scrollable,
-  contentContainerStyles,
-  alignImage
-}) => {
+const Layout = ({ children, image, scrollable, contentContainerStyles, alignImage }) => {
   const backgroundImageRef = useRef(null);
 
   const data = useStaticQuery(graphql`
@@ -73,9 +67,7 @@ const Layout = ({
           relativePath
           childImageSharp {
             gatsbyImageData(
-            formats: [WEBP, AUTO],
-            layout: FULL_WIDTH,
-            breakpoints: [750, 1080, 1366, 1920, 2560, 3840],
+              layout: FULL_WIDTH
             )
           }
         }
@@ -87,8 +79,7 @@ const Layout = ({
 
   useEffect(() => {
     // Ensure this runs only in the browser
-    if (typeof window === 'undefined') return;
-    if (!backgroundImageRef.current || !backgroundImage) return; // Add check for backgroundImage
+    if (typeof window === 'undefined' || !backgroundImageRef.current || !backgroundImage) return;
 
     const handleBackgroundMovement = (moveX) => {
       const maxMoveX = (backgroundImageRef.current.scrollWidth - window.innerWidth) / 2;
