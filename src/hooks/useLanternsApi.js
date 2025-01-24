@@ -1,46 +1,3 @@
-/**
- * Usage Examples:
- * 
- * 1. Get All Lanterns:
- *    const { getAllLanterns } = useLanternsApi();
- *    const lanterns = await getAllLanterns();
- * 
- * 2. Get Lantern by ID:
- *    const { getLanternById } = useLanternsApi();
- *    const lantern = await getLanternById(1);
- * 
- * 3. Create a Lantern:
- *    const { createLantern } = useLanternsApi();
- *    const newLantern = await createLantern({
- *      name: "John Doe",
- *      email: "johnexample.com",
- *      birthdate: "2000-01-01",
- *      animal_sign: "Dragon",
- *      element: "Fire",
- *      message: "Happy Lunar New Year!"
- *    });
- * 
- * 4. Update Lantern:
- *    const { updateLantern } = useLanternsApi();
- *    const updatedLantern = await updateLantern(1, { message: "Updated message" });
- * 
- * 5. Delete Lantern:
- *    const { deleteLantern } = useLanternsApi();
- *    const response = await deleteLantern(1);
- * 
- * 6. Search Lanterns:
- *    const { searchLanterns } = useLanternsApi();
- *    const results = await searchLanterns("Dragon");
- * 
- * 7. Get Random Lanterns:
- *    const { getRandomLanterns } = useLanternsApi();
- *    const randomLanterns = await getRandomLanterns(20);
- * 
- * 8. Get Lantern Stats:
- *    const { getLanternStats } = useLanternsApi();
- *    const stats = await getLanternStats();
- */
-
 import axios from "axios";
 
 // Check for the presence of the API key
@@ -50,11 +7,6 @@ if (!process.env.REACT_APP_API_KEY) {
 
 // Base URL always points to the live production API
 const baseURL = "https://cny2025backend-production.up.railway.app";
-
-// Check for the presence of the API key
-if (!process.env.REACT_APP_API_KEY) {
-  throw new Error("Missing REACT_APP_API_KEY in environment variables");
-}
 
 // Axios instance with fixed baseURL and headers
 const axiosInstance = axios.create({
