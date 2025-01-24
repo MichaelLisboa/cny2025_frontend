@@ -4,7 +4,7 @@ import { Observer } from 'gsap/Observer';
 
 gsap.registerPlugin(Observer);
 
-export const useAnimateTextSequence = ({ waveSpeed = 0.1, fadeDuration = 0.5, startDelay = 0 } = {}) => {
+const useAnimateTextSequence = ({ waveSpeed = 0.1, fadeDuration = 0.5, startDelay = 0 } = {}) => {
   const elementsRef = useRef([]);
 
   useEffect(() => {
@@ -82,3 +82,5 @@ export const useAnimateTextSequence = ({ waveSpeed = 0.1, fadeDuration = 0.5, st
 
   return elementsRef;
 };
+
+export default useAnimateTextSequence;

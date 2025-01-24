@@ -107,7 +107,7 @@ function loadMoon(isMobile) {
     return moon;
 }
 
-export default function ThreeSkyScene({isMobile}) {
+const ThreeSkyScene = ({isMobile}) => {
     const containerRef = useRef(null);
 
     useEffect(() => {
@@ -268,3 +268,5 @@ export default function ThreeSkyScene({isMobile}) {
 
     return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 }
+
+export default ThreeSkyScene;

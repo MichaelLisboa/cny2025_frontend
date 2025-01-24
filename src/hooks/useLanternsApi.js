@@ -56,16 +56,13 @@ if (!process.env.REACT_APP_API_KEY) {
   throw new Error("Missing REACT_APP_API_KEY in environment variables");
 }
 
-// Debugging the base URL
-console.log("API Base URL:", baseURL);
-
 // Axios instance with fixed baseURL and headers
 const axiosInstance = axios.create({
   baseURL,
   headers: { "X-API-Key": process.env.REACT_APP_API_KEY },
 });
 
-export const useLanternsApi = () => {
+const useLanternsApi = () => {
   // Core function to handle all API calls
   const callApi = async ({ method, endpoint, data = {}, params = {} }) => {
     try {
@@ -108,3 +105,5 @@ export const useLanternsApi = () => {
     getLanternStats,
   };
 };
+
+export default useLanternsApi;

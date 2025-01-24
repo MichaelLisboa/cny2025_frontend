@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import { graphql, useStaticQuery } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 import Layout from "../components/layout";
-import { useLanternsApi } from "../hooks/useLanternsApi";
+import useLanternsApi from "../hooks/useLanternsApi";
 import styled from "styled-components";
 import { gsap } from "gsap";
 // import Lantern from "../components/Lantern";

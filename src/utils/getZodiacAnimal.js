@@ -1,5 +1,5 @@
 // Function to determine if a date is before the Chinese New Year for the given year
-const chineseNewYearDates = {
+const chineseNewYearDates = Object.freeze({
     1900: [1, 30], 1901: [2, 18], 1902: [2, 8], 1903: [1, 28], 1904: [2, 16],
     1905: [2, 4], 1906: [1, 24], 1907: [2, 12], 1908: [2, 2], 1909: [1, 21],
     1910: [2, 9], 1911: [1, 30], 1912: [2, 17], 1913: [2, 5], 1914: [1, 25],
@@ -26,10 +26,10 @@ const chineseNewYearDates = {
     2015: [2, 18], 2016: [2, 8], 2017: [1, 27], 2018: [2, 15], 2019: [2, 4],
     2020: [1, 24], 2021: [2, 11], 2022: [1, 31], 2023: [1, 21], 2024: [2, 9],
     2025: [1, 29], 2026: [2, 17], 2027: [2, 6], 2028: [1, 26], 2029: [2, 13],
-};
+});
 
-const zodiacAnimals = ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"];
-const elements = ["Wood", "Fire", "Earth", "Metal", "Water"];
+const zodiacAnimals = Object.freeze(["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"]);
+const elements = Object.freeze(["Wood", "Fire", "Earth", "Metal", "Water"]);
 
 function isBeforeChineseNewYear(month, day, year) {
     const cnyDate = chineseNewYearDates[year];
@@ -38,7 +38,11 @@ function isBeforeChineseNewYear(month, day, year) {
         return false;
     }
 
-    return month < cnyDate[0] || (month === cnyDate[0] && day < cnyDate[1]);
+    const [cnyMonth, cnyDay] = cnyDate;
+    const birthDate = new Date(year, month - 1, day);
+    const chineseNewYearDate = new Date(year, cnyMonth - 1, cnyDay);
+
+    return birthDate < chineseNewYearDate;
 }
 
 const determineZodiacAnimalAndElement = (birthdate) => {
