@@ -10,7 +10,6 @@ module.exports = {
     // "gatsby-plugin-google-gtag",
     'gatsby-plugin-layout',
     "gatsby-plugin-image",
-    "gatsby-plugin-sitemap",
     {
       resolve: `gatsby-plugin-offline`,
       options: {
