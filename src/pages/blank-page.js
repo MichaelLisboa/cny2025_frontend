@@ -4,7 +4,11 @@ import SEO from '../components/seo';
 
 const BlankPage = () => {
   return (
-    <Layout alignImage="bottom">
+    <Layout
+      image="background-zodiac-sky.jpg"
+      alignImage={alignImage}
+      scrollable="true"
+    >
       <div style={{ padding: '20px', textAlign: 'center' }}>
         <h1>Blank Page</h1>
         <p>This is a blank page.</p>
