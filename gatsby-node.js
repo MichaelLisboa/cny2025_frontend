@@ -1,7 +1,9 @@
+// gatsby-node.js
 exports.onCreateWebpackConfig = ({ actions, stage }) => {
     if (stage === 'build-javascript') {
-      actions.setWebpackConfig({
-        devtool: 'source-map',
-      });
+        console.log('Building JavaScript', stage, actions);
+        actions.setWebpackConfig({
+            devtool: 'source-map',
+        });
     }
-  };
+};
