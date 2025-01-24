@@ -1,8 +1,0 @@
-/*
-  X-Frame-Options: SAMEORIGIN
-  X-XSS-Protection: 1; mode=block
-  X-Content-Type-Options: nosniff
-  Cache-Control: public, max-age=0, must-revalidate
-
-  /*.js
-  Content-Type: application/javascript
