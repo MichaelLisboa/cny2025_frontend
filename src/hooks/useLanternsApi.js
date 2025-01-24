@@ -1,8 +1,8 @@
 import axios from "axios";
 
 // Check for the presence of the API key
-if (!process.env.REACT_APP_API_KEY) {
-  throw new Error("Missing REACT_APP_API_KEY in environment variables");
+if (!process.env.GATSBY_API_KEY ) {
+  throw new Error("Missing GATSBY_API_KEY  in environment variables");
 }
 
 // Base URL always points to the live production API
@@ -11,7 +11,7 @@ const baseURL = "https://cny2025backend-production.up.railway.app";
 // Axios instance with fixed baseURL and headers
 const axiosInstance = axios.create({
   baseURL,
-  headers: { "X-API-Key": process.env.REACT_APP_API_KEY },
+  headers: { "X-API-Key": process.env.GATSBY_API_KEY  },
 });
 
 const useLanternsApi = () => {
