@@ -202,6 +202,8 @@ export default function ThreeSkyScene({isMobile}) {
             if (targetRotationX < maxTiltDown) targetRotationX = maxTiltDown;
         };
 
+        console.log("sky scene isMobile:", isMobile);
+
         if (isMobile) {
             window.addEventListener('deviceorientation', handleDeviceOrientation);
 
@@ -214,6 +216,7 @@ export default function ThreeSkyScene({isMobile}) {
                 }
             });
             window.addEventListener('touchmove', (event) => {
+                
                 if (event.touches.length === 1) {
                     const deltaX = event.touches[0].clientX - lastTouchX;
                     const deltaY = event.touches[0].clientY - lastTouchY;
@@ -252,6 +255,7 @@ export default function ThreeSkyScene({isMobile}) {
 
         // Cleanup on unmount
         return () => {
+            console.log("Removing deviceorientation listener");
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('deviceorientation', handleDeviceOrientation);
@@ -260,7 +264,7 @@ export default function ThreeSkyScene({isMobile}) {
             }
             renderer.dispose();
         };
-    }, []); // Removed isMobile from dependencies
+    }, [isMobile]); // Removed isMobile from dependencies
 
     return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 }
