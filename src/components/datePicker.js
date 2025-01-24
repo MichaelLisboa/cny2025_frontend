@@ -157,8 +157,15 @@ const DatePicker = ({ onDateSelected }) => {
       }
     };
 
-    overlayRef.current.addEventListener('click', handleOutsideClick);
-    return () => overlayRef.current.removeEventListener('click', handleOutsideClick);
+    if (overlayRef.current) {
+      overlayRef.current.addEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      if (overlayRef.current) {
+        overlayRef.current.removeEventListener('click', handleOutsideClick);
+      }
+    };
   }, []);
 
   return (

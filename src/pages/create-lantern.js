@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import Layout from "../components/layout"
 import SEO from "../components/seo"; // Corrected import statement
-import createDatePicker from "../components/datePicker"; // Corrected import statement
+import DatePicker from "../components/datePicker"; // Corrected import statement
 import Button from "../components/button";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
@@ -162,13 +162,13 @@ const LanternPresentation = ({ zodiac }) => {
   );
 };
 
-const BirthdatePicker = ({ datePickerRef, birthdateExists, handleNextClick }) => (
+const BirthdatePicker = ({ onDateSelected, birthdateExists, handleNextClick }) => (
   <DatePickerContainer className="date-picker">
     <HeaderText>Select Your Birthdate</HeaderText>
     <TextParagraph className="text-white text-medium">
       Enter your birthdate to create your custom lantern!
     </TextParagraph>
-    <div ref={datePickerRef}></div>
+    <DatePicker onDateSelected={onDateSelected} />
     {birthdateExists && (
       <Button text="Next" onClick={handleNextClick} />
     )}
@@ -176,7 +176,6 @@ const BirthdatePicker = ({ datePickerRef, birthdateExists, handleNextClick }) =>
 );
 
 const CreateLanternPage = () => {
-  const datePickerRef = useRef(null);
   const { state, dispatch, birthdateExists } = useAppState();
   const [flowState, setFlowState] = useState('idle');
   const [localBirthdate, setLocalBirthdate] = useState(null);
@@ -264,19 +263,14 @@ const CreateLanternPage = () => {
     }
   }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
 
-  useEffect(() => {
-    if (datePickerRef.current) {
-      const datePicker = createDatePicker((selectedDate) => {
-        console.log("Selected Date:", selectedDate);
-        setLocalBirthdate(selectedDate);
+  const handleDateSelected = (selectedDate) => {
+    console.log("Selected Date:", selectedDate);
+    setLocalBirthdate(selectedDate);
 
-        const { animal, element } = determineZodiacAnimalAndElement(selectedDate);
-        setLocalZodiac(animal);
-        setLocalElement(element);
-      });
-      datePickerRef.current.appendChild(datePicker);
-    }
-  }, []);
+    const { animal, element } = determineZodiacAnimalAndElement(selectedDate);
+    setLocalZodiac(animal);
+    setLocalElement(element);
+  };
 
   const alignImage = flowState === 'done' ? "top" : "bottom";
 
@@ -288,8 +282,8 @@ const CreateLanternPage = () => {
     >
       {flowState !== 'done' && (
         <BirthdatePicker
-          datePickerRef={datePickerRef}
-          birthdateExists={localBirthdate}
+          onDateSelected={handleDateSelected}
+          birthdateExists={!!localBirthdate} // Ensure birthdateExists is a boolean
           handleNextClick={handleNextClick}
         />
       )}
