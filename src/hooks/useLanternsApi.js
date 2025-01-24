@@ -13,7 +13,7 @@
  *    const { createLantern } = useLanternsApi();
  *    const newLantern = await createLantern({
  *      name: "John Doe",
- *      email: "john@example.com",
+ *      email: "johnexample.com",
  *      birthdate: "2000-01-01",
  *      animal_sign: "Dragon",
  *      element: "Fire",

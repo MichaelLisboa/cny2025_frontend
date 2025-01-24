@@ -3,7 +3,7 @@ import Layout from '../components/layout';
 import SEO from '../components/seo';
 import styled from "styled-components";
 import { gsap } from "gsap";
-// import useLanternsApi from "../hooks/useLanternsApi";
+import useLanternsApi from "../hooks/useLanternsApi";
 
 const LanternConfig = {
     viewportWidth: 100, // % of the screen width for lantern placement
@@ -36,7 +36,7 @@ const DivContainer = styled.div`
 
 const BlankPage = () => {
     const [lanternsData, setLanternsData] = useState([]); // State to store lanterns fetched from API
-    // const { getRandomLanterns } = useLanternsApi(); // Custom hook to fetch lantern data
+    const { getRandomLanterns } = useLanternsApi(); // Custom hook to fetch lantern data
 
     return (
         <Layout
