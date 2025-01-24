@@ -1,0 +1,98 @@
+.container {
+  padding: 8px 16px;
+}
+
+.text-white {
+  color: #fff;
+}
+
+p.text-medium {
+  font-size: 1.25em;
+  font-weight: 300;
+  line-height: 1.2;
+  margin: 0;
+}
+
+p.text-large {
+  font-size: 1.5em;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+picture {
+  padding: 0;
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  p.text-medium {
+    font-size: 1.5em;
+  }
+  p.text-large {
+    font-size: 2.5em;
+  }
+}
+
+@media (min-width: 2560px) {
+  p.text-medium {
+    font-size: 2.5em;
+  }
+  p.text-large {
+    font-size: 3.5em;
+  }
+}
+
+/* Custom font HoganBrush */
+h1 {
+  /* font-family: 'HoganBrush', sans-serif; */
+  font-size: 3.5em;
+  font-weight: 400;
+  line-height: 1;
+  color: #fff;
+  margin-bottom: 0;
+}
+
+/* Custom font HoganBrush */
+h2 {
+  /* font-family: 'HoganBrush', sans-serif; */
+  font-size: 3em;
+  font-weight: 400;
+  line-height: 1;
+  color: #fff;
+}
+
+/* Custom font HoganBrush */
+h3 {
+  font-size: 1.75em;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+}
+
+/* Custom font HoganBrush */
+h4 {
+  font-size: 1.5em;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+}
+
+/* Custom font HoganBrush */
+h5 {
+  font-size: 1.25em;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+}
+
+/* h3 tags followed by p tags should be 8px apart */
+.inline-header {
+  margin-bottom: 8px;
+}
+
+p + .inline-header {
+  margin-top: 1.5em;
+}
+
+
+
