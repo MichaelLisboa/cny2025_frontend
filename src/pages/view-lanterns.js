@@ -6,7 +6,7 @@ import { useLanternsApi } from "../hooks/useLanternsApi";
 import styled from "styled-components";
 import { gsap } from "gsap";
 import Lantern from "../components/Lantern";
-import useDeviceInfo from "../hooks/useDeviceInfo"; // Import the custom hook
+// import useDeviceInfo from "../hooks/useDeviceInfo"; // Import the custom hook
 
 // import { LanternConfig } from "../config/lanternConfig";
 
@@ -99,7 +99,7 @@ const LanternLayer = styled.div`
 const ViewLanterns = () => {
   const [lanternsData, setLanternsData] = useState([]);
   const { getRandomLanterns } = useLanternsApi();
-  const deviceInfo = useDeviceInfo(); // Use the custom hook
+  // const deviceInfo = useDeviceInfo(); // Use the custom hook
 
   const data = useStaticQuery(graphql`
     query LanternImages {

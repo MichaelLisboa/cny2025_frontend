@@ -3,14 +3,14 @@ import styled from "styled-components";
 import Layout from "../components/layout";
 import SEO from "../components/seo"; // Corrected import statement
 // import DatePicker from "../components/datePicker"; // Corrected import statement
-import Button from "../components/button";
+// import Button from "../components/button";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import { zodiacData } from "../data/fortune-data";
 import { gsap } from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
 import { Observer } from "gsap/Observer";
-import { useAnimateTextSequence } from "../hooks/useAnimateTextSequence";
+// import { useAnimateTextSequence } from "../hooks/useAnimateTextSequence";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
 
@@ -143,7 +143,7 @@ const FortuneBody = styled.p`
   transition: opacity 0.5s ease-in-out;
 `;
 
-const ZodiacPresentation = ({ zodiac, element, elementsRef }) => {
+const ZodiacPresentation = ({ zodiac, element }) => {
   const data = useStaticQuery(graphql`
     query {
       allFile {
@@ -199,7 +199,7 @@ const ZodiacPresentation = ({ zodiac, element, elementsRef }) => {
 
   useEffect(() => {
     const textElements = Array.from(document.querySelectorAll(".fortune-title, .fortune-body"));
-    elementsRef.current = textElements;
+    // elementsRef.current = textElements;
   }, []);
 
   return (
@@ -275,7 +275,7 @@ const FortunePage = () => {
     setFlowState('transitioning');
   };
 
-  const elementsRef = useAnimateTextSequence({ waveSpeed: 0.02, fadeDuration: 0.25 });
+  // const elementsRef = useAnimateTextSequence({ waveSpeed: 0.02, fadeDuration: 0.25 });
 
   useEffect(() => {
     if (flowState === 'transitioning') {
@@ -323,12 +323,12 @@ const FortunePage = () => {
         "-=2"
       );
 
-      timeline.call(() => {
-        const textElements = document.querySelectorAll(".fortune-title, .fortune-body");
-        elementsRef.current = textElements;
-      }, null, "+=0.3");
+      // timeline.call(() => {
+      //   const textElements = document.querySelectorAll(".fortune-title, .fortune-body");
+      //   elementsRef.current = textElements;
+      // }, null, "+=0.3");
     }
-  }, [flowState, localBirthdate, localZodiac, localElement, dispatch, elementsRef]);
+  }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
 
   const handleDateSelected = (selectedDate) => {
     console.log("Selected Date:", selectedDate);
@@ -358,7 +358,6 @@ const FortunePage = () => {
         <ZodiacPresentation
           zodiac={flowState === 'done' ? state.zodiac : localZodiac}
           element={flowState === 'done' ? state.element : localElement}
-          elementsRef={elementsRef}
         />
       )}
     </Layout>
