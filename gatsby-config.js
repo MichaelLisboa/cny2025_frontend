@@ -2,7 +2,7 @@ module.exports = {
   siteMetadata: {
     title: 'Welcome to the Year of the Snake',
     description: 'The Snake symbolizes transformation and change.',
-    image: 'src/images/android-chrome-512x512.png',
+    image: './src/images/android-chrome-512x512.png',
     siteUrl: 'https://cny2025.michaellisboa.com'
   },
   plugins: [
@@ -32,7 +32,7 @@ module.exports = {
         background_color: `#AE504F`,
         theme_color: `#AE504F`,
         display: `standalone`,
-        icon: `src/images/logo.png`,
+        icon: `./src/images/logo.png`,
       }
     },
     {
