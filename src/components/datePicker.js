@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { gsap } from 'gsap';
+import Button from './button';
 
 const DatePickerWrapper = styled.div`
+position: absolute;
+  top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   max-width: 600px;
+  height: 100vh;
   width: 100%;
   margin: 16px auto;
+  padding: 16px;
   text-align: center;
 `;
 
@@ -35,6 +40,14 @@ const InputField = styled.input`
   text-align: center;
   outline: none;
   cursor: pointer;
+
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
+  }
+
+  @media (min-width: 1024px) {
+    font-size: 2rem;
+  }
 `;
 
 const DatePickerContainer = styled.div`
@@ -42,15 +55,18 @@ const DatePickerContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #fff;
-  border-radius: 8px;
+  background: #F9F8ED;
+  border-radius: 1.5rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   z-index: 1000;
-  display: none;
+  display: none; // Initially hidden
   padding: 16px;
   text-align: center;
-  width: 80%;
+  width: 80vw;
+  height: 80vw;
   max-width: 600px;
+  max-height: 600px;
+  flex-direction: column;
 `;
 
 const Header = styled.div`
@@ -69,30 +85,81 @@ const Dropdown = styled.select`
   background-repeat: no-repeat;
   background-position: right 16px center;
   outline: none;
+
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
+  }
+
+  @media (min-width: 1024px) {
+    font-size: 2rem;
+  }
 `;
 
 const DaysGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
+  flex-grow: 1;
+  align-items: center;
 `;
 
 const Day = styled.button`
   text-align: center;
   border: none;
-  padding: 8px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  background: ${(props) => (props.isFuture ? '#fff' : '#f5f5f5')};
-  color: ${(props) => (props.isFuture ? '#ccc' : '#333')};
-  border-radius: 4px;
-  font-size: 1.25rem;
+  color: ${(props) => (props.isSelected ? '#FFFFFF' : props.isFuture ? '#C7C6BD' : '#101113')};
+  border-radius: 50%;
+  font-size: 1rem;
+  background-color: ${(props) => (props.isSelected ? 'rgba(192, 86, 14, 1)' : 'transparent')};
   pointer-events: ${(props) => (props.isFuture ? 'none' : 'auto')};
+
+  @media (min-width: 768px) {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
 `;
 
-const DatePicker = ({ onDateSelected }) => {
+const HeaderText = styled.h1`
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 768px) {
+    font-size: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    font-size: 2.5rem;
+  }
+`;
+
+const TextParagraph = styled.p`
+  margin-top: 20px;
+  padding: 8px 24px;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    font-size: 1.5rem;
+  }
+`;
+
+const DatePicker = ({ onDateSelected, birthdateExists, handleNextClick, title, paragraphText, buttonLabel }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [highlightedDate, setHighlightedDate] = useState(new Date().getDate());
   const overlayRef = useRef(null);
   const datePickerRef = useRef(null);
 
@@ -113,15 +180,23 @@ const DatePicker = ({ onDateSelected }) => {
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
+      const isToday =
+        i === today.getDate() &&
+        currentMonth === today.getMonth() &&
+        currentYear === today.getFullYear();
+      const isSelected = i === highlightedDate && currentMonth === today.getMonth() && currentYear === today.getFullYear();
       const isFuture = new Date(currentYear, currentMonth, i) > today;
+
       days.push(
         <Day
           key={i}
           isFuture={isFuture}
+          isSelected={isSelected}
           onClick={() => {
             if (!isFuture) {
               const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
               setSelectedDate(`${i} ${months[currentMonth]}, ${currentYear}`);
+              setHighlightedDate(i);
               onDateSelected(formattedDate);
               hidePicker();
             }
@@ -136,18 +211,22 @@ const DatePicker = ({ onDateSelected }) => {
 
   const showPicker = () => {
     overlayRef.current.style.display = 'block';
-    datePickerRef.current.style.display = 'block';
+    datePickerRef.current.style.display = 'flex'; // Change to flex when shown
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 });
     gsap.fromTo(datePickerRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
   };
 
   const hidePicker = () => {
-    gsap.to(datePickerRef.current, { opacity: 0, duration: 0.3, onComplete: () => {
-      datePickerRef.current.style.display = 'none';
-    }});
-    gsap.to(overlayRef.current, { opacity: 0, duration: 0.5, onComplete: () => {
-      overlayRef.current.style.display = 'none';
-    }});
+    gsap.to(datePickerRef.current, {
+      opacity: 0, duration: 0.3, onComplete: () => {
+        datePickerRef.current.style.display = 'none';
+      }
+    });
+    gsap.to(overlayRef.current, {
+      opacity: 0, duration: 0.5, onComplete: () => {
+        overlayRef.current.style.display = 'none';
+      }
+    });
   };
 
   useEffect(() => {
@@ -170,6 +249,10 @@ const DatePicker = ({ onDateSelected }) => {
 
   return (
     <DatePickerWrapper>
+      <HeaderText>{title}</HeaderText>
+      <TextParagraph className="text-white text-medium">
+        {paragraphText}
+      </TextParagraph>
       <InputField
         value={selectedDate}
         onClick={showPicker}
@@ -211,6 +294,9 @@ const DatePicker = ({ onDateSelected }) => {
           {updateDays()}
         </DaysGrid>
       </DatePickerContainer>
+      {birthdateExists && (
+        <Button text={buttonLabel} onClick={handleNextClick} />
+      )}
     </DatePickerWrapper>
   );
 };

@@ -11,7 +11,6 @@ import { graphql, useStaticQuery } from "gatsby";
 
 import useAnimateTextSequence from "../hooks/useAnimateTextSequence";
 import DatePicker from "../components/datePicker";
-import Button from "../components/button";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 
@@ -253,19 +252,6 @@ const ZodiacPresentation = ({ zodiac, element }) => {
   );
 };
 
-const BirthdatePicker = ({ birthdateExists, handleNextClick, onDateSelected }) => (
-  <DatePickerContainer className="date-picker">
-    <HeaderText>Select Your Birthdate</HeaderText>
-    <TextParagraph className="text-white text-medium">
-      Enter your birthdate to discover your fortune for the new year!
-    </TextParagraph>
-    <DatePicker onDateSelected={onDateSelected} />
-    {birthdateExists && (
-      <Button text="Next" onClick={handleNextClick} />
-    )}
-  </DatePickerContainer>
-);
-
 const FortunePage = () => {
   const { state, dispatch, birthdateExists } = useAppState();
   const [flowState, setFlowState] = useState('idle');
@@ -349,10 +335,13 @@ const FortunePage = () => {
       scrollable="true"
     >
       {flowState !== 'done' && (
-        <BirthdatePicker
+        <DatePicker
           birthdateExists={localBirthdate}
           handleNextClick={handleNextClick}
           onDateSelected={handleDateSelected}
+          title="Enter Your Birthdate"
+          paragraphText="Discover your fortune for the new year!"
+          buttonLabel="Next"
         />
       )}
       {flowState !== 'idle' && (
