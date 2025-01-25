@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import styled from 'styled-components';
 
 const NavbarContainer = styled.div`
@@ -88,7 +88,7 @@ const NavLink = styled.a`
   }
 `;
 
-const Navbar = () => {
+const Navbar = forwardRef((props, ref) => {
   const [selectedLink, setSelectedLink] = useState(null);
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <NavbarContainer>
+    <NavbarContainer ref={ref}>
       <NavContainer>
         <NavLinkContainer selected={selectedLink === 'createLantern'}>
           <NavLink href="/create-lantern" onClick={() => setSelectedLink('createLantern')}>Make a wish</NavLink>
@@ -115,6 +115,6 @@ const Navbar = () => {
       </NavContainer>
     </NavbarContainer>
   );
-};
+});
 
 export default Navbar;

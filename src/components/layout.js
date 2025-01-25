@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { gsap } from "gsap";
 import { graphql, useStaticQuery } from "gatsby";
@@ -30,6 +30,9 @@ const Content = styled.div`
   z-index: 1;
   overflow-x: hidden;
   overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
+
+  margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
+  transition: margin-top 0.3s ease;
 `;
 
 const ParallaxImageContainer = styled.div`
@@ -59,6 +62,67 @@ const ParallaxImageContainer = styled.div`
 
 const Layout = ({ children, image, scrollable, contentContainerStyles, alignImage }) => {
   const backgroundImageRef = useRef(null);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const contentRef = useRef(null);
+  const navbarRef = useRef(null);
+
+  useEffect(() => {
+    const navbar = navbarRef.current;
+    let startY = 0;
+    let isSwiping = false;
+
+    const handleTouchStart = (e) => {
+      startY = e.touches[0].clientY;
+      isSwiping = true;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isSwiping || isRefreshing) return;
+
+      const currentY = e.touches[0].clientY;
+      if (currentY - startY > 50) { // Swipe threshold
+        triggerRefresh();
+        isSwiping = false;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      isSwiping = false;
+    };
+
+    navbar.addEventListener("touchstart", handleTouchStart);
+    navbar.addEventListener("touchmove", handleTouchMove);
+    navbar.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      navbar.removeEventListener("touchstart", handleTouchStart);
+      navbar.removeEventListener("touchmove", handleTouchMove);
+      navbar.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isRefreshing]);
+
+  const triggerRefresh = () => {
+    setIsRefreshing(true);
+
+    // GSAP animation for pull-down
+    gsap.to(contentRef.current, {
+      y: 50,
+      duration: 0.3,
+      ease: "power1.out",
+    });
+
+    // Clear localStorage and refresh after a delay
+    setTimeout(() => {
+      localStorage.clear();
+      window.location.reload();
+    }, 1000);
+
+    setTimeout(() => {
+      gsap.to(contentRef.current, { y: 0, duration: 0.3 });
+      setIsRefreshing(false);
+    }, 1200);
+  };
 
   const data = useStaticQuery(graphql`
     query {
@@ -133,7 +197,7 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
 
   return (
     <Container>
-      <Navbar /> {/* Add Navbar component */}
+      <Navbar ref={navbarRef} /> {/* Add Navbar component */}
       {backgroundImage && (
         <ParallaxImageContainer
           ref={backgroundImageRef}
