@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { gsap } from "gsap";
 import { graphql, useStaticQuery } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
@@ -7,7 +7,7 @@ import Navbar from "../components/navbar"; // Import Navbar
 import "./layout.css";
 
 // Styled-components
-const Container = styled.div.attrs({ className: "main-container" })`
+const Container = styled.div.attrs({ className: "container" })`
   position: absolute;
   top: 0;
   height: 100vh;
@@ -30,7 +30,9 @@ const Content = styled.div`
   z-index: 1;
   overflow-x: hidden;
   overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
-  transition: transform 0.3s ease; // Use transform instead of margin-top
+
+  margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
+  transition: margin-top 0.3s ease;
 `;
 
 const ParallaxImageContainer = styled.div`
@@ -55,6 +57,36 @@ const ParallaxImageContainer = styled.div`
 
   @media (min-width: 3840px) {
     width: 110%;
+  }
+`;
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const RefreshIndicator = styled.div`
+  position: fixed;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 48px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+
+  @media (min-width: 768px) {
+    top: 120px;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    animation: ${spin} 1s linear infinite;
   }
 `;
 
@@ -103,27 +135,22 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
   const triggerRefresh = () => {
     setIsRefreshing(true);
 
-    // Animate the Content sliding down (Navbar remains unaffected)
-    gsap.to(contentRef.current, { // Use contentRef to target Content
-      y: 50, // Slide down 50px
+    // GSAP animation for pull-down
+    gsap.to(contentRef.current, {
+      y: 50,
       duration: 0.3,
       ease: "power1.out",
     });
 
-    // Clear localStorage and reload the page
+    // Clear localStorage and refresh after a delay
     setTimeout(() => {
-      localStorage.clear(); // Clear stored data
-      window.location.reload(); // Refresh the page
+      localStorage.clear();
+      window.location.reload();
     }, 1000);
 
-    // Reset the Content's position after refresh
     setTimeout(() => {
-      gsap.to(contentRef.current, {
-        y: 0, // Reset to original position
-        duration: 0.3,
-        ease: "power1.out",
-      });
-      setIsRefreshing(false); // Reset refreshing state
+      gsap.to(contentRef.current, { y: 0, duration: 0.3 });
+      setIsRefreshing(false);
     }, 1200);
   };
 
@@ -200,7 +227,22 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
 
   return (
     <>
-      <Navbar ref={navbarRef} />
+      <Navbar ref={navbarRef} /> {/* Add Navbar component */}
+      {isRefreshing && (
+        <RefreshIndicator>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" style={{ display: "block", margin: "auto" }}>
+            {/* Outer Circle */}
+            <circle cx="50" cy="50" r="50" fill="#d40202" />
+            <path
+              d="M50 15a35 35 0 1 1-24.75 10.25"
+              fill="none"
+              stroke="#fff"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
+          </svg>
+        </RefreshIndicator>
+      )}
       <Container>
         {backgroundImage && (
           <ParallaxImageContainer
@@ -211,7 +253,7 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
             <GatsbyImage image={backgroundImage} alt="Background Image" />
           </ParallaxImageContainer>
         )}
-        <Content ref={contentRef} style={contentContainerStyles} scrollable={scrollable}>
+        <Content style={contentContainerStyles} scrollable={scrollable}>
           {children}
         </Content>
       </Container>
