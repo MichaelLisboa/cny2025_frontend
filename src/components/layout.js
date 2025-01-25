@@ -7,7 +7,7 @@ import Navbar from "../components/navbar"; // Import Navbar
 import "./layout.css";
 
 // Styled-components
-const Container = styled.div`
+const Container = styled.div.attrs({ className: "main-container" })`
   position: absolute;
   top: 0;
   height: 100vh;
@@ -30,9 +30,7 @@ const Content = styled.div`
   z-index: 1;
   overflow-x: hidden;
   overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
-
-  margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
-  transition: margin-top 0.3s ease;
+  transition: transform 0.3s ease; // Use transform instead of margin-top
 `;
 
 const ParallaxImageContainer = styled.div`
@@ -105,22 +103,27 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
   const triggerRefresh = () => {
     setIsRefreshing(true);
 
-    // GSAP animation for pull-down
-    gsap.to(contentRef.current, {
-      y: 50,
+    // Animate the Content sliding down (Navbar remains unaffected)
+    gsap.to(contentRef.current, { // Use contentRef to target Content
+      y: 50, // Slide down 50px
       duration: 0.3,
       ease: "power1.out",
     });
 
-    // Clear localStorage and refresh after a delay
+    // Clear localStorage and reload the page
     setTimeout(() => {
-      localStorage.clear();
-      window.location.reload();
+      localStorage.clear(); // Clear stored data
+      window.location.reload(); // Refresh the page
     }, 1000);
 
+    // Reset the Content's position after refresh
     setTimeout(() => {
-      gsap.to(contentRef.current, { y: 0, duration: 0.3 });
-      setIsRefreshing(false);
+      gsap.to(contentRef.current, {
+        y: 0, // Reset to original position
+        duration: 0.3,
+        ease: "power1.out",
+      });
+      setIsRefreshing(false); // Reset refreshing state
     }, 1200);
   };
 
@@ -196,21 +199,23 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
   }, [backgroundImage]);
 
   return (
-    <Container>
-      <Navbar ref={navbarRef} /> {/* Add Navbar component */}
-      {backgroundImage && (
-        <ParallaxImageContainer
-          ref={backgroundImageRef}
-          className="background-image"
-          alignImage={alignImage}
-        >
-          <GatsbyImage image={backgroundImage} alt="Background Image" />
-        </ParallaxImageContainer>
-      )}
-      <Content style={contentContainerStyles} scrollable={scrollable}>
-        {children}
-      </Content>
-    </Container>
+    <>
+      <Navbar ref={navbarRef} />
+      <Container>
+        {backgroundImage && (
+          <ParallaxImageContainer
+            ref={backgroundImageRef}
+            className="background-image"
+            alignImage={alignImage}
+          >
+            <GatsbyImage image={backgroundImage} alt="Background Image" />
+          </ParallaxImageContainer>
+        )}
+        <Content ref={contentRef} style={contentContainerStyles} scrollable={scrollable}>
+          {children}
+        </Content>
+      </Container>
+    </>
   );
 }
 
