@@ -17,24 +17,6 @@ import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 gsap.registerPlugin(Observer);
 gsap.registerPlugin(TextPlugin);
 
-const DatePickerContainer = styled.div`
-  position: absolute;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  height: 100%;
-  max-width: 600px;
-  text-align: center;
-  z-index: 2;
-
-  @media (min-width: 1441px) {
-    max-width: 1024px;
-  }
-`;
-
 const FortuneContainer = styled.div.attrs({
   className: "fortune-container", // Ensures GSAP can target it
 })`
@@ -114,17 +96,6 @@ const ZodiacImageWrapper = styled.div`
   }
 `;
 
-const HeaderText = styled.h1`
-  margin: 0;
-  padding: 0;
-`;
-
-const TextParagraph = styled.p`
-  margin-top: 20px;
-  padding: 8px 24px;
-  text-align: center;
-`;
-
 const Title = styled.h1`
   margin-top: 0;
   text-align: center;
@@ -141,6 +112,28 @@ const FortuneBody = styled.p`
   opacity: 0;
   display: none;
   transition: opacity 0.5s ease-in-out;
+`;
+
+const DatePickerContainer = styled.div`
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 100%;
+  max-width: 600px;
+  text-align: center;
+  z-index: 2;
+
+  @media (min-width: 1441px) {
+    max-width: 1024px;
+  }
+
+  &.date-picker {
+    transition: transform 2s ease, opacity 2s ease;
+  }
 `;
 
 const ZodiacPresentation = ({ zodiac, element }) => {
@@ -293,10 +286,10 @@ const FortunePage = () => {
       );
 
       timeline.to(".date-picker", {
-        y: "100%",
+        y: "350%",
         opacity: 0,
-        duration: 2,
-        ease: "power3.inOut",
+        duration: 1.5,
+        ease: "power2.inOut",
         onComplete: () => {
           dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
           dispatch({ type: "SET_ZODIAC", payload: localZodiac });
@@ -335,14 +328,16 @@ const FortunePage = () => {
       scrollable="true"
     >
       {flowState !== 'done' && (
-        <DatePicker
-          birthdateExists={localBirthdate}
-          handleNextClick={handleNextClick}
-          onDateSelected={handleDateSelected}
-          title="Enter Your Birthdate"
-          paragraphText="Discover your fortune for the new year!"
-          buttonLabel="Next"
-        />
+        <DatePickerContainer className="date-picker">
+          <DatePicker
+            birthdateExists={localBirthdate}
+            handleNextClick={handleNextClick}
+            onDateSelected={handleDateSelected}
+            title="Enter Your Birthdate"
+            paragraphText="Discover your fortune for the new year!"
+            buttonLabel="Next"
+          />
+        </DatePickerContainer>
       )}
       {flowState !== 'idle' && (
         <ZodiacPresentation
