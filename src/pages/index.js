@@ -68,10 +68,10 @@ const IndexPage = () => {
   const [xOffset, setXOffset] = useState(0);
 
   useFloatingAnimation(contentContainerRef, {
-    minX: -5,
-    maxX: 5,
-    minY: -10,
-    maxY: 10,
+    minX: -10,
+    maxX: 10,
+    minY: -15,
+    maxY: 15,
   });
 
   useEffect(() => {
@@ -113,11 +113,11 @@ const IndexPage = () => {
           </ImageWrapper>
           <TextDiv ref={textDivRef}>
             <p className="text-medium text-white">
-              Share wishes with your loved ones, slithering into the new year with hope, wisdom, and lucky fortunes.
+            Share your new year's wish to the sky and join us in marking the Lunar New Year, the Year of the Snake. Embrace the traditions of joy, fortune, and togetherness. Happy Chinese New Year!
             </p>
           </TextDiv>
           <ButtonWrapper ref={buttonWrapperRef}>
-            <Button text="Continue" onClick={() => navigate('/blank-page')} />
+            <Button text="Continue" onClick={() => navigate('/view-lanterns')} />
           </ButtonWrapper>
         </ContentContainer>
       </div>

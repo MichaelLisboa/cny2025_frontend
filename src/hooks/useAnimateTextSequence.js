@@ -1,50 +1,52 @@
+// useAnimateTextSequence.js
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Observer } from 'gsap/Observer';
 
 gsap.registerPlugin(Observer);
 
-const useAnimateTextSequence = ({ waveSpeed = 0.1, fadeDuration = 0.5, startDelay = 0 } = {}) => {
-  const elementsRef = useRef([]);
+const useAnimateTextSequence = ({
+  waveSpeed = 0.1,
+  fadeDuration = 0.5,
+  startDelay = 0
+} = {}) => {
+  // 1. The hook creates & manages its own ref
+  const elementsRef = useRef(null);
 
   useEffect(() => {
     const elements = elementsRef.current;
     if (!elements || elements.length === 0) return;
 
-    // Ensure elements are hidden initially and split their text content
-    elements.forEach((el) => {
-      gsap.set(el, { display: 'block', opacity: 0 }); // Hide initially
-      if (!el.dataset.text) el.dataset.text = el.textContent.trim(); // Store text in dataset
+    // 2. Ensure each element is hidden initially and text is split
+    elements.forEach((el, index) => {
+      gsap.set(el, { display: 'block', opacity: 0 });
+      if (!el.dataset.text) el.dataset.text = el.textContent.trim();
 
-      // Split text into spans for characters and spaces
+      // split text into spans
       el.innerHTML = el.dataset.text
-        .split('') // Split by character
-        .map((char) => {
-          if (char === ' ') {
-            return ` `; // Visible space
-          }
-          return `<span class="char">${char}</span>`; // Wrap each character
-        })
+        .split('')
+        .map((char) => (char === ' ' ? ' ' : `<span class="char">${char}</span>`))
         .join('');
+      // store order for sorting in IntersectionObserver
+      el.dataset.index = index;
     });
 
-    // Create a shared timeline for sequential animations
+    // 3. Create a timeline for sequential or wave-based animations
     const timeline = gsap.timeline({ paused: true, delay: startDelay });
 
-    // Observer to track visibility
+    // 4. IntersectionObserver to start animation when visible
     const observer = new IntersectionObserver(
       (entries) => {
         entries
-          .filter((entry) => entry.isIntersecting) // Only process visible elements
-          .sort((a, b) => a.target.dataset.index - b.target.dataset.index) // Ensure order by index
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.target.dataset.index - b.target.dataset.index)
           .forEach((entry) => {
-            const el = entry.target; // Current visible element
-            const characters = el.querySelectorAll('.char'); // Get all character spans
-
-            // Add wave animation for this element
+            const el = entry.target;
+            const characters = el.querySelectorAll('.char');
             timeline.add(
-              gsap.timeline()
-                .to(el, { opacity: 1, duration: fadeDuration, ease: 'power1.out' }) // Fade in the element
+              gsap
+                .timeline()
+                .to(el, { opacity: 1, duration: fadeDuration, ease: 'power1.out' })
                 .fromTo(
                   characters,
                   { y: 40, opacity: 0, scale: 0.05 },
@@ -53,33 +55,35 @@ const useAnimateTextSequence = ({ waveSpeed = 0.1, fadeDuration = 0.5, startDela
                     scale: 1,
                     opacity: 1,
                     duration: 0.5,
-                    stagger: waveSpeed, // Wave effect
-                    ease: 'power1.out',
+                    stagger: waveSpeed,
+                    ease: 'power1.out'
                   },
-                  `-=${fadeDuration / 4}` // Start wave slightly after fade begins
+                  `-=${fadeDuration / 4}`
                 )
             );
 
-            observer.unobserve(el); // Stop observing this element
+            // once animated, stop observing
+            observer.unobserve(el);
           });
 
-        timeline.play(); // Play the timeline for visible elements
+        timeline.play();
       },
-      { threshold: 0.2, rootMargin: '0px 0px -2% 0px' } // Adjust threshold and root margin
+      { threshold: 0.2, rootMargin: '0px 0px -2% 0px' }
     );
 
-    // Add an index to ensure order is maintained
-    elements.forEach((el, index) => {
-      el.dataset.index = index; // Assign an index for sorting
-      observer.observe(el); // Attach observer to each element
+    // 5. Observe each element
+    elements.forEach((el) => {
+      observer.observe(el);
     });
 
+    // 6. Cleanup on unmount
     return () => {
-      observer.disconnect(); // Clean up observer on unmount
-      timeline.kill(); // Kill the timeline on unmount
+      observer.disconnect();
+      timeline.kill();
     };
   }, [waveSpeed, fadeDuration, startDelay]);
 
+  // Return this so any component can set elementsRef.current to the relevant nodes
   return elementsRef;
 };
 

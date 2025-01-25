@@ -116,14 +116,18 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
 
     document.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('deviceorientation', handleDeviceOrientation);
-    backgroundImageRef.current.addEventListener('touchstart', handleTouchStart);
-    backgroundImageRef.current.addEventListener('touchmove', handleTouchMove);
+    if (backgroundImageRef.current) {
+      backgroundImageRef.current.addEventListener('touchstart', handleTouchStart);
+      backgroundImageRef.current.addEventListener('touchmove', handleTouchMove);
+    }
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('deviceorientation', handleDeviceOrientation);
-      backgroundImageRef.current.removeEventListener('touchstart', handleTouchStart);
-      backgroundImageRef.current.removeEventListener('touchmove', handleTouchMove);
+      if (backgroundImageRef.current) {
+        backgroundImageRef.current.removeEventListener('touchstart', handleTouchStart);
+        backgroundImageRef.current.removeEventListener('touchmove', handleTouchMove);
+      }
     };
   }, [backgroundImage]);
 
