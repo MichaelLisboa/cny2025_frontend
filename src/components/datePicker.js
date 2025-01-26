@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 import Button from './button';
 
 const DatePickerWrapper = styled.div`
-position: absolute;
+  position: absolute;
   top: 0;
   display: flex;
   flex-direction: column;

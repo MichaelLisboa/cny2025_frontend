@@ -10,7 +10,9 @@ const getState = () => {
 // Helper to update state in localStorage
 const updateState = (newState) => {
     if (typeof window !== "undefined") {
-        localStorage.setItem('appState', JSON.stringify(newState));
+        const existingState = getState();
+        const mergedState = { ...existingState, ...newState };
+        localStorage.setItem('appState', JSON.stringify(mergedState));
     }
 };
 
@@ -23,6 +25,8 @@ const reducer = (state, action) => {
             return { ...state, zodiac: action.payload };
         case 'SET_ELEMENT':
             return { ...state, element: action.payload };
+        case 'SET_WISHES':
+            return { ...state, ...{ wishes: action.payload } };
         case 'CLEAR':
             return {}; // Clear all state
         default:

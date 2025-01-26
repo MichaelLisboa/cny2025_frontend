@@ -96,13 +96,13 @@ const Button = ({ text = 'Continue', to = null, onClick = null }) => {
       <Wrapper
         className="button-wrapper"
         onClick={!to && onClick ? onClick : null}
-        >
+      >
         {to ? (
           <Link to={to} isMobile={isMobile} aria-label={text}>
             {text}
           </Link>
         ) : (
-          <Link isMobile={isMobile} aria-label={text}>
+          <Link as="span" isMobile={isMobile} aria-label={text}>
             {text}
           </Link>
         )}
