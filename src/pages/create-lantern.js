@@ -81,7 +81,6 @@ const LanternImageWrapper = styled.div`
     width: auto;
     height: 100%;
     margin: auto;
-    min-height: 65vh;
     filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
     transition: filter 0.3s ease-in-out;
 
@@ -96,7 +95,6 @@ const LanternImageWrapper = styled.div`
       width: auto;
       height: 100%;
       margin: auto;
-      min-height: 75vh;
       filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
       transition: filter 0.3s ease-in-out;
 
@@ -130,6 +128,27 @@ const TextParagraph = styled.p`
 
   @media (min-width: 1441px) {
     font-size: 2.5rem;
+    max-width: 30%;
+  }
+`;
+
+const WishParagraph = styled.p`
+  margin-top: 32px;
+  font-size: 1.25rem;
+  line-height: 1;
+  font-weight: 600;
+  max-width: 50%;
+  color: rgba(226, 127, 12, 0.8);
+  z-index: 3; /* Ensure it appears above the image */
+  pointer-events: none; /* Prevent interactions */
+  position: relative; /* Explicitly position it for z-index to work */
+  text-align: center;
+  text-shadow: -1px -1px 1px rgba(226, 127, 12, 0.5); /* Subtle shadow for depth */
+  mix-blend-mode: multiply; /* Blend with the lantern background */
+  // opacity: 0;
+
+  @media (min-width: 1441px) {
+    font-size: 1.5rem;
     max-width: 30%;
   }
 `;
@@ -224,11 +243,16 @@ const SaveWishButton = styled.div`
   overflow: visible;
 `;
 
-const LanternPresentation = ({ zodiac }) => {
+const LanternPresentation = ({ zodiac, setFlowState }) => {
   const [isWriting, setIsWriting] = useState(false); // State to toggle text area visibility
   const [wish, setWish] = useState(""); // State to capture the user's wish
   const maxCharacters = 150; // Set the maximum character limit
   const textAreaRef = useRef(null); // Reference for TextAreaContainer
+  const paragraphRef = useRef(null); // Reference for TextParagraph
+
+  // Helper function to truncate wish
+  const truncateWish = (text, maxLength = 128) =>
+    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 
   const data = useStaticQuery(graphql`
     query {
@@ -308,6 +332,40 @@ const LanternPresentation = ({ zodiac }) => {
     setWish(""); // Clear the text
   };
 
+
+  const handleWishSubmit = () => {
+    if (wish.trim()) {
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          setIsWriting(false); // Hide the TextAreaContainer after animation
+          setFlowState("transitioning2"); // Move to the next flow state
+        },
+      });
+  
+      // Fade out both the TextAreaContainer and SaveWishButton
+      timeline.to([textAreaRef.current, ".save-wish-button"], {
+        opacity: 0,
+        duration: 1,
+        ease: "power2.out",
+      });
+  
+      // Ensure the WishParagraph starts with opacity: 0
+      gsap.set(paragraphRef.current, { opacity: 0, scale: 0.8 });
+  
+      // Fade in the WishParagraph with a subtle scale effect
+      timeline.to(
+        paragraphRef.current,
+        { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" },
+        "-=0.5" // Overlap with the previous animation slightly
+      );
+    }
+  };
+
+  const handleCreateAnother = () => {
+    setWish(""); // Clear the existing wish
+    setFlowState("idle"); // Reset to idle state for new lantern creation
+  };
+
   const characterCount = wish.length; // Calculate the number of characters typed
 
 
@@ -346,9 +404,12 @@ const LanternPresentation = ({ zodiac }) => {
               {characterCount}/{maxCharacters}
             </div>
           </TextAreaContainer>
-        ) : (
-          <TextParagraph>Tap to write your message.</TextParagraph>
-        )}
+        ) :
+          wish.length ? (
+            <WishParagraph ref={paragraphRef}>{truncateWish(wish)}</WishParagraph>
+          ) : (
+            <TextParagraph>Tap to write your message.</TextParagraph>
+          )}
         {lanternImage ? (
           <GatsbyImage
             image={lanternImage}
@@ -360,8 +421,8 @@ const LanternPresentation = ({ zodiac }) => {
           <p>Lantern image not found</p>
         )}
       </LanternImageWrapper>
-      <SaveWishButton>
-        <Button onClick={() => setIsWriting(false)} text="Save Your Wish" />
+      <SaveWishButton className="save-wish-button">
+        <Button onClick={handleWishSubmit} text="Save Your Wish" />
       </SaveWishButton>
     </LanternContainer>
   );
@@ -374,52 +435,19 @@ const CreateLanternPage = () => {
   const [localZodiac, setLocalZodiac] = useState(null);
   const [localElement, setLocalElement] = useState(null);
 
-  const { getRandomLanterns } = useLanternsApi(); // Destructure the function from the hook
-
-  // Fetch and log all lanterns when the component mounts
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchLanterns = async () => {
-      try {
-        const lanterns = await getRandomLanterns(20);
-        if (isMounted) console.log("Fetched Lanterns:", JSON.stringify(lanterns))
-      } catch (error) {
-        if (isMounted) console.error("Error fetching lanterns:", error);
-      }
-    };
-
-    fetchLanterns();
-
-    return () => {
-      isMounted = false; // Prevent setting state if unmounted
-    };
-  }, [getRandomLanterns]);
-
-  useEffect(() => {
-    if (birthdateExists() && state.zodiac) {
-      setFlowState('done');
-    }
-  }, [birthdateExists, state.zodiac]);
+  // useEffect(() => {
+  //   if (birthdateExists() && state.zodiac) {
+  //     setFlowState('done');
+  //   }
+  // }, [birthdateExists, state.zodiac]);
 
   const handleNextClick = () => {
-    setFlowState('transitioning');
+    setFlowState('transitioning1');
   };
 
   useEffect(() => {
-    if (flowState === 'transitioning') {
+    if (flowState === 'transitioning1') {
       const timeline = gsap.timeline();
-
-      // timeline.to(
-      //   ".background-image",
-      //   {
-      //     top: 0,
-      //     duration: 5,
-      //     ease: "power2.inOut",
-      //   },
-      //   "<"
-      // );
-
       timeline.to(".date-picker", {
         y: "350%",
         opacity: 0,
@@ -445,11 +473,23 @@ const CreateLanternPage = () => {
           opacity: 1,
           duration: 2,
           ease: "power3.out",
-          onComplete: () => {
-            setFlowState('done');
-          },
+          onComplete: () => setFlowState("writing"), // Move to "writing" state
         },
         "-=0.5"
+      );
+    }
+
+    if (flowState === "transitioning2") {
+      const timeline = gsap.timeline();
+
+      timeline.to(
+        ".background-image",
+        {
+          top: 0,
+          duration: 8,
+          ease: "power2.inOut",
+        },
+        "<"
       );
     }
   }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
@@ -469,7 +509,7 @@ const CreateLanternPage = () => {
     <Layout
       image="background-zodiac-sky.jpg"
       alignImage={alignImage}
-      scrollable="true"
+      scrollable="false"
     >
       {flowState !== 'done' && (
         <DatePickerContainer className="date-picker">
@@ -487,6 +527,7 @@ const CreateLanternPage = () => {
         <LanternPresentation
           zodiac={flowState === 'done' ? state.zodiac : localZodiac}
           element={flowState === 'done' ? state.element : localElement}
+          setFlowState={setFlowState}
         />
       )}
     </Layout>
