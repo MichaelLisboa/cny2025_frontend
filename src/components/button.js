@@ -1,6 +1,7 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { gsap } from 'gsap';
 import styled from 'styled-components';
+import { Link as GatsbyLink } from 'gatsby';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -12,7 +13,6 @@ const Wrapper = styled.div`
   position: relative;
   margin: 0 auto;
   display: inline-block;
-  padding: 8px 32px;
   border-radius: 25px;
   background: rgba(255, 239, 200, 0.2);
   box-shadow: 0 0 30px rgba(255, 239, 200, 0.4), 0 0 60px rgba(255, 239, 200, 0.2);
@@ -28,19 +28,21 @@ const Wrapper = styled.div`
   }
 `;
 
-const Link = styled.a`
+const Link = styled(GatsbyLink)`
   position: relative;
   display: inline-block;
+  padding: 8px 32px;
   font-size: ${props => (props.isMobile ? '1.25em' : '1.5em')};
   font-weight: 500;
   color: #ffffff;
   text-decoration: none;
   text-transform: uppercase;
+  text-wrap: nowrap;
   z-index: 2;
   text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
 `;
 
-const Button = ({ text = 'Continue', onClick = () => {} }) => {
+const Button = ({ text = 'Continue', to = '/', onClick = null }) => {
   const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
 
   useEffect(() => {
@@ -92,9 +94,15 @@ const Button = ({ text = 'Continue', onClick = () => {} }) => {
   return (
     <ButtonContainer>
       <Wrapper className="button-wrapper" onClick={onClick}>
-        <Link isMobile={isMobile} aria-label={text}>
-          {text}
-        </Link>
+        {to ? (
+          <Link to={to} isMobile={isMobile} aria-label={text}>
+            {text}
+          </Link>
+        ) : (
+          <span isMobile={isMobile} aria-label={text}>
+            {text}
+          </span>
+        )}
       </Wrapper>
     </ButtonContainer>
   );

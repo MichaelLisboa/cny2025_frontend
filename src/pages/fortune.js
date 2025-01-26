@@ -164,7 +164,6 @@ const ZodiacPresentation = ({ zodiac, element }) => {
       const image = data.allFile.edges.find(({ node }) =>
         node.relativePath.includes(name)
       );
-      console.log(`Searching for image: ${name}`, image);
       return image ? getImage(image.node.childImageSharp) : null;
     },
     [data]
@@ -263,7 +262,6 @@ const FortunePage = () => {
   };
 
   const handleDateSelected = (selectedDate) => {
-    console.log("Selected Date:", selectedDate);
     setLocalBirthdate(selectedDate);
 
     const { animal, element } = determineZodiacAnimalAndElement(selectedDate);

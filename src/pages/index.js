@@ -96,8 +96,6 @@ const IndexPage = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isMobile]);
 
-  console.log('index.js isMobile:', isMobile);
-
   return (
     <Layout alignImage="bottom">
       <div id="main-container" ref={mainContainerRef}>
