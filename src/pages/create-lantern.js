@@ -46,9 +46,9 @@ const LanternContainer = styled.div.attrs({
   box-sizing: border-box;
   width: 100%;
   max-width: 600px;
-  padding: 64px 0 0 0;
+  padding: 96px 0 32px 0;
   margin-bottom: 72px;
-  overflow: hidden;
+  overflow: visible;
 
   @media (min-width: 1441px) {
   padding: 128px 0 72px 0;
@@ -65,14 +65,16 @@ const LanternImageWrapper = styled.div`
   width: 100%;
   height: 70vh; /* 70% of the vertical viewport */
   margin-bottom: 32px;
-  z-index: 2;
+  z-index: 1; /* Set lower stacking order for the image */
 
   .gatsby-image-wrapper {
+    position: absolute; /* Ensure it doesn't disrupt flexbox alignment */
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    padding: 48px;
-    overflow: visible;
-    cursor: pointer;
+    z-index: 1; /* Ensure it is behind the text */
+    pointer-events: none; /* Prevent interactions */
   }
 
   img {
@@ -104,31 +106,130 @@ const LanternImageWrapper = styled.div`
       }
     }
     .gatsby-image-wrapper {
-        width: 100%;
-        min-height: 75vh;
-        max-height: 85vh;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1; /* Keep behind the text */
     }
   }
 `;
 
-const HeaderText = styled.h1`
-  margin: 0;
-  padding: 0;
-`;
-
 const TextParagraph = styled.p`
-  margin-top: 20px;
-  padding: 8px 24px;
+  margin-top: 32px;
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: 800;
+  max-width: 50%;
+  color: rgba(226, 127, 12, 0.6);
+  z-index: 3; /* Ensure it appears above the image */
+  pointer-events: none; /* Prevent interactions */
+  position: relative; /* Explicitly position it for z-index to work */
   text-align: center;
+  text-shadow: -1px -1px 1px rgba(226, 127, 12, 0.3); /* Subtle shadow for depth */
+  mix-blend-mode: multiply; /* Blend with the lantern background */
+
+  @media (min-width: 1441px) {
+    font-size: 2.5rem;
+    max-width: 30%;
+  }
 `;
 
-const Title = styled.h1`
-  margin-top: 0;
+
+const TextAreaContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  border-radius: 50px;
+  z-index: 3;
   text-align: center;
-  color: white;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.3s ease-in-out;
+
+  &:focus {
+    box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 50px rgba(255, 255, 255, 0.9);
+  }
+
+  @media (min-width: 1441px) {
+    width: 35%;
+  }
+`;
+
+const TextArea = styled.textarea`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: auto;
+  max-width: 400px;
+  font-size: 16px;
+  font-weight: 800;
+  color: rgba(226, 127, 12, 1);
+  padding: 32px;
+  border-radius: 32px;
+  border: none;
+  background: white;
+  outline: none;
+  text-align: center;
+  background: none;
+  resize: none;
+  overflow: hidden;
+
+  &::placeholder {
+    font-size: 16px;
+    font-weight: 800;
+    color: rgba(226, 127, 12, 0.65);
+    text-align: center;
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+
+  svg {
+    fill: #999;
+    transition: fill 0.2s ease;
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover svg {
+    fill: #e27f0c;
+  }
+`;
+
+const SaveWishButton = styled.div`
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  overflow: visible;
 `;
 
 const LanternPresentation = ({ zodiac }) => {
+  const [isWriting, setIsWriting] = useState(false); // State to toggle text area visibility
+  const [wish, setWish] = useState(""); // State to capture the user's wish
+  const maxCharacters = 150; // Set the maximum character limit
+  const textAreaRef = useRef(null); // Reference for TextAreaContainer
+
   const data = useStaticQuery(graphql`
     query {
       allFile {
@@ -159,9 +260,95 @@ const LanternPresentation = ({ zodiac }) => {
 
   useFloatingAnimation(floatingRef, { minX: -10, maxX: 10, minY: -30, maxY: 30 });
 
+  const handleInput = (e) => {
+    const textarea = e.target;
+    textarea.style.height = "auto"; // Reset height to calculate the new height
+    textarea.style.height = `${textarea.scrollHeight}px`; // Set height based on content
+
+    if (e.target.value.length <= maxCharacters) {
+      setWish(e.target.value); // Update the wish state if within limit
+    }
+  };
+
+  const handleClickOutside = (e) => {
+    // If click is outside the TextAreaContainer and wish is empty
+    if (
+      textAreaRef.current &&
+      !textAreaRef.current.contains(e.target) &&
+      !wish.trim()
+    ) {
+      setIsWriting(false);
+    }
+  };
+
+  // Add and clean up the event listener for clicks outside
+  useEffect(() => {
+    if (isWriting) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isWriting, wish]);
+
+  const handleWrapperClick = (e) => {
+    // Prevent toggling if already set to true
+    if (!isWriting) {
+      setIsWriting(true);
+    }
+  };
+
+  const stopPropagation = (e) => {
+    e.stopPropagation(); // Prevent event from bubbling up to wrapper
+  };
+
+  const clearText = () => {
+    setWish(""); // Clear the text
+  };
+
+  const characterCount = wish.length; // Calculate the number of characters typed
+
+
   return (
     <LanternContainer>
-      <LanternImageWrapper ref={floatingRef}>
+      <LanternImageWrapper
+        ref={floatingRef}
+        onClick={handleWrapperClick} // Toggle the text area on click
+      >
+        {isWriting ? (
+          <TextAreaContainer ref={textAreaRef} onClick={stopPropagation}>
+            {wish.length >= 1 && (
+              <CloseButton onClick={clearText}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="12" fill="black" />
+                  <path
+                    d="M15.5 8.5c.3-.3.3-.8 0-1.1-.3-.3-.8-.3-1.1 0L12 9.9 9.6 7.5c-.3-.3-.8-.3-1.1 0-.3.3-.3.8 0 1.1l2.4 2.4-2.4 2.4c-.3.3-.3.8 0 1.1.3.3.8.3 1.1 0L12 12.1l2.4 2.4c.3.3.8.3 1.1 0 .3-.3.3-.8 0-1.1L13.1 10l2.4-2.4z"
+                    fill="white"
+                  />
+                </svg>
+              </CloseButton>
+            )
+            }
+            <TextArea
+              placeholder="Write your wish here..."
+              value={wish}
+              onChange={handleInput} // Dynamically adjust height
+              maxLength={maxCharacters} // Enforce character limit at input level
+              onInput={handleInput} // Auto-resize the textarea
+            />
+            <div style={{ marginTop: "10px", fontSize: "14px", color: "#999" }}>
+              {characterCount}/{maxCharacters}
+            </div>
+          </TextAreaContainer>
+        ) : (
+          <TextParagraph>Tap to write your message.</TextParagraph>
+        )}
         {lanternImage ? (
           <GatsbyImage
             image={lanternImage}
@@ -173,6 +360,9 @@ const LanternPresentation = ({ zodiac }) => {
           <p>Lantern image not found</p>
         )}
       </LanternImageWrapper>
+      <SaveWishButton>
+        <Button onClick={() => setIsWriting(false)} text="Save Your Wish" />
+      </SaveWishButton>
     </LanternContainer>
   );
 };
@@ -217,61 +407,61 @@ const CreateLanternPage = () => {
   };
 
   useEffect(() => {
-      if (flowState === 'transitioning') {
-        const timeline = gsap.timeline();
-  
-        timeline.to(
-          ".background-image",
-          {
-            top: 0,
-            duration: 5,
-            ease: "power2.inOut",
-          },
-          "<"
-        );
-  
-        timeline.to(".date-picker", {
-          y: "350%",
-          opacity: 0,
-          duration: 1.5,
-          ease: "power2.inOut",
+    if (flowState === 'transitioning') {
+      const timeline = gsap.timeline();
+
+      // timeline.to(
+      //   ".background-image",
+      //   {
+      //     top: 0,
+      //     duration: 5,
+      //     ease: "power2.inOut",
+      //   },
+      //   "<"
+      // );
+
+      timeline.to(".date-picker", {
+        y: "350%",
+        opacity: 0,
+        duration: 1.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
+          dispatch({ type: "SET_ZODIAC", payload: localZodiac });
+          dispatch({ type: "SET_ELEMENT", payload: localElement });
+        },
+      },
+        "<"
+      );
+
+      timeline.fromTo(
+        ".lantern-container",
+        {
+          y: "-100%",
+          opacity: 0
+        },
+        {
+          y: "0%",
+          opacity: 1,
+          duration: 2,
+          ease: "power3.out",
           onComplete: () => {
-            dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
-            dispatch({ type: "SET_ZODIAC", payload: localZodiac });
-            dispatch({ type: "SET_ELEMENT", payload: localElement });
+            setFlowState('done');
           },
         },
-          "-=4.5"
-        );
-  
-        timeline.fromTo(
-          ".lantern-container",
-          {
-            y: "-100%",
-            opacity: 0
-          },
-          {
-            y: "0%",
-            opacity: 1,
-            duration: 2,
-            ease: "power3.out",
-            onComplete: () => {
-              setFlowState('done');
-            },
-          },
-          "-=2"
-        );
-      }
-    }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
+        "-=0.5"
+      );
+    }
+  }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
 
   const handleDateSelected = (selectedDate) => {
-      console.log("Selected Date:", selectedDate);
-      setLocalBirthdate(selectedDate);
-  
-      const { animal, element } = determineZodiacAnimalAndElement(selectedDate);
-      setLocalZodiac(animal);
-      setLocalElement(element);
-    };
+    console.log("Selected Date:", selectedDate);
+    setLocalBirthdate(selectedDate);
+
+    const { animal, element } = determineZodiacAnimalAndElement(selectedDate);
+    setLocalZodiac(animal);
+    setLocalElement(element);
+  };
 
   const alignImage = flowState === 'done' ? "top" : "bottom";
 

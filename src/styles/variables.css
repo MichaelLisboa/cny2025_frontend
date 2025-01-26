@@ -86,7 +86,7 @@
   kbd,
   pre,
   samp {
-    font-family: var(--font-mono);
+    /* font-family: var(--font-mono); */
     font-size: 1em;
     line-height: inherit;
   }
@@ -199,7 +199,6 @@
     background-color: var(--color-code-bg);
     border-radius: var(--border-radius);
     color: var(--color-code);
-    font-family: var(--font-mono);
     padding-bottom: 0.25em;
     padding-top: 0.25em;
     word-break: normal;
