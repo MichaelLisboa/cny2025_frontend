@@ -178,7 +178,6 @@ const LanternPresentation = ({ zodiac }) => {
 };
 
 const CreateLanternPage = () => {
-  const datePickerRef = useRef(null);
   const { state, dispatch, birthdateExists } = useAppState();
   const [flowState, setFlowState] = useState('idle');
   const [localBirthdate, setLocalBirthdate] = useState(null);

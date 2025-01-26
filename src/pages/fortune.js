@@ -8,7 +8,6 @@ import { TextPlugin } from "gsap/TextPlugin";
 import { Observer } from "gsap/Observer";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
-
 import useAnimateTextSequence from "../hooks/useAnimateTextSequence";
 import DatePicker from "../components/datePicker";
 import useAppState from "../hooks/useAppState";

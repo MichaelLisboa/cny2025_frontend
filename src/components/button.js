@@ -42,7 +42,7 @@ const Link = styled(GatsbyLink)`
   text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
 `;
 
-const Button = ({ text = 'Continue', to = '/', onClick = null }) => {
+const Button = ({ text = 'Continue', to = null, onClick = null }) => {
   const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
 
   useEffect(() => {
@@ -93,15 +93,18 @@ const Button = ({ text = 'Continue', to = '/', onClick = null }) => {
 
   return (
     <ButtonContainer>
-      <Wrapper className="button-wrapper" onClick={onClick}>
+      <Wrapper
+        className="button-wrapper"
+        onClick={!to && onClick ? onClick : null}
+        >
         {to ? (
           <Link to={to} isMobile={isMobile} aria-label={text}>
             {text}
           </Link>
         ) : (
-          <span isMobile={isMobile} aria-label={text}>
+          <Link isMobile={isMobile} aria-label={text}>
             {text}
-          </span>
+          </Link>
         )}
       </Wrapper>
     </ButtonContainer>
