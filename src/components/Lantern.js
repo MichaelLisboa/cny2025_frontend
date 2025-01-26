@@ -39,7 +39,7 @@ const LanternWrapper = styled.div`
   }
 `;
 
-const Lantern = ({ x, y, scale, zindex, opacity, image, alt }) => {
+const Lantern = ({ id, x, y, scale, zindex, opacity, image, alt, onClick }) => {
   const floatingRef = useRef(null);
 
   // Ensure the floating animation gracefully handles cases where the ref might not be valid
@@ -53,12 +53,14 @@ const Lantern = ({ x, y, scale, zindex, opacity, image, alt }) => {
 
   return (
     <LanternWrapper
+      id={id} // Ensure id is set here
       x={x}
       y={y}
       scale={scale}
       zindex={zindex}
       opacity={opacity}
       ref={floatingRef}
+      onClick={onClick} // Ensure onClick is passed here
     >
       <GatsbyImage image={image} alt={alt} />
     </LanternWrapper>

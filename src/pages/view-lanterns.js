@@ -7,6 +7,30 @@ import styled from "styled-components";
 import { gsap } from "gsap";
 import Lantern from "../components/Lantern";
 
+// Styled components for the lantern container and parallax layer
+const ParallaxContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+`;
+
+const LanternLayer = styled.div`
+  position: relative;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100vh;
+  transition: transform 0.1s ease-out;
+
+  @media (min-width: 1024px) {
+    width: 100vw; /* Adjust width for larger screens */
+  }
+`;
+
 // Configuration for lantern rendering and positioning
 const LanternConfig = {
     viewportWidth: 100, // % of the screen width for lantern placement
@@ -16,8 +40,8 @@ const LanternConfig = {
     maxScale: 0.6, // Maximum random scale
     zIndexMultiplier: 10, // Used to scale z-index based on size
     parallaxSpeed: {
-        x: 0.1, // Horizontal parallax sensitivity
-        y: 0.2, // Vertical parallax sensitivity
+        x: 0.08, // Horizontal parallax sensitivity
+        y: 0.08, // Vertical parallax sensitivity
     },
     throttleInterval: 16, // Throttling interval (~60 FPS)
 };
@@ -49,33 +73,10 @@ const generateLanternData = (count) => {
     return positions;
 };
 
-// Styled components for the lantern container and parallax layer
-const ParallaxContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-`;
-
-const LanternLayer = styled.div`
-  position: relative;
-  bottom: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200%;
-  height: 200vh;
-  transition: transform 0.1s ease-out;
-
-  @media (min-width: 1024px) {
-    width: 120%; /* Adjust width for larger screens */
-  }
-`;
-
 const ViewLanterns = () => {
     const [lanternsData, setLanternsData] = useState([]); // State to store lanterns fetched from API
     const { getRandomLanterns } = useLanternsApi(); // Custom hook to fetch lantern data
+    const [selectedLantern, setSelectedLantern] = useState(null); // State to store the selected lantern
 
     // Query to fetch lantern images
     const data = useStaticQuery(graphql`
@@ -93,8 +94,6 @@ const ViewLanterns = () => {
       }
     }
   `);
-
-    console.log(data);
 
     // Memoize image mapping for performance
     const images = useMemo(() => {
@@ -185,13 +184,59 @@ const ViewLanterns = () => {
         }
     }, []);
 
+    // Handle lantern click to animate it to the front
+    const handleLanternClick = (lantern) => {
+        const lanternElement = document.getElementById(`lantern-${lantern.id}`);
+        const layerElement = layerRef.current;
+    
+        if (!lanternElement || !layerElement) {
+            console.warn(`Missing required elements: Lantern (${lantern.id}) or LanternLayer`);
+            return;
+        }
+    
+        const lanternRect = lanternElement.getBoundingClientRect();
+    
+        if (selectedLantern === lantern.id) {
+            // Deselect: Move back to original position
+            setSelectedLantern(null);
+            gsap.to(lanternElement, {
+                position: "absolute",
+                x: `${lantern.position.x}vw`, // Use the lantern's original position within LanternLayer
+                y: `${lantern.position.y}vh`,
+                scale: lantern.scale,
+                opacity: lantern.opacity,
+                zIndex: lantern.zindex,
+                duration: 1,
+                ease: "power2.inOut",
+                clearProps: "transform" // Clear transform properties
+            });
+        } else {
+            // Select: Move to the center of the viewport
+            setSelectedLantern(lantern.id);
+            gsap.to(lanternElement, {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                x: `-${lanternRect.width / 2}px`,
+                y: `-${lanternRect.height / 2}px`,
+                scale: 1.5, // Adjust this to your desired zoom size
+                opacity: 1,
+                zIndex: 100, // Bring to front
+                duration: 1,
+                ease: "power2.inOut",
+                transform: "translate(-50%, -50%)" // Center the lantern
+            });
+        }
+    };
+
     return (
         <Layout image="background-zodiac-sky.jpg" alignImage="top" scrollable="false">
             <ParallaxContainer>
                 <LanternLayer ref={layerRef}>
-                    {lanternData.map((lantern, index) => (
+                    {lanternData.map((lantern) => (
                         <Lantern
-                            key={index}
+                            key={lantern.id}
+                            id={`lantern-${lantern.id}`}
                             x={lantern.position.x}
                             y={lantern.position.y}
                             scale={lantern.scale}
@@ -199,6 +244,7 @@ const ViewLanterns = () => {
                             opacity={lantern.opacity}
                             image={lantern.image}
                             alt={`Lantern for ${lantern.animal_sign}`}
+                            onClick={() => handleLanternClick(lantern)} // Ensure onClick is passed
                         />
                     ))}
                 </LanternLayer>
