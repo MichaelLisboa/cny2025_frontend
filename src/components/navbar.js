@@ -66,21 +66,22 @@ const Logo = styled.div`
 
 const NavLinkContainer = styled.div`
   margin: 0;
-  border-bottom: ${props => (props.selected ? '2px solid white' : '2px solid transparent')};
-  transition: border-bottom 0.3s ease-in-out;
+  min-width: 33.33%;
 
   @media (min-width: 1024px) {
     text-align: center;
   }
 `;
 
-const NavLink = styled.a`
+const NavLink = styled(Link)`
   color: white;
   text-decoration: none;
   text-transform: uppercase;
   font-size: 1em;
   text-wrap: nowrap;
   transition: text-shadow 0.3s ease-in-out;
+  border-bottom: ${props => (props.selected ? '2px solid white' : '2px solid transparent')};
+  transition: border-bottom 0.3s ease-in-out;
 
   &:hover {
     text-shadow: 0 0 24px rgba(255, 255, 255, 0.5);
@@ -128,14 +129,24 @@ const Navbar = forwardRef((props, ref) => {
   return (
     <NavbarContainer ref={ref}>
       <NavContainer>
-        <NavLinkContainer selected={selectedLink === 'createLantern'}>
-          <NavLink href="/create-lantern" onClick={() => setSelectedLink('createLantern')}>Make a wish</NavLink>
+        <NavLinkContainer>
+          <NavLink
+            to="/create-lantern"
+            selected={selectedLink === 'createLantern'}
+            onClick={() => setSelectedLink('createLantern')}>
+              Make a wish
+          </NavLink>
         </NavLinkContainer>
         <Logo>
           <Link to="/" onClick={() => setSelectedLink('')}><GatsbyImage image={logoImage} alt="Logo" /></Link>
         </Logo>
-        <NavLinkContainer selected={selectedLink === 'fortune'}>
-          <NavLink href="/fortune" onClick={() => setSelectedLink('fortune')}>Your fortune</NavLink>
+        <NavLinkContainer>
+          <NavLink
+            to="/fortune"
+            selected={selectedLink === 'fortune'}
+            onClick={() => setSelectedLink('fortune')}>
+              Your fortune
+          </NavLink>
         </NavLinkContainer>
       </NavContainer>
     </NavbarContainer>
