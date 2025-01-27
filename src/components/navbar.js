@@ -129,8 +129,9 @@ const Navbar = forwardRef((props, ref) => {
   return (
     <NavbarContainer ref={ref}>
       <NavContainer>
-        <NavLinkContainer>
+        <NavLinkContainer style={{textAlign: "right"}}>
           <NavLink
+            style={{textAlign: "right"}}
             to="/create-lantern"
             selected={selectedLink === 'createLantern'}
             onClick={() => setSelectedLink('createLantern')}>
@@ -140,8 +141,9 @@ const Navbar = forwardRef((props, ref) => {
         <Logo>
           <Link to="/" onClick={() => setSelectedLink('')}><GatsbyImage image={logoImage} alt="Logo" /></Link>
         </Logo>
-        <NavLinkContainer>
+        <NavLinkContainer style={{textAlign: "left"}}>
           <NavLink
+            style={{textAlign: "left"}}
             to="/fortune"
             selected={selectedLink === 'fortune'}
             onClick={() => setSelectedLink('fortune')}>
