@@ -1,5 +1,7 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import styled from 'styled-components';
+import { GatsbyImage, getImage } from 'gatsby-plugin-image';
+import { graphql, useStaticQuery, Link } from 'gatsby';
 
 const NavbarContainer = styled.div`
   position: fixed;
@@ -7,8 +9,8 @@ const NavbarContainer = styled.div`
   left: 0;
   width: 100%;
   z-index: 10000;
-  backdrop-filter: blur(6px);
-  background: linear-gradient(180deg, rgba(7, 28, 57, 0.6), rgba(7, 28, 57, 0.25) 30%, rgba(7, 28, 57, 0.075) 60%, rgba(7, 28, 57, 0) 100%);
+  backdrop-filter: blur(3px);
+  background: linear-gradient(180deg, rgba(7, 28, 57, 0.3), rgba(7, 28, 57, 0.2) 30%, rgba(7, 28, 57, 0.025) 60%, rgba(7, 28, 57, 0) 80%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +19,7 @@ const NavbarContainer = styled.div`
   height: 64px;
 
   @media (min-width: 768px) {
-    height: 80px;
+    height: 72px;
     padding: 0;
   }
 `;
@@ -38,18 +40,27 @@ const NavContainer = styled.div`
 `;
 
 const Logo = styled.div`
-  width: 88px;
-  height: 88px;
+  margin-top: 24px;
+  width: auto;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: black;
-  background: white;
+
+  img {
+    width: auto;
+    height: 64px;
+  }
 
   @media (min-width: 1440px) {
+  margin-top: 16px;
     width: 102px;
     height: 102px;
-    font-size: 32px;
+    
+    img {
+    width: auto;
+    height: 72px;
+  }
   }
 `;
 
@@ -102,13 +113,27 @@ const Navbar = forwardRef((props, ref) => {
     }
   }, []);
 
+  const data = useStaticQuery(graphql`
+    query {
+      logo: file(relativePath: { eq: "logo.png" }) {
+        childImageSharp {
+          gatsbyImageData(width: 88, height: 88)
+        }
+      }
+    }
+  `);
+
+  const logoImage = getImage(data.logo);
+
   return (
     <NavbarContainer ref={ref}>
       <NavContainer>
         <NavLinkContainer selected={selectedLink === 'createLantern'}>
           <NavLink href="/create-lantern" onClick={() => setSelectedLink('createLantern')}>Make a wish</NavLink>
         </NavLinkContainer>
-        <Logo>Logo</Logo>
+        <Logo>
+          <Link to="/" onClick={() => setSelectedLink('')}><GatsbyImage image={logoImage} alt="Logo" /></Link>
+        </Logo>
         <NavLinkContainer selected={selectedLink === 'fortune'}>
           <NavLink href="/fortune" onClick={() => setSelectedLink('fortune')}>Your fortune</NavLink>
         </NavLinkContainer>
