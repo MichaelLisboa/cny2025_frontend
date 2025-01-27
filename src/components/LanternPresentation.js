@@ -38,7 +38,6 @@ const LanternImageWrapper = styled.div`
   justify-content: center;
   width: 100%;
   height: 70vh; /* 70% of the vertical viewport */
-  margin-bottom: 32px;
   z-index: 1; /* Set lower stacking order for the image */
 
   .gatsby-image-wrapper {
@@ -61,8 +60,8 @@ const LanternImageWrapper = styled.div`
     transition: filter 0.3s ease-in-out;
 
     &:hover {
-      filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.9)); /* Increase glow effect on hover */
-      transition: filter 1s ease-in-out;
+      filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9)); /* Increase glow effect on hover */
+      transition: filter 0.3s ease-in-out;
     }
   }
 
@@ -75,14 +74,14 @@ const LanternImageWrapper = styled.div`
       transition: filter 0.3s ease-in-out;
 
       &:hover {
-        filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.9)); /* Increase glow effect on hover */
-        transition: filter 1s ease-in-out;
+        filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9)); /* Increase glow effect on hover */
+        transition: filter 0.3s ease-in-out;
       }
     }
     .gatsby-image-wrapper {
       position: absolute;
-    left: 0;
-    transform: translateX(0);
+      left: 0;
+      transform: translateX(0);
       width: 100%;
       max-height: 80vh;
       z-index: 1; /* Keep behind the text */
