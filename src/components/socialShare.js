@@ -6,12 +6,12 @@ import {
     FacebookShareButton,
     WhatsappShareButton,
     EmailShareButton,
-    XShareButton,
+    TwitterShareButton, // Corrected import
     LinkedinIcon,
     FacebookIcon,
     WhatsappIcon,
     EmailIcon,
-    XIcon,
+    TwitterIcon, // Corrected import
 } from 'react-share';
 
 const Overlay = styled.div`
@@ -198,15 +198,23 @@ const Input = styled.input`
   }
 `;
 
-const SocialShare = () => {
-    const [isModalOpen, setIsModalOpen] = useState(true);
+const SocialShare = ({ isModalOpen, setIsModalOpen }) => {
     const [selectedIcon, setSelectedIcon] = useState(null);
     const [formData, setFormData] = useState({ name: '', email: '' });
+    const [formTouched, setFormTouched] = useState(false);
     const [error, setError] = useState('');
     const [nameError, setNameError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const overlayRef = useRef(null);
     const modalRef = useRef(null);
+
+    const shareRefs = {
+        linkedin: useRef(null),
+        facebook: useRef(null),
+        x: useRef(null),
+        whatsapp: useRef(null),
+        email: useRef(null),
+    };
 
     // const shareUrl = window.location.href;
     // const title = `Check this out!`;
@@ -235,36 +243,19 @@ const SocialShare = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-    
-        // Update form data as user types
         setFormData({ ...formData, [name]: value });
-    
-        // Clear specific errors dynamically
-        if (name === 'name') {
-            if (value.trim() !== '') setNameError(false); // Clear name error if valid
+
+        if (name === 'name' && value.trim() !== '') {
+            setNameError(false); // Clear name error
         }
-    
+
         if (name === 'email') {
-            let updatedErrors = error.split('\n'); // Split errors into an array
-    
-            if (value.trim() === '') {
-                // Email is empty
-                setEmailError(true);
-                updatedErrors = replaceOrAddError(updatedErrors, 'Email must be in the correct format.', 'Email is a required field.');
-            } else if (!/\S+@\S+\.\S+/.test(value)) {
-                // Email format is invalid
-                setEmailError(true);
-                updatedErrors = replaceOrAddError(updatedErrors, 'Email is a required field.', 'Email must be in the correct format.');
-            } else {
-                // Email is valid
-                setEmailError(false);
-                updatedErrors = updatedErrors.filter((msg) => !msg.includes('Email')); // Remove email-related errors
+            if (value.trim() === '' || !/\S+@\S+\.\S+/.test(value)) {
+                setEmailError(false); // Only clear the error when valid
             }
-    
-            setError(updatedErrors.join('\n')); // Update the error banner
         }
     };
-    
+
     // Helper function to replace or add an error
     const replaceOrAddError = (errorsArray, oldError, newError) => {
         const errorIndex = errorsArray.indexOf(oldError);
@@ -278,15 +269,17 @@ const SocialShare = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setFormTouched(true);
+
         let errors = [];
-    
+
         if (!formData.name) {
             setNameError(true);
             errors.push('Name is a required field.');
         } else {
             setNameError(false);
         }
-    
+
         if (!formData.email) {
             setEmailError(true);
             errors.push('Email is a required field.');
@@ -296,58 +289,23 @@ const SocialShare = () => {
         } else {
             setEmailError(false);
         }
-    
+
         if (!selectedIcon) {
             errors.push('Please select a platform to share!');
         }
-    
+
         if (errors.length > 0) {
             setError(errors.join('\n'));
             return;
         }
-    
+
         setError('');
         console.log('Form submitted:', { ...formData, selectedIcon });
-    
-        const shareText = `Check this out! Shared by ${formData.name}`;
-        const shareUrl = window.location.href;
-    
-        // Ensure window.open() only runs on the client side
-        if (typeof window !== 'undefined') {
-            switch (selectedIcon) {
-                case 'linkedin':
-                    window.open(
-                        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareText)}`,
-                        '_blank'
-                    );
-                    break;
-                case 'facebook':
-                    window.open(
-                        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`,
-                        '_blank'
-                    );
-                    break;
-                case 'x':
-                    window.open(
-                        `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
-                        '_blank'
-                    );
-                    break;
-                case 'whatsapp':
-                    window.open(
-                        `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
-                        '_blank'
-                    );
-                    break;
-                case 'email':
-                    window.open(
-                        `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareUrl)}`,
-                        '_self'
-                    );
-                    break;
-                default:
-                    alert('Invalid platform selected!');
-            }
+
+        if (shareRefs[selectedIcon]?.current) {
+            shareRefs[selectedIcon].current.click();
+        } else {
+            alert('Invalid platform selected!');
         }
     };
 
@@ -367,38 +325,64 @@ const SocialShare = () => {
                                     placeholder="Your Name"
                                     value={formData.name}
                                     onChange={handleInputChange}
-                                    error={nameError} // Pass true/false here
+                                    error={formTouched && nameError}
                                 />
+
                                 <Input
                                     type="email"
                                     name="email"
                                     placeholder="Your Email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    error={emailError} // Pass true/false here
+                                    error={formTouched && emailError}
                                 />
                                 <SocialIcons>
-                                    <LinkedinIcon
-                                        className={selectedIcon === 'linkedin' ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                                        onClick={() => handleIconClick('linkedin')}
-                                    />
-                                    <FacebookIcon
-                                        className={selectedIcon === 'facebook' ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                                        onClick={() => handleIconClick('facebook')}
-                                    />
-                                    <XIcon
-                                        className={selectedIcon === 'x' ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                                        onClick={() => handleIconClick('x')}
-                                    />
-                                    <WhatsappIcon
-                                        className={selectedIcon === 'whatsapp' ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                                        onClick={() => handleIconClick('whatsapp')}
-                                    />
-                                    <EmailIcon
-                                        className={selectedIcon === 'email' ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                                        onClick={() => handleIconClick('email')}
-                                    />
+                                    {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
+                                        const IconComponent = {
+                                            linkedin: LinkedinIcon,
+                                            facebook: FacebookIcon,
+                                            twitter: TwitterIcon, // Corrected key
+                                            whatsapp: WhatsappIcon,
+                                            email: EmailIcon,
+                                        }[platform];
+
+                                        return (
+                                            <IconComponent
+                                                key={platform}
+                                                className={selectedIcon === platform ? 'selected' : selectedIcon ? 'dimmed' : ''}
+                                                onClick={() => setSelectedIcon(platform)}
+                                            />
+                                        );
+                                    })}
                                 </SocialIcons>
+                                <div style={{ display: 'none' }}>
+                                    <LinkedinShareButton
+                                        ref={shareRefs.linkedin}
+                                        url={`https://example.com/lantern/${formData.name}`}
+                                        title={`Check this out! Shared by ${formData.name}`}
+                                    />
+                                    <FacebookShareButton
+                                        ref={shareRefs.facebook}
+                                        url={`https://example.com/lantern/${formData.name}`}
+                                        quote={`Check this out! Shared by ${formData.name}`}
+                                    />
+                                    <TwitterShareButton // Corrected component
+                                        ref={shareRefs.twitter}
+                                        url={`https://example.com/lantern/${formData.name}`}
+                                        title={`Check this out! Shared by ${formData.name}`}
+                                    />
+                                    <WhatsappShareButton
+                                        ref={shareRefs.whatsapp}
+                                        url={`https://example.com/lantern/${formData.name}`}
+                                        title={`Check this out! Shared by ${formData.name}`}
+                                    />
+                                    <EmailShareButton
+                                        ref={shareRefs.email}
+                                        url={`https://example.com/lantern/${formData.name}`}
+                                        subject={`Check this out!`}
+                                        body={`Hi there, check this out: https://example.com/lantern/${formData.name}`}
+                                    />
+                                </div>
                                 <SubmitButton type="submit">Submit</SubmitButton>
                             </Form>
                         </ModalContent>

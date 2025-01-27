@@ -37,6 +37,7 @@ const CreateLanternPage = () => {
   const [localBirthdate, setLocalBirthdate] = useState(null);
   const [localZodiac, setLocalZodiac] = useState(null);
   const [localElement, setLocalElement] = useState(null);
+  const [shareReady, setShareReady] = useState(false); // State to control the visibility of the share button
 
   useEffect(() => {
     if (birthdateExists() && state.zodiac) {
@@ -83,7 +84,14 @@ const CreateLanternPage = () => {
     }
 
     if (flowState === "transitioning2") {
-      const timeline = gsap.timeline();
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          setTimeout(() => {
+            setFlowState("done"); // Move to "done" state
+            setShareReady(true); // Show the share button
+          }, 1000); // Delay to ensure the animation is complete
+        },
+      });
 
       timeline.to(
         ".background-image",
@@ -130,7 +138,10 @@ const CreateLanternPage = () => {
         <LanternPresentation
           zodiac={flowState === 'done' ? state.zodiac : localZodiac}
           element={flowState === 'done' ? state.element : localElement}
+          flowState={flowState}
           setFlowState={setFlowState}
+          shareReady={shareReady}
+          setShareReady={setShareReady}
         />
       )}
       <SocialShare />
