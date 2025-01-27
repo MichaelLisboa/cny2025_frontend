@@ -455,7 +455,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
           <Button onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
         </ShareWishButton>
       )}
-      <SocialShare isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <SocialShare wish={wish} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </LanternContainer>
   );
 };

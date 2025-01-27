@@ -2,16 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { gsap } from 'gsap';
 import {
-    LinkedinShareButton,
-    FacebookShareButton,
-    WhatsappShareButton,
-    EmailShareButton,
-    TwitterShareButton, // Corrected import
-    LinkedinIcon,
-    FacebookIcon,
-    WhatsappIcon,
-    EmailIcon,
-    TwitterIcon, // Corrected import
+  LinkedinShareButton,
+  FacebookShareButton,
+  WhatsappShareButton,
+  EmailShareButton,
+  TwitterShareButton, // Corrected import
+  LinkedinIcon,
+  FacebookIcon,
+  WhatsappIcon,
+  EmailIcon,
+  TwitterIcon, // Corrected import
 } from 'react-share';
 import useAppState from '../hooks/useAppState'; // Import useAppState
 import useLanternsApi from '../hooks/useLanternsApi'; // Import useLanternsApi
@@ -200,213 +200,209 @@ const Input = styled.input`
   }
 `;
 
-const SocialShare = ({ isModalOpen, setIsModalOpen }) => {
-    const { dispatch, state } = useAppState(); // Use the useAppState hook
-    const { createLantern } = useLanternsApi(); // Use the useLanternsApi hook
-    const [selectedIcon, setSelectedIcon] = useState(null);
-    const [formData, setFormData] = useState({ name: '', email: '' });
-    const [formTouched, setFormTouched] = useState(false);
-    const [error, setError] = useState('');
-    const [nameError, setNameError] = useState(false);
-    const [emailError, setEmailError] = useState(false);
-    const overlayRef = useRef(null);
-    const modalRef = useRef(null);
+const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
+  const { dispatch, state } = useAppState(); // Use the useAppState hook
+  const { createLantern } = useLanternsApi(); // Use the useLanternsApi hook
+  const [selectedIcon, setSelectedIcon] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [formTouched, setFormTouched] = useState(false);
+  const [error, setError] = useState('');
+  const [nameError, setNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const overlayRef = useRef(null);
+  const modalRef = useRef(null);
 
-    const shareRefs = {
-        linkedin: useRef(null),
-        facebook: useRef(null),
-        x: useRef(null),
-        whatsapp: useRef(null),
-        email: useRef(null),
+  const shareRefs = {
+    linkedin: useRef(null),
+    facebook: useRef(null),
+    twitter: useRef(null), // Corrected key
+    whatsapp: useRef(null),
+    email: useRef(null),
+  };
+
+  // const shareUrl = window.location.href;
+  // const title = `Check this out!`;
+
+  useEffect(() => {
+    if (isModalOpen) {
+      gsap.to(overlayRef.current, { opacity: 1, duration: 0.5 });
+      gsap.to(modalRef.current, { opacity: 1, duration: 0.5, delay: 0.3 });
+    }
+  }, [isModalOpen]);
+
+  const closeModal = () => {
+    gsap.to(modalRef.current, { opacity: 0, duration: 0.5 });
+    gsap.to(overlayRef.current, { opacity: 0, duration: 0.5, delay: 0.3, onComplete: () => setIsModalOpen(false) });
+  };
+
+  const handleIconClick = (icon) => {
+    setSelectedIcon(icon === selectedIcon ? null : icon);
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === overlayRef.current) {
+      closeModal();
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'name' && value.trim() !== '') {
+      setNameError(false); // Clear name error
+    }
+
+    if (name === 'email') {
+      if (value.trim() === '' || !/\S+@\S+\.\S+/.test(value)) {
+        setEmailError(false); // Only clear the error when valid
+      }
+    }
+  };
+
+  // Helper function to replace or add an error
+  const replaceOrAddError = (errorsArray, oldError, newError) => {
+    const errorIndex = errorsArray.indexOf(oldError);
+    if (errorIndex > -1) {
+      errorsArray[errorIndex] = newError; // Replace the error
+    } else if (!errorsArray.includes(newError)) {
+      errorsArray.push(newError); // Add the new error if not already present
+    }
+    return errorsArray;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFormTouched(true);
+
+    // Validation
+    const errors = [];
+    if (!formData.name) errors.push('Name is required.');
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) errors.push('Valid email is required.');
+    if (!selectedIcon) errors.push('Please select a platform to share.');
+
+    if (errors.length) {
+      setError(errors.join('\n'));
+      return;
+    }
+
+    // Get state data from localStorage
+    const savedData = JSON.parse(localStorage.getItem('appState'));
+    console.log('Saved Data from localStorage:', savedData);
+
+    // Map fields to match backend requirements
+    const backendData = {
+      id: savedData?.id || null, // Ensure ID is passed if available
+      name: savedData?.userData?.name || formData.name,
+      email: savedData?.userData?.email || formData.email,
+      birthdate: savedData?.birthdate || '', // Map birthdate
+      animal_sign: savedData?.zodiac || '', // Map zodiac to animal_sign
+      element: savedData?.element || '', // Map element
+      message: wish || savedData?.wishes?.[0]?.wish, // Use first wish message
     };
 
-    // const shareUrl = window.location.href;
-    // const title = `Check this out!`;
+    console.log('Mapped Backend Data:', backendData);
 
-    useEffect(() => {
-        if (isModalOpen) {
-            gsap.to(overlayRef.current, { opacity: 1, duration: 0.5 });
-            gsap.to(modalRef.current, { opacity: 1, duration: 0.5, delay: 0.3 });
-        }
-    }, [isModalOpen]);
+    // POST to backend
+    try {
+      const newLantern = await createLantern({backendData});
+    } catch (err) {
+      console.error('Error posting to API:', err);
+    }
 
-    const closeModal = () => {
-        gsap.to(modalRef.current, { opacity: 0, duration: 0.5 });
-        gsap.to(overlayRef.current, { opacity: 0, duration: 0.5, delay: 0.3, onComplete: () => setIsModalOpen(false) });
-    };
+    // Trigger sharing regardless of API success
+    if (shareRefs[selectedIcon]?.current) {
+      shareRefs[selectedIcon].current.click();
+    } else {
+      alert('Sharing platform not configured correctly.');
+    }
+  };
 
-    const handleIconClick = (icon) => {
-        setSelectedIcon(icon === selectedIcon ? null : icon);
-    };
+  console.log('Selected Icon:', selectedIcon);
+  console.log('Share Ref:', shareRefs[selectedIcon]?.current);
 
-    const handleOverlayClick = (e) => {
-        if (e.target === overlayRef.current) {
-            closeModal();
-        }
-    };
+  return (
+    <div>
+      {isModalOpen && (
+        <Overlay ref={overlayRef} onClick={handleOverlayClick}>
+          <Modal ref={modalRef}>
+            <ModalContent>
+              <h2>Share your wish</h2>
+              <p>Placeholder content for social sharing buttons.</p>
+              {error && <ErrorBanner>{error}</ErrorBanner>}
+              <Form onSubmit={handleSubmit}>
+                <Input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  error={formTouched && nameError}
+                />
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  error={formTouched && emailError}
+                />
+                <SocialIcons>
+                  {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
+                    const IconComponent = {
+                      linkedin: LinkedinIcon,
+                      facebook: FacebookIcon,
+                      twitter: TwitterIcon, // Corrected key
+                      whatsapp: WhatsappIcon,
+                      email: EmailIcon,
+                    }[platform];
 
-        if (name === 'name' && value.trim() !== '') {
-            setNameError(false); // Clear name error
-        }
-
-        if (name === 'email') {
-            if (value.trim() === '' || !/\S+@\S+\.\S+/.test(value)) {
-                setEmailError(false); // Only clear the error when valid
-            }
-        }
-    };
-
-    // Helper function to replace or add an error
-    const replaceOrAddError = (errorsArray, oldError, newError) => {
-        const errorIndex = errorsArray.indexOf(oldError);
-        if (errorIndex > -1) {
-            errorsArray[errorIndex] = newError; // Replace the error
-        } else if (!errorsArray.includes(newError)) {
-            errorsArray.push(newError); // Add the new error if not already present
-        }
-        return errorsArray;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setFormTouched(true);
-
-        let errors = [];
-
-        if (!formData.name) {
-            setNameError(true);
-            errors.push('Name is a required field.');
-        } else {
-            setNameError(false);
-        }
-
-        if (!formData.email) {
-            setEmailError(true);
-            errors.push('Email is a required field.');
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            setEmailError(true);
-            errors.push('Email must be in the correct format.');
-        } else {
-            setEmailError(false);
-        }
-
-        if (!selectedIcon) {
-            errors.push('Please select a platform to share!');
-        }
-
-        if (errors.length > 0) {
-            setError(errors.join('\n'));
-            return;
-        }
-
-        setError('');
-        console.log('Form submitted:', { ...formData, selectedIcon });
-
-        // Store the social share data in state/localStorage
-        dispatch({ type: 'SET_SOCIAL_SHARE_DATA', payload: { ...formData } });
-        localStorage.setItem('socialShareData', JSON.stringify({ ...formData }));
-
-        // Post the data to the database
-        try {
-            const lanternData = JSON.parse(localStorage.getItem('socialShareData'));
-            await createLantern(lanternData);
-        } catch (error) {
-            console.error('Error creating lantern:', error);
-        }
-
-        if (shareRefs[selectedIcon]?.current) {
-            shareRefs[selectedIcon].current.click();
-        } else {
-            alert('Invalid platform selected!');
-        }
-    };
-
-    return (
-        <div>
-            {isModalOpen && (
-                <Overlay ref={overlayRef} onClick={handleOverlayClick}>
-                    <Modal ref={modalRef}>
-                        <ModalContent>
-                            <h2>Share your wish</h2>
-                            <p>Placeholder content for social sharing buttons.</p>
-                            {error && <ErrorBanner>{error}</ErrorBanner>}
-                            <Form onSubmit={handleSubmit}>
-                                <Input
-                                    type="text"
-                                    name="name"
-                                    placeholder="Your Name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    error={formTouched && nameError}
-                                />
-
-                                <Input
-                                    type="email"
-                                    name="email"
-                                    placeholder="Your Email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    error={formTouched && emailError}
-                                />
-                                <SocialIcons>
-                                    {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
-                                        const IconComponent = {
-                                            linkedin: LinkedinIcon,
-                                            facebook: FacebookIcon,
-                                            twitter: TwitterIcon, // Corrected key
-                                            whatsapp: WhatsappIcon,
-                                            email: EmailIcon,
-                                        }[platform];
-
-                                        return (
-                                            <IconComponent
-                                                key={platform}
-                                                className={selectedIcon === platform ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                                                onClick={() => setSelectedIcon(platform)}
-                                            />
-                                        );
-                                    })}
-                                </SocialIcons>
-                                <div style={{ display: 'none' }}>
-                                    <LinkedinShareButton
-                                        ref={shareRefs.linkedin}
-                                        url={`https://example.com/lantern/${formData.name}`}
-                                        title={`Check this out! Shared by ${formData.name}`}
-                                    />
-                                    <FacebookShareButton
-                                        ref={shareRefs.facebook}
-                                        url={`https://example.com/lantern/${formData.name}`}
-                                        quote={`Check this out! Shared by ${formData.name}`}
-                                    />
-                                    <TwitterShareButton // Corrected component
-                                        ref={shareRefs.twitter}
-                                        url={`https://example.com/lantern/${formData.name}`}
-                                        title={`Check this out! Shared by ${formData.name}`}
-                                    />
-                                    <WhatsappShareButton
-                                        ref={shareRefs.whatsapp}
-                                        url={`https://example.com/lantern/${formData.name}`}
-                                        title={`Check this out! Shared by ${formData.name}`}
-                                    />
-                                    <EmailShareButton
-                                        ref={shareRefs.email}
-                                        url={`https://example.com/lantern/${formData.name}`}
-                                        subject={`Check this out!`}
-                                        body={`Hi there, check this out: https://example.com/lantern/${formData.name}`}
-                                    />
-                                </div>
-                                <SubmitButton type="submit">Submit</SubmitButton>
-                            </Form>
-                        </ModalContent>
-                    </Modal>
-                </Overlay>
-            )}
-        </div>
-    );
+                    return (
+                      <IconComponent
+                        key={platform}
+                        className={selectedIcon === platform ? 'selected' : selectedIcon ? 'dimmed' : ''}
+                        onClick={() => setSelectedIcon(platform)}
+                      />
+                    );
+                  })}
+                </SocialIcons>
+                <div style={{ opacity: 0, pointerEvents: 'none', position: 'absolute' }}>
+                  <LinkedinShareButton
+                    ref={shareRefs.linkedin}
+                    url={`https://example.com/lantern/${formData.name}`}
+                    title={`Check this out! Shared by ${formData.name}`}
+                  />
+                  <FacebookShareButton
+                    ref={shareRefs.facebook}
+                    url={`https://example.com/lantern/${formData.name}`}
+                    quote={`Check this out! Shared by ${formData.name}`}
+                  />
+                  <TwitterShareButton // Corrected component
+                    ref={shareRefs.twitter}
+                    url={`https://example.com/lantern/${formData.name}`}
+                    title={`Check this out! Shared by ${formData.name}`}
+                  />
+                  <WhatsappShareButton
+                    ref={shareRefs.whatsapp}
+                    url={`https://example.com/lantern/${formData.name}`}
+                    title={`Check this out! Shared by ${formData.name}`}
+                  />
+                  <EmailShareButton
+                    ref={shareRefs.email}
+                    url={`https://example.com/lantern/${formData.name}`}
+                    subject={`Check this out!`}
+                    body={`Hi there, check this out: https://example.com/lantern/${formData.name}`}
+                  />
+                </div>
+                <SubmitButton type="submit">Submit</SubmitButton>
+              </Form>
+            </ModalContent>
+          </Modal>
+        </Overlay>
+      )}
+    </div>
+  );
 };
 
 export default SocialShare;
