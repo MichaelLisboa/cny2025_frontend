@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Layout from "../components/layout";
 import SEO from "../components/seo";
@@ -7,6 +7,7 @@ import DatePicker from "../components/datePicker";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import LanternPresentation from "../components/LanternPresentation";
+import SocialShare from "../components/socialShare"; // Import SocialShare
 
 const DatePickerContainer = styled.div`
   position: absolute;
@@ -111,7 +112,7 @@ const CreateLanternPage = () => {
     <Layout
       image="background-zodiac-sky.jpg"
       alignImage="bottom"
-      scrollable="false"
+      scrollable={false}
     >
       {flowState !== 'done' && (
         <DatePickerContainer className="date-picker">
@@ -132,6 +133,7 @@ const CreateLanternPage = () => {
           setFlowState={setFlowState}
         />
       )}
+      <SocialShare /> {/* Add SocialShare component */}
     </Layout>
   );
 };

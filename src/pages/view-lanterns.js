@@ -265,7 +265,7 @@ const ViewLanterns = () => {
     useFloatingAnimation(floatingRef, { minX: -40, maxX: 80, minY: -40, maxY: 40 });
 
     return (
-        <Layout image="background-zodiac-sky.jpg" alignImage="top" scrollable="false">
+        <Layout image="background-zodiac-sky.jpg" alignImage="top" scrollable={false}>
             <ParentContainer>
             <LanternContainer ref={containerRef}>
                 {lanterns.map((lantern) => (
