@@ -257,6 +257,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
   const [isWriting, setIsWriting] = useState(false); // State to toggle text area visibility
   const [wish, setWish] = useState(""); // State to capture the user's wish
   const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle modal visibility
+  const [wasShareReady, setWasShareReady] = useState(false); // State to remember if shareReady was true
   const maxCharacters = 150; // Set the maximum character limit
   const textAreaRef = useRef(null); // Reference for TextAreaContainer
   const paragraphRef = useRef(null); // Reference for TextParagraph
@@ -328,6 +329,15 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isWriting, wish]);
+
+  useEffect(() => {
+    if (isWriting) {
+      setWasShareReady(shareReady); // Remember if shareReady was true
+      setShareReady(false); // Set shareReady to false when isWriting is true
+    } else if (wasShareReady) {
+      setShareReady(true); // Restore shareReady to true if it was previously true
+    }
+  }, [isWriting, shareReady, setShareReady, wasShareReady]);
 
   const handleWrapperClick = (e) => {
     // Prevent toggling if already set to true
