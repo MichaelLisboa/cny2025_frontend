@@ -44,16 +44,18 @@ const LanternImageWrapper = styled.div`
   .gatsby-image-wrapper {
     position: absolute; /* Ensure it doesn't disrupt flexbox alignment */
     top: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-40%);
     width: 100%;
-    height: 100%;
+    max-height: 70vh; /* 70% of the vertical viewport */
     z-index: 1; /* Ensure it is behind the text */
     pointer-events: none; /* Prevent interactions */
+    overflow: visible;
   }
 
   img {
     width: auto;
-    height: 100%;
+    height: 100%
     margin: auto;
     filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
     transition: filter 0.3s ease-in-out;
@@ -67,7 +69,7 @@ const LanternImageWrapper = styled.div`
   @media (min-width: 1441px) {
     img {
       width: auto;
-      height: 100%;
+      height: 90%;
       margin: auto;
       filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
       transition: filter 0.3s ease-in-out;
@@ -79,8 +81,10 @@ const LanternImageWrapper = styled.div`
     }
     .gatsby-image-wrapper {
       position: absolute;
+    left: 0;
+    transform: translateX(0);
       width: 100%;
-      height: 100%;
+      max-height: 80vh;
       z-index: 1; /* Keep behind the text */
     }
   }
@@ -164,7 +168,7 @@ const TextAreaContainer = styled.div`
 `;
 
 const TextArea = styled.textarea`
-    position: relative;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
