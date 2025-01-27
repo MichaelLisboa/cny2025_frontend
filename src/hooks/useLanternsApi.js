@@ -1,3 +1,5 @@
+// useLanternsApi.js
+
 /**
  * Usage Examples:
  * 

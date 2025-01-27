@@ -292,7 +292,6 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
 
     // Map fields to match backend requirements
     const backendData = {
-      id: savedData?.id || null, // Ensure ID is passed if available
       name: savedData?.userData?.name || formData.name,
       email: savedData?.userData?.email || formData.email,
       birthdate: savedData?.birthdate || '', // Map birthdate
@@ -305,7 +304,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
 
     // POST to backend
     try {
-      const newLantern = await createLantern({backendData});
+      const newLantern = await createLantern(backendData);
     } catch (err) {
       console.error('Error posting to API:', err);
     }
