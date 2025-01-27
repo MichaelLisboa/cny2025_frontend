@@ -84,14 +84,7 @@ const CreateLanternPage = () => {
     }
 
     if (flowState === "transitioning2") {
-      const timeline = gsap.timeline({
-        onComplete: () => {
-          setTimeout(() => {
-            setFlowState("done"); // Move to "done" state
-            setShareReady(true); // Show the share button
-          }, 1000); // Delay to ensure the animation is complete
-        },
-      });
+      const timeline = gsap.timeline();
 
       timeline.to(
         ".background-image",
@@ -99,6 +92,12 @@ const CreateLanternPage = () => {
           top: 0,
           duration: 8,
           ease: "power2.inOut",
+          onComplete: () => {
+            setTimeout(() => {
+              setFlowState("done"); // Move to "done" state
+              setShareReady(true); // Show the share button
+            }, 1000); // Delay to ensure the animation is complete
+          },
         },
         "<"
       );

@@ -55,7 +55,7 @@ const LanternImageWrapper = styled.div`
 
   img {
     width: auto;
-    height: 100%
+    height: 100%;
     margin: auto;
     filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
     transition: filter 0.3s ease-in-out;
@@ -135,13 +135,13 @@ const FormContainer = styled.div`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
 `;
 
 const TextAreaContainer = styled.div`
@@ -356,7 +356,6 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
 
   const handleWishSubmit = () => {
     if (wish.trim()) {
-
       // Save the wish to localStorage using useAppState
       const newWish = { id: uuidv4(), wish }; // Add a unique identifier to the wish
       const updatedWishes = [...(state.wishes || []), newWish]; // Ensure state.wishes is an array
@@ -395,7 +394,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
 
   const characterCount = wish.length; // Calculate the number of characters typed
 
-  console.log("STATES", { flowState, isWriting, wish, shareReady });
+  console.log("STATES", { flowState });
 
   return (
     <LanternContainer>
@@ -435,7 +434,6 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
             <SaveWishButton className="save-wish-button" visible={wish.trim().length > 0}>
               <Button onClick={handleWishSubmit} text="Save Your Wish" />
             </SaveWishButton>
-
           </FormContainer>
         ) : wish.length ? (
           <WishParagraph ref={paragraphRef}>{truncateWish(wish)}</WishParagraph>
@@ -454,9 +452,9 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
         )}
       </LanternImageWrapper>
       {shareReady && (
-      <ShareWishButton>
-        <Button onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
-      </ShareWishButton>
+        <ShareWishButton>
+          <Button onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
+        </ShareWishButton>
       )}
       <SocialShare isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </LanternContainer>
