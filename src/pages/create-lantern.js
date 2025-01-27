@@ -7,7 +7,7 @@ import DatePicker from "../components/datePicker";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import LanternPresentation from "../components/LanternPresentation";
-import SocialShare from "../components/socialShare"; // Import SocialShare
+import SocialShare from "../components/socialShare";
 
 const DatePickerContainer = styled.div`
   position: absolute;
@@ -133,7 +133,7 @@ const CreateLanternPage = () => {
           setFlowState={setFlowState}
         />
       )}
-      <SocialShare /> {/* Add SocialShare component */}
+      <SocialShare />
     </Layout>
   );
 };
