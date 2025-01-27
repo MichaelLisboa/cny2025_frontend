@@ -39,6 +39,8 @@ const CreateLanternPage = () => {
   const [localElement, setLocalElement] = useState(null);
   const [shareReady, setShareReady] = useState(false); // State to control the visibility of the share button
 
+  console.log("State:", state);
+
   useEffect(() => {
     if (birthdateExists() && state.zodiac) {
       setFlowState('done');

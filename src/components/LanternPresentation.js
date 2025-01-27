@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
@@ -282,15 +282,14 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
     }
   `);
 
-  const getImageByName = useCallback(
-    (name) => {
+  const getImageByName = useMemo(() => {
+    return (name) => {
       const image = data.allFile.edges.find(({ node }) =>
         node.relativePath.includes(name)
       );
       return image ? getImage(image.node.childImageSharp) : null;
-    },
-    [data]
-  );
+    };
+  }, [data]);
 
   const lanternImage = zodiac ? getImageByName(`lantern-${zodiac.toLowerCase()}.png`) : null;
   const floatingRef = useRef(null);

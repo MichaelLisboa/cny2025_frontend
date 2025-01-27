@@ -13,6 +13,8 @@ import {
     EmailIcon,
     TwitterIcon, // Corrected import
 } from 'react-share';
+import useAppState from '../hooks/useAppState'; // Import useAppState
+import useLanternsApi from '../hooks/useLanternsApi'; // Import useLanternsApi
 
 const Overlay = styled.div`
   position: fixed;
@@ -199,6 +201,8 @@ const Input = styled.input`
 `;
 
 const SocialShare = ({ isModalOpen, setIsModalOpen }) => {
+    const { dispatch, state } = useAppState(); // Use the useAppState hook
+    const { createLantern } = useLanternsApi(); // Use the useLanternsApi hook
     const [selectedIcon, setSelectedIcon] = useState(null);
     const [formData, setFormData] = useState({ name: '', email: '' });
     const [formTouched, setFormTouched] = useState(false);
@@ -267,7 +271,7 @@ const SocialShare = ({ isModalOpen, setIsModalOpen }) => {
         return errorsArray;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setFormTouched(true);
 
@@ -301,6 +305,18 @@ const SocialShare = ({ isModalOpen, setIsModalOpen }) => {
 
         setError('');
         console.log('Form submitted:', { ...formData, selectedIcon });
+
+        // Store the social share data in state/localStorage
+        dispatch({ type: 'SET_SOCIAL_SHARE_DATA', payload: { ...formData } });
+        localStorage.setItem('socialShareData', JSON.stringify({ ...formData }));
+
+        // Post the data to the database
+        try {
+            const lanternData = JSON.parse(localStorage.getItem('socialShareData'));
+            await createLantern(lanternData);
+        } catch (error) {
+            console.error('Error creating lantern:', error);
+        }
 
         if (shareRefs[selectedIcon]?.current) {
             shareRefs[selectedIcon].current.click();
