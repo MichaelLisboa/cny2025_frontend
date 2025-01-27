@@ -45,7 +45,7 @@ const LanternImageWrapper = styled.div`
     position: absolute; /* Ensure it doesn't disrupt flexbox alignment */
     top: 0;
     left: 50%;
-    transform: translateX(-40%);
+    transform: translateX(-50%);
     width: 100%;
     max-height: 70vh; /* 70% of the vertical viewport */
     z-index: 1; /* Ensure it is behind the text */
@@ -264,7 +264,7 @@ const LanternPresentation = ({ zodiac, setFlowState }) => {
           node {
             relativePath
             childImageSharp {
-              gatsbyImageData(layout: FULL_WIDTH, placeholder: BLURRED)
+              gatsbyImageData(layout: CONSTRAINED, placeholder: BLURRED)
             }
           }
         }
