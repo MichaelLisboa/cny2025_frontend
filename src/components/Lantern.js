@@ -10,7 +10,7 @@ const pulse = keyframes`
     transform: scale(1);
   }
   50% {
-    filter: drop-shadow(0 0 32px rgba(255, 255, 179, 0.6));
+    filter: drop-shadow(0 0 40px rgba(255, 255, 179, 0.6));
     transform: scale(1.01);
   }
   100% {
