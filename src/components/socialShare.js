@@ -300,8 +300,6 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
       message: wish || savedData?.wishes?.[0]?.wish, // Use first wish message
     };
 
-    console.log('Mapped Backend Data:', backendData);
-
     // POST to backend
     try {
       const newLantern = await createLantern(backendData);
@@ -316,9 +314,6 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
       alert('Sharing platform not configured correctly.');
     }
   };
-
-  console.log('Selected Icon:', selectedIcon);
-  console.log('Share Ref:', shareRefs[selectedIcon]?.current);
 
   return (
     <div>
@@ -336,7 +331,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  error={formTouched && nameError}
+                  {...(formTouched && nameError ? { error: true } : {})}
                 />
 
                 <Input
@@ -345,7 +340,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
                   placeholder="Your Email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  error={formTouched && emailError}
+                  {...(formTouched && nameError ? { error: true } : {})}
                 />
                 <SocialIcons>
                   {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {

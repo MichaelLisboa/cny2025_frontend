@@ -52,10 +52,12 @@ const Wrapper = styled.div`
   overflow: hidden;
   transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
   padding: 12px 36px;
-  ${({ variant }) => variants[variant] || variants.glow}
+  ${({ $variant }) => variants[$variant] || variants.glow}
 `;
 
-const Link = styled(GatsbyLink)`
+const Link = styled(GatsbyLink).attrs((props) => ({
+  isMobile: undefined, // Ensure `isMobile` is not passed to the DOM
+}))`
   position: relative;
   display: inline-block;
   font-size: ${(props) => (props.isMobile ? '1.25em' : '1.5em')};
@@ -63,13 +65,15 @@ const Link = styled(GatsbyLink)`
   text-decoration: none;
   text-transform: uppercase;
   white-space: nowrap;
-  color: inherit; /* Ensures it inherits color from the Wrapper */
+  color: inherit;
+
   &:visited {
-    color: inherit; /* Prevents purple text for visited links */
+    color: inherit;
   }
+
   &:hover,
   &:focus {
-    color: inherit; /* Keeps the color consistent on hover or focus */
+    color: inherit;
   }
 `;
 
@@ -101,7 +105,7 @@ const Button = ({ text = 'Continue', to = null, onClick = null, variant = 'glow'
     <ButtonContainer>
       <Wrapper
         ref={wrapperRef}
-        variant={variant}
+        $variant={variant} // Use the transient prop here
         onMouseEnter={variant === 'glow' ? () => gsap.to(wrapperRef.current, { scale: 1.1 }) : null}
         onMouseLeave={variant === 'glow' ? () => gsap.to(wrapperRef.current, { scale: 1.07 }) : null}
         onClick={!to && onClick ? onClick : null}

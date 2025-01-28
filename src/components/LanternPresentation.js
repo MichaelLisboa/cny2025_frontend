@@ -19,13 +19,13 @@ import {
 import { truncateWish } from "../utils/helpers"; // Import truncateWish
 import Lantern from "./Lantern"; // Import Lantern component
 
-const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setShareReady }) => {
+const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) => {
   const [isWriting, setIsWriting] = useState(false);
   const [wish, setWish] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [wasShareReady, setWasShareReady] = useState(false);
   const maxCharacters = 150;
   const textAreaRef = useRef(null);
+  const textAreaInputRef = useRef(null);
   const paragraphRef = useRef(null);
   const { state, dispatch } = useAppState();
 
@@ -87,13 +87,10 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
   }, [isWriting, wish]);
 
   useEffect(() => {
-    if (isWriting) {
-      setWasShareReady(shareReady);
-      setShareReady(false);
-    } else if (wasShareReady) {
-      setShareReady(true);
+    if (isWriting && textAreaInputRef.current) {
+      textAreaInputRef.current.focus();
     }
-  }, [isWriting, shareReady, setShareReady, wasShareReady]);
+  }, [isWriting]);
 
   const handleWrapperClick = (e) => {
     if (!isWriting) {
@@ -110,29 +107,37 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
   };
 
   const handleWishSubmit = () => {
-    if (wish.trim()) {
-      const newWish = { id: uuidv4(), wish };
-      const updatedWishes = [...(state.wishes || []), newWish];
-      dispatch({ type: "SET_WISHES", payload: updatedWishes });
-
-      const timeline = gsap.timeline({
-        onComplete: () => {
-          setIsWriting(false);
-          setFlowState("transitioning2");
-        },
-      });
-
-      timeline.to([textAreaRef.current, ".save-wish-button"], {
-        opacity: 0,
-        duration: 1,
-        ease: "power2.out",
-      });
-
+    if (!wish.trim() || flowState !== "writing") return; 
+  
+    console.log("Wish submitted");
+  
+    const newWish = { id: uuidv4(), wish };
+    const updatedWishes = [...(state.wishes || []), newWish];
+    dispatch({ type: "SET_WISHES", payload: updatedWishes });
+  
+    const timeline = gsap.timeline({
+      onComplete: () => {
+        setIsWriting("locked");
+        setFlowState("transitioning2"); // Move to "transitioning2" after submission
+      },
+    });
+  
+    timeline.to([textAreaRef.current, ".save-wish-button"], {
+      opacity: 0,
+      duration: 1,
+      ease: "power2.out",
+    });
+  
+    if (paragraphRef.current) {
       gsap.set(paragraphRef.current, { opacity: 0, scale: 0.8 });
-
       timeline.to(
         paragraphRef.current,
-        { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 1.5,
+          ease: "power2.out",
+        },
         "-=0.5"
       );
     }
@@ -167,6 +172,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
                 </CloseButton>
               )}
               <TextArea
+                ref={textAreaInputRef}
                 placeholder="Write your wish here..."
                 value={wish}
                 onChange={handleInput}
@@ -177,7 +183,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
                 {characterCount}/{maxCharacters}
               </div>
             </TextAreaContainer>
-            <SaveWishButton className="save-wish-button" visible={wish.trim().length > 0}>
+            <SaveWishButton className="save-wish-button" $visible={wish.trim().length > 0}>
               <Button variant="primary" onClick={handleWishSubmit} text="Save Your Wish" />
             </SaveWishButton>
           </FormContainer>
@@ -186,15 +192,15 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
           <Lantern
             animalSign={zodiac}
             name={null}
-            text={wish.length ? !isWriting && truncateWish(wish) : !isWriting && "Tap to write a wish."}
+            text={wish.length ? isWriting === "locked" && truncateWish(wish) : !isWriting && "Tap to write a wish."}
           />
         ) : (
           <p>Lantern image not found</p>
         )}
-        </div>
+      </div>
       {shareReady && (
         <ShareWishButton>
-          <Button variant="primary" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
+          <Button variant="glow" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
         </ShareWishButton>
       )}
       <SocialShare wish={wish} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />

@@ -134,13 +134,13 @@ export const SaveWishButton = styled.div`
   z-index: 1000;
   margin: 4px auto 24px;
   overflow: visible;
-  display: ${({ visible }) => (visible ? 'block' : 'none')};
+  display: display: ${(props) => (props.$visible ? "block" : "none")};
 `;
 
 export const ShareWishButton = styled.div`
-  position: relative;
+  position: absolute;
   z-index: 1000;
-  bottom: 32px;
+  bottom: 5vh;
   margin: 4px auto 24px;
   overflow: visible;
 `;
