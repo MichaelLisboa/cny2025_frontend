@@ -27,6 +27,8 @@ const reducer = (state, action) => {
             return { ...state, element: action.payload };
         case 'SET_WISHES':
             return { ...state, ...{ wishes: action.payload } };
+        case 'SET_USER_DATA':
+            return { ...state, userData: action.payload };
         case 'CLEAR':
             return {}; // Clear all state
         default:

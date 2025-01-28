@@ -16,6 +16,7 @@ import {
 import Button from './button';
 import useAppState from '../hooks/useAppState'; // Import useAppState
 import useLanternsApi from '../hooks/useLanternsApi'; // Import useLanternsApi
+import { navigate } from "gatsby";
 
 const Overlay = styled.div`
   position: fixed;
@@ -156,7 +157,7 @@ const SubmitButton = styled.div`
   font-size: 0.75em;
 `;
 
-const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
+const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lanternId = null, simple = false }) => {
   const { dispatch, state } = useAppState(); // Use the useAppState hook
   const { createLantern } = useLanternsApi(); // Use the useLanternsApi hook
   const [selectedIcon, setSelectedIcon] = useState(null);
@@ -193,6 +194,9 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
 
   const handleIconClick = (icon) => {
     setSelectedIcon(icon === selectedIcon ? null : icon);
+    if (simple && shareRefs[icon]?.current) {
+      shareRefs[icon].current.click();
+    }
   };
 
   const handleOverlayClick = (e) => {
@@ -242,33 +246,40 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
       return;
     }
 
-    // Get state data from localStorage
-    const savedData = JSON.parse(localStorage.getItem('appState'));
-    console.log('Saved Data from localStorage:', savedData);
+    if (mode === "create") {
+      // Get state data from localStorage
+      const savedData = JSON.parse(localStorage.getItem('appState'));
+      console.log('Saved Data from localStorage:', savedData);
 
-    // Map fields to match backend requirements
-    const backendData = {
-      name: savedData?.userData?.name || formData.name,
-      email: savedData?.userData?.email || formData.email,
-      birthdate: savedData?.birthdate || '', // Map birthdate
-      animal_sign: savedData?.zodiac || '', // Map zodiac to animal_sign
-      element: savedData?.element || '', // Map element
-      message: wish || savedData?.wishes?.[0]?.wish, // Use first wish message
-    };
+      // Map fields to match backend requirements
+      const backendData = {
+        name: savedData?.userData?.name || formData.name,
+        email: savedData?.userData?.email || formData.email,
+        birthdate: savedData?.birthdate || '', // Map birthdate
+        animal_sign: savedData?.zodiac || '', // Map zodiac to animal_sign
+        element: savedData?.element || '', // Map element
+        message: wish || savedData?.wishes?.[0]?.wish, // Use first wish message
+      };
 
-    // POST to backend
-    try {
-      const newLantern = await createLantern(backendData);
-      console.log('New Lantern:', newLantern);
-    } catch (err) {
-      console.error('Error posting to API:', err);
-    }
-
-    // Trigger sharing regardless of API success
-    if (shareRefs[selectedIcon]?.current) {
-      shareRefs[selectedIcon].current.click();
-    } else {
-      alert('Sharing platform not configured correctly.');
+      // POST to backend
+      try {
+        const newLantern = await createLantern(backendData);
+        if (newLantern?.id) {
+          // Update app state and local storage
+          dispatch({ type: "SET_USER_DATA", payload: { name: formData.name, email: formData.email } });
+          navigate(`/lantern/${newLantern.id}`);
+        }
+      } catch (err) {
+        setError("Something went wrong. Please try again later.");
+        console.error(err);
+      }
+    } else if (mode === "share" && lanternId) {
+      // Trigger sharing for existing lantern
+      if (shareRefs[selectedIcon]?.current) {
+        shareRefs[selectedIcon].current.click();
+      } else {
+        alert('Sharing platform not configured correctly.');
+      }
     }
   };
 
@@ -278,77 +289,83 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
         <Overlay ref={overlayRef} onClick={handleOverlayClick}>
           <Modal ref={modalRef}>
             <ModalContent>
-              <p style={{lineHeight: 1, marginBottom: "24px", width: "80%"}} className='text-medium text-center'><strong>Enter your name and email to share your lantern!</strong></p>
-              {error && <ErrorBanner>{error}</ErrorBanner>}
-              <Form onSubmit={handleSubmit}>
-                <Input
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  {...(nameError ? { error: true } : {})}
-                />
+              {!simple && (
+                <>
+                  <p style={{lineHeight: 1, marginBottom: "24px", width: "80%"}} className='text-medium text-center'><strong>Enter your name and email to share your lantern!</strong></p>
+                  {error && <ErrorBanner>{error}</ErrorBanner>}
+                  <Form onSubmit={handleSubmit}>
+                    <Input
+                      type="text"
+                      name="name"
+                      placeholder="Your Name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      {...(nameError ? { error: true } : {})}
+                    />
 
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  {...(emailError ? { error: true } : {})}
-                />
-                <SocialIcons>
-                  {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
-                    const IconComponent = {
-                      linkedin: LinkedinIcon,
-                      facebook: FacebookIcon,
-                      twitter: TwitterIcon, // Corrected key
-                      whatsapp: WhatsappIcon,
-                      email: EmailIcon,
-                    }[platform];
+                    <Input
+                      type="email"
+                      name="email"
+                      placeholder="Your Email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      {...(emailError ? { error: true } : {})}
+                    />
+                  </Form>
+                </>
+              )}
+              <SocialIcons>
+                {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
+                  const IconComponent = {
+                    linkedin: LinkedinIcon,
+                    facebook: FacebookIcon,
+                    twitter: TwitterIcon, // Corrected key
+                    whatsapp: WhatsappIcon,
+                    email: EmailIcon,
+                  }[platform];
 
-                    return (
-                      <IconComponent
-                        key={platform}
-                        className={selectedIcon === platform ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                        onClick={() => setSelectedIcon(platform)}
-                      />
-                    );
-                  })}
-                </SocialIcons>
-                <div style={{ opacity: 0, pointerEvents: 'none', position: 'absolute' }}>
-                  <LinkedinShareButton
-                    ref={shareRefs.linkedin}
-                    url={`https://example.com/lantern/${formData.name}`}
-                    title={`Check this out! Shared by ${formData.name}`}
-                  />
-                  <FacebookShareButton
-                    ref={shareRefs.facebook}
-                    url={`https://example.com/lantern/${formData.name}`}
-                    quote={`Check this out! Shared by ${formData.name}`}
-                  />
-                  <TwitterShareButton // Corrected component
-                    ref={shareRefs.twitter}
-                    url={`https://example.com/lantern/${formData.name}`}
-                    title={`Check this out! Shared by ${formData.name}`}
-                  />
-                  <WhatsappShareButton
-                    ref={shareRefs.whatsapp}
-                    url={`https://example.com/lantern/${formData.name}`}
-                    title={`Check this out! Shared by ${formData.name}`}
-                  />
-                  <EmailShareButton
-                    ref={shareRefs.email}
-                    url={`https://example.com/lantern/${formData.name}`}
-                    subject={`Check this out!`}
-                    body={`Hi there, check this out: https://example.com/lantern/${formData.name}`}
-                  />
-                </div>
+                  return (
+                    <IconComponent
+                      key={platform}
+                      className={selectedIcon === platform ? 'selected' : selectedIcon ? 'dimmed' : ''}
+                      onClick={() => handleIconClick(platform)}
+                    />
+                  );
+                })}
+              </SocialIcons>
+              <div style={{ opacity: 0, pointerEvents: 'none', position: 'absolute' }}>
+                <LinkedinShareButton
+                  ref={shareRefs.linkedin}
+                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  title={`Check this out! Shared by ${formData.name}`}
+                />
+                <FacebookShareButton
+                  ref={shareRefs.facebook}
+                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  quote={`Check this out! Shared by ${formData.name}`}
+                />
+                <TwitterShareButton // Corrected component
+                  ref={shareRefs.twitter}
+                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  title={`Check this out! Shared by ${formData.name}`}
+                />
+                <WhatsappShareButton
+                  ref={shareRefs.whatsapp}
+                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  title={`Check this out! Shared by ${formData.name}`}
+                />
+                <EmailShareButton
+                  ref={shareRefs.email}
+                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  subject={`Check this out!`}
+                  body={`Hi there, check this out: https://example.com/lantern/${lanternId || formData.name}`}
+                />
+              </div>
+              {!simple && (
                 <SubmitButton>
                   <Button variant="primary" text="Share your lantern" onClick={handleSubmit} />
                 </SubmitButton>
-              </Form>
+              )}
             </ModalContent>
           </Modal>
         </Overlay>

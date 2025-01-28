@@ -14,7 +14,6 @@ import {
   CloseButton,
   ButtonContainer,
   SaveWishButton,
-  ShareWishButton
 } from "./LanternPresentationStyles"; // Import styled components
 import { truncateWish } from "../utils/helpers"; // Import truncateWish
 import Lantern from "./Lantern"; // Import Lantern component
