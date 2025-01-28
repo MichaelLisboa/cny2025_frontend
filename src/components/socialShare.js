@@ -166,6 +166,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
   const [error, setError] = useState('');
   const [nameError, setNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [shouldShare, setShouldShare] = useState(false); // State to track if sharing should be triggered
   const overlayRef = useRef(null);
   const modalRef = useRef(null);
 
@@ -187,6 +188,14 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
     }
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (shouldShare && shareRefs[selectedIcon]?.current) {
+      console.log(`Triggering share for ${selectedIcon}`); // Debugging statement
+      shareRefs[selectedIcon].current.click();
+      setShouldShare(false); // Reset the flag
+    }
+  }, [shouldShare, selectedIcon]);
+
   const closeModal = () => {
     gsap.to(modalRef.current, { opacity: 0, duration: 0.5 });
     gsap.to(overlayRef.current, { opacity: 0, duration: 0.5, delay: 0.3, onComplete: () => setIsModalOpen(false) });
@@ -195,6 +204,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
   const handleIconClick = (icon) => {
     setSelectedIcon(icon === selectedIcon ? null : icon);
     if (simple && shareRefs[icon]?.current) {
+      console.log(`Triggering share for ${icon}`); // Debugging statement
       shareRefs[icon].current.click();
     }
   };
@@ -270,6 +280,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
           dispatch({ type: "SET_USER_DATA", payload: { name: formData.name, email: formData.email } });
           console.log('Navigating to:', `/lantern/${newLantern.id}`); // Debugging statement
           navigate(`/lantern/${newLantern.id}`);
+          setShouldShare(true); // Set the flag to trigger sharing
         } else {
           console.error('New Lantern does not have an ID:', newLantern); // Debugging statement
         }
@@ -280,6 +291,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
     } else if (mode === "share" && lanternId) {
       // Trigger sharing for existing lantern
       if (shareRefs[selectedIcon]?.current) {
+        console.log(`Triggering share for ${selectedIcon}`); // Debugging statement
         shareRefs[selectedIcon].current.click();
       } else {
         alert('Sharing platform not configured correctly.');
