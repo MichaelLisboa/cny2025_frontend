@@ -264,14 +264,18 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
       // POST to backend
       try {
         const newLantern = await createLantern(backendData);
+        console.log('New Lantern:', newLantern); // Debugging statement
         if (newLantern?.id) {
           // Update app state and local storage
           dispatch({ type: "SET_USER_DATA", payload: { name: formData.name, email: formData.email } });
+          console.log('Navigating to:', `/lantern/${newLantern.id}`); // Debugging statement
           navigate(`/lantern/${newLantern.id}`);
+        } else {
+          console.error('New Lantern does not have an ID:', newLantern); // Debugging statement
         }
       } catch (err) {
         setError("Something went wrong. Please try again later.");
-        console.error(err);
+        console.error('Error posting to API:', err); // Debugging statement
       }
     } else if (mode === "share" && lanternId) {
       // Trigger sharing for existing lantern
