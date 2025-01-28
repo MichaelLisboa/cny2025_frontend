@@ -1,7 +1,23 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef, useMemo, useRef } from 'react';
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import useFloatingAnimation from '../hooks/useFloatingAnimation';
+
+const pulse = keyframes`
+  0% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.8));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(255, 255, 179, 0.6));
+    transform: scale(1.01);
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.8));
+    transform: scale(1);
+  }
+`;
 
 const LanternContainer = styled.div`
   position: absolute;
@@ -37,13 +53,7 @@ const LanternImageWrapper = styled.div`
     object-fit: contain;
     margin: auto; /* Backup in case Flexbox alignment fails */
     
-    filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8));
-    transition: filter 0.3s ease-in-out;
-
-    &:hover {
-      filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9));
-      transition: filter 0.3s ease-in-out;
-    }
+    animation: ${pulse} 3s infinite ease-in-out; /* Add the pulsing animation with easing */
   }
 `;
 
@@ -80,9 +90,12 @@ const Lantern = forwardRef(({ animalSign }, ref) => {
 
   const lanternImage = getImageByName(`lantern-${animalSign.toLowerCase()}.png`);
 
+  const floatingRef = useRef(null);
+  useFloatingAnimation(floatingRef, { minX: -30, maxX: 30, minY: -60, maxY: 60, minRotation: -3, maxRotation: 3 });
+
   return (
     <LanternContainer ref={ref}>
-      <LanternImageWrapper>
+      <LanternImageWrapper ref={floatingRef}>
         {lanternImage ? (
           <StyledImage
             image={lanternImage}
