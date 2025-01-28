@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useStaticQuery, graphql } from "gatsby";
-import { getImage, GatsbyImage } from "gatsby-plugin-image";
 import styled from "styled-components";
 import { gsap } from "gsap";
 import useLanternsApi from "../hooks/useLanternsApi";
 import useFloatingAnimation from '../hooks/useFloatingAnimation'; // Use named import
 import Layout from "../components/layout";
 import Button from "../components/button"; // Import the Button component
+import Lantern from "../components/Lantern"; // Import Lantern component
 
 // Styled components
 
@@ -76,29 +75,6 @@ const ViewLanterns = () => {
     const { getRandomLanterns } = useLanternsApi();
     const containerRef = useRef(null); // Ref for the container
 
-    // Fetch images via GraphQL
-    const data = useStaticQuery(graphql`
-    query LanternImages {
-      allFile(filter: { relativePath: { regex: "/lantern-.+\\.png$/" } }) {
-        edges {
-          node {
-            childImageSharp {
-              gatsbyImageData(width: 300, placeholder: BLURRED)
-            }
-            relativePath
-            name
-          }
-        }
-      }
-    }
-  `);
-
-    const images = {};
-    data.allFile.edges.forEach(({ node }) => {
-        const animalName = node.name.replace("lantern-", "").toLowerCase();
-        images[animalName] = getImage(node.childImageSharp);
-    });
-
     const fetchLanterns = async () => {
         const apiData = await getRandomLanterns(20);
 
@@ -136,7 +112,6 @@ const ViewLanterns = () => {
                 scale,
                 opacity,
                 zIndex,
-                image: images[lantern.animal_sign.toLowerCase()] || images["default"],
             };
         });
 
@@ -262,7 +237,7 @@ const ViewLanterns = () => {
     }, []);
 
     const floatingRef = useRef(null);
-    useFloatingAnimation(floatingRef, { minX: -40, maxX: 80, minY: -40, maxY: 40 });
+    useFloatingAnimation(floatingRef, { minX: -40, maxX: 80, minY: -80, maxY: 80 });
 
     return (
         <Layout image="background-zodiac-sky.jpg" alignImage="top" scrollable={false}>
@@ -286,8 +261,8 @@ const ViewLanterns = () => {
                         zIndex={lantern.zIndex}
                         opacity={lantern.opacity}
                     >
-                        <GatsbyImage
-                            image={lantern.image}
+                        <Lantern
+                            animalSign={lantern.animal_sign}
                             alt={`Lantern for ${lantern.animal_sign}`}
                         />
                     </LanternWrapper>

@@ -9,7 +9,7 @@ const useFloatingAnimation = (ref, { minX, maxX, minY, maxY, minRotation = -2, m
         x: `random(${minX}, ${maxX})`,
         y: `random(${minY}, ${maxY})`,
         rotation: `random(${minRotation}, ${maxRotation})`,
-        duration: 3,
+        duration: 5,
         ease: 'power1.inOut',
         repeat: -1,
         yoyo: true,

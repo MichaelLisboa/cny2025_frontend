@@ -40,7 +40,7 @@ const NavContainer = styled.div`
 `;
 
 const Logo = styled.div`
-  margin-top: 24px;
+  margin-top: 16px;
   width: auto;
   height: 64px;
   display: flex;
