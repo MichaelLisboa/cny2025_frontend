@@ -53,13 +53,13 @@ const Logo = styled.div`
   }
 
   @media (min-width: 1440px) {
-  margin-top: 16px;
+  margin-top: 20px;
     width: 102px;
     height: 102px;
     
     img {
     width: auto;
-    height: 72px;
+    height: 96px;
   }
   }
 `;
@@ -88,15 +88,15 @@ const NavLink = styled(Link)`
   }
 
   @media (min-width: 1024px) {
-    font-size: 1.5em;
+    font-size: 1em;
   }
 
   @media (min-width: 1440px) {
-    font-size: 1.75em;
+    font-size: 1.25em;
   }
 
   @media (min-width: 2440px) {
-    font-size: 2em;
+    font-size: 1.5;
   }
 `;
 
