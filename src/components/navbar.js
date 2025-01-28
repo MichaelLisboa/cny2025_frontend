@@ -9,8 +9,8 @@ const NavbarContainer = styled.div`
   left: 0;
   width: 100%;
   z-index: 10000;
-  backdrop-filter: blur(3px);
-  background: linear-gradient(180deg, rgba(7, 28, 57, 0.3), rgba(7, 28, 57, 0.2) 30%, rgba(7, 28, 57, 0.025) 60%, rgba(7, 28, 57, 0) 80%);
+  backdrop-filter: blur(1px);
+  background: linear-gradient(180deg, rgba(7, 28, 57, 0.5), rgba(7, 28, 57, 0.25) 30%, rgba(7, 28, 57, 0.0125) 60%, rgba(7, 28, 57, 0) 80%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,7 +40,7 @@ const NavContainer = styled.div`
 `;
 
 const Logo = styled.div`
-  margin-top: 16px;
+  margin-top: 8px;
   width: auto;
   height: 64px;
   display: flex;
