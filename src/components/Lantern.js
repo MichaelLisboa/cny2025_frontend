@@ -48,10 +48,9 @@ const LanternImageWrapper = styled.div`
 
 const TextOverlay = styled.div`
   position: absolute;
-  top: 50%;
+  bottom: 10%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 2rem;
   z-index: 1;
   text-align: center;
   color: rgba(170, 111, 0, 0.9); /* Adjust color to match lantern glow */
@@ -60,11 +59,13 @@ const TextOverlay = styled.div`
   mix-blend-mode: multiply; /* Add multiply effect */
 
   @media (max-width: 768px) {
-    font-size: 3vw; /* Adjust font-size for smaller screens */
+    font-size: 6vw; /* Adjust font-size for smaller screens */
   }
 
-  @media (min-width: 2560px) {
+  @media (min-width: 769px) {
+    padding: 1.5rem; /* Add padding for larger screens */
     font-size: 1.25vw; /* Adjust font-size for 4k displays */
+    bottom: 20%;
   }
 
   p.name {
@@ -74,7 +75,7 @@ const TextOverlay = styled.div`
 
   p.message {
     font-weight: 800;
-    line-height: 0.9;
+    line-height: 1;
   }
 `;
 
