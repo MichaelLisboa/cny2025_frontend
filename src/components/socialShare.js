@@ -13,6 +13,7 @@ import {
   EmailIcon,
   TwitterIcon, // Corrected import
 } from 'react-share';
+import Button from './button';
 import useAppState from '../hooks/useAppState'; // Import useAppState
 import useLanternsApi from '../hooks/useLanternsApi'; // Import useLanternsApi
 
@@ -28,12 +29,13 @@ const Overlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(10px);
 `;
 
 const Modal = styled.div`
   background: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 1.875rem;;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   opacity: 0;
   z-index: 10001;
@@ -57,32 +59,6 @@ const ModalContent = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-
-    @media (min-width: 768px) {
-      font-size: 2rem;
-    }
-
-    @media (min-width: 1024px) {
-      font-size: 2.5rem;
-    }
-  }
-
-  p {
-    font-size: 1rem;
-    margin-bottom: 20px;
-
-    @media (min-width: 768px) {
-      font-size: 1.25rem;
-    }
-
-    @media (min-width: 1024px) {
-      font-size: 1.5rem;
-    }
-  }
 `;
 
 const Form = styled.form`
@@ -90,13 +66,6 @@ const Form = styled.form`
   flex-direction: column;
   width: 100%;
   margin-bottom: 20px;
-
-  input {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
 
     @media (min-width: 768px) {
       padding: 12px;
@@ -148,27 +117,6 @@ const SocialIcons = styled.div`
   }
 `;
 
-const SubmitButton = styled.button`
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #d40202;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-
-  @media (min-width: 768px) {
-    padding: 12px 24px;
-    font-size: 1.25rem;
-  }
-
-  @media (min-width: 1024px) {
-    padding: 14px 28px;
-    font-size: 1.5rem;
-  }
-`;
-
 const ErrorBanner = styled.div`
   background: #f8d7da;
   color: #721c24;
@@ -182,12 +130,16 @@ const ErrorBanner = styled.div`
 
 const Input = styled.input`
   padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid ${({ error }) => (error ? 'rgba(212, 2, 2, 1) !important' : '#ccc')};
-  border-radius: 4px;
+  margin-bottom: 16px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid ${({ error }) => (error ? 'rgba(212, 2, 2, 1) !important' : '#f8f8f8')} 
+  border-radius: 16px;
   font-size: 1rem;
   box-shadow: ${({ error }) => (error ? '0 0 4px rgba(212, 2, 2, 0.5)' : 'none')};
   outline: none; /* Remove the default focus outline */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
   @media (min-width: 768px) {
     padding: 12px;
@@ -198,6 +150,10 @@ const Input = styled.input`
     padding: 14px;
     font-size: 1.5rem;
   }
+`;
+
+const SubmitButton = styled.div`
+  font-size: 0.75em;
 `;
 
 const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
@@ -303,6 +259,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
     // POST to backend
     try {
       const newLantern = await createLantern(backendData);
+      console.log('New Lantern:', newLantern);
     } catch (err) {
       console.error('Error posting to API:', err);
     }
@@ -321,8 +278,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
         <Overlay ref={overlayRef} onClick={handleOverlayClick}>
           <Modal ref={modalRef}>
             <ModalContent>
-              <h2>Share your wish</h2>
-              <p>Placeholder content for social sharing buttons.</p>
+              <p style={{lineHeight: 1, marginBottom: "24px", width: "80%"}} className='text-medium text-center'><strong>Enter your name and email to share your lantern!</strong></p>
               {error && <ErrorBanner>{error}</ErrorBanner>}
               <Form onSubmit={handleSubmit}>
                 <Input
@@ -331,7 +287,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  {...(formTouched && nameError ? { error: true } : {})}
+                  {...(nameError ? { error: true } : {})}
                 />
 
                 <Input
@@ -340,7 +296,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
                   placeholder="Your Email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  {...(formTouched && nameError ? { error: true } : {})}
+                  {...(emailError ? { error: true } : {})}
                 />
                 <SocialIcons>
                   {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
@@ -389,7 +345,9 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen }) => {
                     body={`Hi there, check this out: https://example.com/lantern/${formData.name}`}
                   />
                 </div>
-                <SubmitButton type="submit">Submit</SubmitButton>
+                <SubmitButton>
+                  <Button variant="primary" text="Share your lantern" onClick={handleSubmit} />
+                </SubmitButton>
               </Form>
             </ModalContent>
           </Modal>
