@@ -16,6 +16,7 @@ const variants = {
     box-shadow: 0 0 30px rgba(255, 239, 200, 0.4), 0 0 60px rgba(255, 239, 200, 0.2);
     color: #ffffff;
     text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+    transition: background 0.5s ease-in-out, transform 0.5s ease-in-out;
 
     &:hover {
       box-shadow: 0 0 60px rgba(255, 239, 200, 0.8), 0 0 150px rgba(255, 239, 200, 0.5);
@@ -25,6 +26,7 @@ const variants = {
   primary: css`
     background: #C0560E;
     color: #ffffff;
+    transition: background 0.5s ease-in-out, transform 0.5s ease-in-out;
 
     &:hover {
       background: #BE5711;
@@ -33,11 +35,12 @@ const variants = {
   `,
   secondary: css`
     background: transparent;
-    border: 2px solid #ffffff;
     color: #ffffff;
+    font-size: 0.8rem;
+    transition: background 0.5s ease-in-out, transform 0.5s ease-in-out;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
       transform: scale(1.05);
     }
   `,
@@ -60,7 +63,7 @@ const Link = styled(GatsbyLink).attrs((props) => ({
 }))`
   position: relative;
   display: inline-block;
-  font-size: ${(props) => (props.isMobile ? '1.25em' : '1.5em')};
+  font-size: ${(props) => (props.isMobile ? '1em' : '1.25em')};
   font-weight: 500;
   text-decoration: none;
   text-transform: uppercase;

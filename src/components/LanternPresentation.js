@@ -8,11 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import SocialShare from "./socialShare";
 import {
   LanternContainer,
-  LanternImageWrapper,
   FormContainer,
   TextAreaContainer,
   TextArea,
   CloseButton,
+  ButtonContainer,
   SaveWishButton,
   ShareWishButton
 } from "./LanternPresentationStyles"; // Import styled components
@@ -199,9 +199,10 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
         )}
       </div>
       {shareReady && (
-        <ShareWishButton>
+        <ButtonContainer>
           <Button variant="glow" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
-        </ShareWishButton>
+          <Button variant="secondary" to="/fortune" text="Or Get your Fortune" />
+        </ButtonContainer>
       )}
       <SocialShare wish={wish} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </LanternContainer>

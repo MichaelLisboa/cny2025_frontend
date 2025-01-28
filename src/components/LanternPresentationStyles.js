@@ -7,10 +7,11 @@ export const LanternContainer = styled.div.attrs({
     display: inline-block;
     height: 100vh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-direction: column;
     width: 100%;
+    padding: 32px 0 0 0;
 
     .lantern-wrapper {
       position: relative;
@@ -137,10 +138,14 @@ export const SaveWishButton = styled.div`
   display: display: ${(props) => (props.$visible ? "block" : "none")};
 `;
 
-export const ShareWishButton = styled.div`
+export const ButtonContainer = styled.div`
   position: absolute;
-  z-index: 1000;
+  z-index: 10000;
   bottom: 5vh;
   margin: 4px auto 24px;
   overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
