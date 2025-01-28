@@ -109,7 +109,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
   const handleWishSubmit = () => {
     if (!wish.trim() || flowState !== "writing") return; 
   
-    console.log("Wish submitted");
+    textAreaInputRef.current.blur();
   
     const newWish = { id: uuidv4(), wish };
     const updatedWishes = [...(state.wishes || []), newWish];
