@@ -178,6 +178,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
                 onChange={handleInput}
                 maxLength={maxCharacters}
                 onInput={handleInput}
+                style={{ pointerEvents: flowState === "done" ? "none" : "auto" }}
               />
               <div style={{ marginTop: "10px", fontSize: "14px", color: "#999" }}>
                 {characterCount}/{maxCharacters}
