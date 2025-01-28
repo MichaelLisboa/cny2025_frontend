@@ -3,75 +3,24 @@ import styled from "styled-components";
 export const LanternContainer = styled.div.attrs({
   className: "lantern-container",
 })`
-  position: absolute;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 600px;
-  padding: 96px 0 32px 0;
-  margin-bottom: 72px;
-  overflow: visible;
+    position: relative;
+    display: inline-block;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
 
-  @media (min-width: 1441px) {
-    padding: 128px 0 72px 0;
-    max-width: 1024px;
-  }
-`;
-
-export const LanternImageWrapper = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 70vh;
-  z-index: 1;
-  overflow: visible;
-`;
-
-export const TextParagraph = styled.p`
-  margin-top: 32px;
-  font-size: 1.75rem;
-  line-height: 1;
-  font-weight: 800;
-  max-width: 50%;
-  color: rgba(226, 127, 12, 0.6);
-  z-index: 3;
-  pointer-events: none;
-  position: relative;
-  text-align: center;
-  text-shadow: -1px -1px 1px rgba(226, 127, 12, 0.3);
-  mix-blend-mode: multiply;
-
-  @media (min-width: 1441px) {
-    font-size: 2.5rem;
-    max-width: 30%;
-  }
-`;
-
-export const WishParagraph = styled.p`
-  margin-top: 32px;
-  font-size: 1.25rem;
-  line-height: 1;
-  font-weight: 600;
-  max-width: 50%;
-  color: rgba(226, 127, 12, 0.8);
-  z-index: 3;
-  pointer-events: none;
-  position: relative;
-  text-align: center;
-  text-shadow: -1px -1px 1px rgba(226, 127, 12, 0.5);
-  mix-blend-mode: multiply;
-
-  @media (min-width: 1441px) {
-    font-size: 1.5rem;
-    max-width: 30%;
-  }
+    .lantern-wrapper {
+      position: relative;
+      display: inline-block;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 80vw;
+    }
 `;
 
 export const FormContainer = styled.div`
@@ -106,7 +55,7 @@ export const TextAreaContainer = styled.div`
   }
 
   @media (min-width: 1441px) {
-    width: 60%;
+    width: 30%;
   }
 `;
 

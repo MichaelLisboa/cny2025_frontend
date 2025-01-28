@@ -112,6 +112,8 @@ const Day = styled.button`
   color: ${(props) => (props.isSelected ? '#FFFFFF' : props.isFuture ? '#C7C6BD' : '#101113')};
   border-radius: 50%;
   font-size: 1rem;
+  // don't wrap text
+  white-space: nowrap;
   background-color: ${(props) => (props.isSelected ? 'rgba(192, 86, 14, 1)' : 'transparent')};
   pointer-events: ${(props) => (props.isFuture ? 'none' : 'auto')};
 

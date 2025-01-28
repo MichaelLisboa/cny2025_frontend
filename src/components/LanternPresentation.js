@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { GatsbyImage, getImage } from "gatsby-plugin-image";
+import { getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
 import { gsap } from "gsap";
-import useFloatingAnimation from "../hooks/useFloatingAnimation";
 import Button from "./button";
 import useAppState from "../hooks/useAppState";
 import { v4 as uuidv4 } from 'uuid';
@@ -10,8 +9,6 @@ import SocialShare from "./socialShare";
 import {
   LanternContainer,
   LanternImageWrapper,
-  TextParagraph,
-  WishParagraph,
   FormContainer,
   TextAreaContainer,
   TextArea,
@@ -57,9 +54,6 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
   }, [data]);
 
   const lanternImage = zodiac ? getImageByName(`lantern-${zodiac.toLowerCase()}.png`) : null;
-  const floatingRef = useRef(null);
-
-  useFloatingAnimation(floatingRef, { minX: -30, maxX: 30, minY: -60, maxY: 60 });
 
   const handleInput = (e) => {
     const textarea = e.target;
@@ -153,11 +147,8 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
 
   return (
     <LanternContainer>
-      <LanternImageWrapper
-        ref={floatingRef}
-        onClick={handleWrapperClick}
-      >
-        {isWriting ? (
+      <div className="lantern-wrapper" onClick={handleWrapperClick}>
+        {isWriting && (
           <FormContainer>
             <TextAreaContainer ref={textAreaRef} onClick={stopPropagation}>
               {wish.length >= 1 && (
@@ -190,22 +181,17 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
               <Button variant="primary" onClick={handleWishSubmit} text="Save Your Wish" />
             </SaveWishButton>
           </FormContainer>
-        ) : wish.length ? (
-          <WishParagraph ref={paragraphRef}>{truncateWish(wish)}</WishParagraph>
-        ) : (
-          <TextParagraph>Tap to write your message.</TextParagraph>
         )}
         {lanternImage ? (
           <Lantern
             animalSign={zodiac}
-            alt={`${zodiac} lantern`}
-            placeholder="blurred"
-            layout="fullWidth"
+            name={null}
+            text={wish.length ? !isWriting && truncateWish(wish) : !isWriting && "Tap to write a wish."}
           />
         ) : (
           <p>Lantern image not found</p>
         )}
-      </LanternImageWrapper>
+        </div>
       {shareReady && (
         <ShareWishButton>
           <Button variant="primary" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
