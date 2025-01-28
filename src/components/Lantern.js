@@ -19,25 +19,14 @@ const pulse = keyframes`
   }
 `;
 
-const LanternContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-`;
-
 const LanternImageWrapper = styled.div`
   height: 75vh;
   max-height: 75vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
+  position: relative; /* Add relative positioning */
 
   .gatsby-image-wrapper {
     height: 100%; /* Ensure it fills the vertical space */
@@ -45,6 +34,7 @@ const LanternImageWrapper = styled.div`
     align-items: center;
     justify-content: center; /* Centers the image horizontally */
     width: 100%; /* Prevent shrink-to-fit */
+    overflow: visible;
   }
 
   .gatsby-image-wrapper img {
@@ -52,8 +42,39 @@ const LanternImageWrapper = styled.div`
     width: auto;
     object-fit: contain;
     margin: auto; /* Backup in case Flexbox alignment fails */
-    
-    animation: ${pulse} 3s infinite ease-in-out; /* Add the pulsing animation with easing */
+    animation: ${pulse} 5s infinite ease-in-out; /* Add the pulsing animation with easing */
+  }
+`;
+
+const TextOverlay = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2rem;
+  z-index: 1;
+  text-align: center;
+  color: rgba(170, 111, 0, 0.9); /* Adjust color to match lantern glow */
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9), 0 0 20px rgba(152, 103, 4, 0.7); /* Add glow effect */
+  font-size: 2vw; /* Responsive font-size for standard viewports */
+  mix-blend-mode: multiply; /* Add multiply effect */
+
+  @media (max-width: 768px) {
+    font-size: 3vw; /* Adjust font-size for smaller screens */
+  }
+
+  @media (min-width: 2560px) {
+    font-size: 1.25vw; /* Adjust font-size for 4k displays */
+  }
+
+  p.name {
+    font-size: 0.7em;
+    font-weight: 800;
+  }
+
+  p.message {
+    font-weight: 800;
+    line-height: 0.9;
   }
 `;
 
@@ -63,7 +84,7 @@ const StyledImage = styled(GatsbyImage)`
   object-fit: contain;
 `;
 
-const Lantern = forwardRef(({ animalSign }, ref) => {
+const Lantern = forwardRef(({ animalSign, text, name }, ref) => {
   const data = useStaticQuery(graphql`
     query {
       allFile {
@@ -94,8 +115,13 @@ const Lantern = forwardRef(({ animalSign }, ref) => {
   useFloatingAnimation(floatingRef, { minX: -20, maxX: 20, minY: -40, maxY: 40, minRotation: -3, maxRotation: 3 });
 
   return (
-    <LanternContainer ref={ref}>
       <LanternImageWrapper ref={floatingRef}>
+        {(text || name) && (
+          <TextOverlay>
+            {name && <p className="name">From {name}</p>}
+            {text && <p className="message">{text}</p>}
+          </TextOverlay>
+        )}
         {lanternImage ? (
           <StyledImage
             image={lanternImage}
@@ -105,7 +131,6 @@ const Lantern = forwardRef(({ animalSign }, ref) => {
           <p>Lantern image not found</p>
         )}
       </LanternImageWrapper>
-    </LanternContainer>
   );
 });
 
