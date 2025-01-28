@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useLanternsApi from '../../hooks/useLanternsApi';
 import Layout from '../../components/layout';
 import Lantern from '../../components/Lantern';
+import Button from '../../components/button';
 
 const LanternContainer = styled.div`
     position: relative;
@@ -11,19 +12,14 @@ const LanternContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 100%;
 `;
 
-const OverlayMessage = styled.div`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    text-align: center;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
 `;
 
 const LanternPage = ({ params }) => {
@@ -61,6 +57,9 @@ const LanternPage = ({ params }) => {
         >
             <LanternContainer>
                 <Lantern animalSign={lantern.animal_sign} name={lantern.name} text={lantern.message} />
+                <ButtonContainer>
+                    <Button variant='glow' to="/create-lantern" text="Create your own lantern" />
+                </ButtonContainer>
             </LanternContainer>
         </Layout>
     );

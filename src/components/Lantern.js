@@ -20,13 +20,13 @@ const pulse = keyframes`
 `;
 
 const LanternImageWrapper = styled.div`
-  height: 75vh;
-  max-height: 75vh;
+  position: relative;
+  width: 75%; /* Scale with viewport or parent */
+  aspect-ratio: 3 / 4; /* Keeps the shape proportional */
+  max-height: 75vh; /* Prevents oversized lanterns */
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible;
-  position: relative; /* Add relative positioning */
 
   .gatsby-image-wrapper {
     height: 100%; /* Ensure it fills the vertical space */
@@ -49,24 +49,41 @@ const LanternImageWrapper = styled.div`
 const TextOverlay = styled.div`
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  width: 30%;
-  z-index: 1;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%; /* Default width relative to lantern */
+  font-size: calc(1vw + 10px); /* Scale text with viewport width */
   text-align: center;
+  line-height: 1;
   color: rgb(224, 119, 0); /* Adjust color to match lantern glow */
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6), -1px -1px 1px rgba(152, 103, 4, 0.4); /* Add glow effect */
   font-size: 2vw; /* Responsive font-size for standard viewports */
   mix-blend-mode: multiply; /* Add multiply effect */
+  z-index: 1;
+
+
+
 
   @media (max-width: 768px) {
-    font-size: 6vw; /* Adjust font-size for smaller screens */
+    width: 60%; /* Expand width for smaller screens */
+    font-size: calc(2vw + 12px); /* Adjust font size for small screens */
   }
 
-  @media (min-width: 769px) {
-    padding: 1.5rem; /* Add padding for larger screens */
-    font-size: 1.5vw; /* Adjust font-size for 4k displays */
-    bottom: 20%;
+  @media (min-width: 768px) {
+    width: 30%; /* Shrink width for large screens */
+    font-size: calc(1vw + 16px); /* Fine-tune for large displays */
   }
+
+  @media (min-width: 1200px) {
+    width: 20%; /* Shrink width for large screens */
+    font-size: calc(1.5vw + 12px); /* Fine-tune for large displays */
+  }
+
+  @media (min-width: 1920px) {
+    width: 15%; /* Shrink width for large screens */
+    font-size: calc(1vw + 12px); /* Fine-tune for large displays */
+  }
+
 
   p.large-text {
     font-size: 0.7em;
@@ -76,6 +93,7 @@ const TextOverlay = styled.div`
   p.name {
     font-size: 0.7em;
     font-weight: 600;
+    text-wrap: nowrap;
   }
 
   p.message {
