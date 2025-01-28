@@ -17,6 +17,8 @@ const LanternContainer = styled.div`
 `;
 
 const ButtonContainer = styled.div`
+position: relative;
+bottom: 5vh;
     display: flex;
     justify-content: center;
     margin-top: 1rem;
