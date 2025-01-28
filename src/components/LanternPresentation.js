@@ -187,7 +187,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
               </div>
             </TextAreaContainer>
             <SaveWishButton className="save-wish-button" visible={wish.trim().length > 0}>
-              <Button onClick={handleWishSubmit} text="Save Your Wish" />
+              <Button variant="primary" onClick={handleWishSubmit} text="Save Your Wish" />
             </SaveWishButton>
           </FormContainer>
         ) : wish.length ? (
@@ -208,7 +208,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
       </LanternImageWrapper>
       {shareReady && (
         <ShareWishButton>
-          <Button onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
+          <Button variant="primary" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
         </ShareWishButton>
       )}
       <SocialShare wish={wish} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />

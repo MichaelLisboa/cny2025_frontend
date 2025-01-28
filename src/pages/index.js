@@ -115,7 +115,7 @@ const IndexPage = () => {
             </p>
           </TextDiv>
           <ButtonWrapper ref={buttonWrapperRef}>
-            <Button text="Continue" onClick={() => navigate('/view-lanterns')} />
+            <Button variant="glow" text="Continue" onClick={() => navigate('/view-lanterns')} />
           </ButtonWrapper>
         </ContentContainer>
       </div>
