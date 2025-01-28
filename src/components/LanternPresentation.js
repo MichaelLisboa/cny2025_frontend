@@ -1,271 +1,35 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import styled from "styled-components";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
 import { gsap } from "gsap";
 import useFloatingAnimation from "../hooks/useFloatingAnimation";
 import Button from "./button";
 import useAppState from "../hooks/useAppState";
-import { v4 as uuidv4 } from 'uuid'; // Import uuid for generating unique identifiers
+import { v4 as uuidv4 } from 'uuid';
 import SocialShare from "./socialShare";
-
-const LanternContainer = styled.div.attrs({
-  className: "lantern-container", // Ensures GSAP can target it
-})`
-  position: absolute;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 600px;
-  padding: 96px 0 32px 0;
-  margin-bottom: 72px;
-  overflow: visible;
-
-  @media (min-width: 1441px) {
-    padding: 128px 0 72px 0;
-    max-width: 1024px;
-  }
-`;
-
-const LanternImageWrapper = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 70vh; /* 70% of the vertical viewport */
-  z-index: 1; /* Set lower stacking order for the image */
-
-  .gatsby-image-wrapper {
-    position: absolute; /* Ensure it doesn't disrupt flexbox alignment */
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-height: 70vh; /* 70% of the vertical viewport */
-    z-index: 1; /* Ensure it is behind the text */
-    pointer-events: none; /* Prevent interactions */
-    overflow: visible;
-  }
-
-  img {
-    width: auto;
-    height: 100%;
-    margin: auto;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
-    transition: filter 0.3s ease-in-out;
-
-    &:hover {
-      filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9)); /* Increase glow effect on hover */
-      transition: filter 0.3s ease-in-out;
-    }
-  }
-
-  @media (min-width: 1441px) {
-    img {
-      width: auto;
-      height: 90%;
-      margin: auto;
-      filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8)); /* Add glow effect */
-      transition: filter 0.3s ease-in-out;
-
-      &:hover {
-        filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9)); /* Increase glow effect on hover */
-        transition: filter 0.3s ease-in-out;
-      }
-    }
-    .gatsby-image-wrapper {
-      position: absolute;
-      left: 0;
-      transform: translateX(0);
-      width: 100%;
-      max-height: 80vh;
-      z-index: 1; /* Keep behind the text */
-    }
-  }
-`;
-
-const TextParagraph = styled.p`
-  margin-top: 32px;
-  font-size: 1.75rem;
-  line-height: 1;
-  font-weight: 800;
-  max-width: 50%;
-  color: rgba(226, 127, 12, 0.6);
-  z-index: 3; /* Ensure it appears above the image */
-  pointer-events: none; /* Prevent interactions */
-  position: relative; /* Explicitly position it for z-index to work */
-  text-align: center;
-  text-shadow: -1px -1px 1px rgba(226, 127, 12, 0.3); /* Subtle shadow for depth */
-  mix-blend-mode: multiply; /* Blend with the lantern background */
-
-  @media (min-width: 1441px) {
-    font-size: 2.5rem;
-    max-width: 30%;
-  }
-`;
-
-const WishParagraph = styled.p`
-  margin-top: 32px;
-  font-size: 1.25rem;
-  line-height: 1;
-  font-weight: 600;
-  max-width: 50%;
-  color: rgba(226, 127, 12, 0.8);
-  z-index: 3; /* Ensure it appears above the image */
-  pointer-events: none; /* Prevent interactions */
-  position: relative; /* Explicitly position it for z-index to work */
-  text-align: center;
-  text-shadow: -1px -1px 1px rgba(226, 127, 12, 0.5); /* Subtle shadow for depth */
-  mix-blend-mode: multiply; /* Blend with the lantern background */
-  // opacity: 0;
-
-  @media (min-width: 1441px) {
-    font-size: 1.5rem;
-    max-width: 30%;
-  }
-`;
-
-const FormContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  z-index: 3;
-`;
-
-const TextAreaContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 80%;
-  border-radius: 50px;
-  z-index: 3;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.6);
-  transition: box-shadow 0.3s ease-in-out;
-
-  &:focus {
-    box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 50px rgba(255, 255, 255, 0.9);
-  }
-
-  @media (min-width: 1441px) {
-    width: 60%;
-  }
-`;
-
-const TextArea = styled.textarea`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80%;
-  height: auto;
-  max-width: 400px;
-  font-size: 16px;
-  font-weight: 800;
-  color: rgba(226, 127, 12, 1);
-  padding: 32px;
-  border-radius: 32px;
-  border: none;
-  background: white;
-  outline: none;
-  text-align: center;
-  background: none;
-  resize: none;
-  overflow: hidden;
-
-  &::placeholder {
-    color: rgba(226, 127, 12, 0.65);
-    text-align: center;
-  }
-
-  &:focus::placeholder {
-    color: transparent; /* Make placeholder text disappear on focus */
-  }
-
-  @media (min-width: 768px) {
-    font-size: 1.75em;
-    width: 100%;
-    max-width: 640px;
-  }
-
-  @media (min-width: 1440px) {
-    font-size: 2em;
-    width: 100%;
-    max-width: 640px;
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-
-  svg {
-    fill: #999;
-    transition: fill 0.2s ease;
-    width: 100%;
-    height: 100%;
-  }
-
-  &:hover svg {
-    fill: #e27f0c;
-  }
-`;
-
-const SaveWishButton = styled.div`
-  position: relative;
-  z-index: 1000;
-  margin: 4px auto 24px;
-  overflow: visible;
-  display: ${({ visible }) => (visible ? 'block' : 'none')}; /* Conditionally render based on visibility */
-`;
-
-const ShareWishButton = styled.div`
-  position: relative;
-  z-index: 1000;
-  bottom: 32px;
-  margin: 4px auto 24px;
-  overflow: visible;
-`;
+import {
+  LanternContainer,
+  LanternImageWrapper,
+  TextParagraph,
+  WishParagraph,
+  FormContainer,
+  TextAreaContainer,
+  TextArea,
+  CloseButton,
+  SaveWishButton,
+  ShareWishButton
+} from "./LanternPresentationStyles"; // Import styled components
+import { truncateWish } from "../utils/helpers"; // Import truncateWish
 
 const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setShareReady }) => {
-  const [isWriting, setIsWriting] = useState(false); // State to toggle text area visibility
-  const [wish, setWish] = useState(""); // State to capture the user's wish
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle modal visibility
-  const [wasShareReady, setWasShareReady] = useState(false); // State to remember if shareReady was true
-  const maxCharacters = 150; // Set the maximum character limit
-  const textAreaRef = useRef(null); // Reference for TextAreaContainer
-  const paragraphRef = useRef(null); // Reference for TextParagraph
-  const { state, dispatch } = useAppState(); // Use the useAppState hook
-
-  // Helper function to truncate wish
-  const truncateWish = (text, maxLength = 128) =>
-    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  const [isWriting, setIsWriting] = useState(false);
+  const [wish, setWish] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [wasShareReady, setWasShareReady] = useState(false);
+  const maxCharacters = 150;
+  const textAreaRef = useRef(null);
+  const paragraphRef = useRef(null);
+  const { state, dispatch } = useAppState();
 
   const data = useStaticQuery(graphql`
     query {
@@ -298,16 +62,15 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
 
   const handleInput = (e) => {
     const textarea = e.target;
-    textarea.style.height = "auto"; // Reset height to calculate the new height
-    textarea.style.height = `${textarea.scrollHeight}px`; // Set height based on content
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
 
     if (e.target.value.length <= maxCharacters) {
-      setWish(e.target.value); // Update the wish state if within limit
+      setWish(e.target.value);
     }
   };
 
   const handleClickOutside = (e) => {
-    // If click is outside the TextAreaContainer and wish is empty
     if (
       textAreaRef.current &&
       !textAreaRef.current.contains(e.target) &&
@@ -317,7 +80,6 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
     }
   };
 
-  // Add and clean up the event listener for clicks outside
   useEffect(() => {
     if (isWriting) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -331,75 +93,68 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
 
   useEffect(() => {
     if (isWriting) {
-      setWasShareReady(shareReady); // Remember if shareReady was true
-      setShareReady(false); // Set shareReady to false when isWriting is true
+      setWasShareReady(shareReady);
+      setShareReady(false);
     } else if (wasShareReady) {
-      setShareReady(true); // Restore shareReady to true if it was previously true
+      setShareReady(true);
     }
   }, [isWriting, shareReady, setShareReady, wasShareReady]);
 
   const handleWrapperClick = (e) => {
-    // Prevent toggling if already set to true
     if (!isWriting) {
       setIsWriting(true);
     }
   };
 
   const stopPropagation = (e) => {
-    e.stopPropagation(); // Prevent event from bubbling up to wrapper
+    e.stopPropagation();
   };
 
   const clearText = () => {
-    setWish(""); // Clear the text
+    setWish("");
   };
 
   const handleWishSubmit = () => {
     if (wish.trim()) {
-      // Save the wish to localStorage using useAppState
-      const newWish = { id: uuidv4(), wish }; // Add a unique identifier to the wish
-      const updatedWishes = [...(state.wishes || []), newWish]; // Ensure state.wishes is an array
+      const newWish = { id: uuidv4(), wish };
+      const updatedWishes = [...(state.wishes || []), newWish];
       dispatch({ type: "SET_WISHES", payload: updatedWishes });
 
       const timeline = gsap.timeline({
         onComplete: () => {
-          setIsWriting(false); // Hide the TextAreaContainer after animation
-          setFlowState("transitioning2"); // Move to the next flow state
+          setIsWriting(false);
+          setFlowState("transitioning2");
         },
       });
 
-      // Fade out both the TextAreaContainer and SaveWishButton
       timeline.to([textAreaRef.current, ".save-wish-button"], {
         opacity: 0,
         duration: 1,
         ease: "power2.out",
       });
 
-      // Ensure the WishParagraph starts with opacity: 0
       gsap.set(paragraphRef.current, { opacity: 0, scale: 0.8 });
 
-      // Fade in the WishParagraph with a subtle scale effect
       timeline.to(
         paragraphRef.current,
         { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" },
-        "-=0.5" // Overlap with the previous animation slightly
+        "-=0.5"
       );
     }
   };
 
   const handleCreateAnother = () => {
-    setWish(""); // Clear the existing wish
-    setFlowState("idle"); // Reset to idle state for new lantern creation
+    setWish("");
+    setFlowState("idle");
   };
 
-  const characterCount = wish.length; // Calculate the number of characters typed
-
-  console.log("STATES", { flowState });
+  const characterCount = wish.length;
 
   return (
     <LanternContainer>
       <LanternImageWrapper
         ref={floatingRef}
-        onClick={handleWrapperClick} // Toggle the text area on click
+        onClick={handleWrapperClick}
       >
         {isWriting ? (
           <FormContainer>
@@ -422,9 +177,9 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
               <TextArea
                 placeholder="Write your wish here..."
                 value={wish}
-                onChange={handleInput} // Dynamically adjust height
-                maxLength={maxCharacters} // Enforce character limit at input level
-                onInput={handleInput} // Auto-resize the textarea
+                onChange={handleInput}
+                maxLength={maxCharacters}
+                onInput={handleInput}
               />
               <div style={{ marginTop: "10px", fontSize: "14px", color: "#999" }}>
                 {characterCount}/{maxCharacters}
