@@ -20,6 +20,7 @@ import {
   ShareWishButton
 } from "./LanternPresentationStyles"; // Import styled components
 import { truncateWish } from "../utils/helpers"; // Import truncateWish
+import Lantern from "./Lantern"; // Import Lantern component
 
 const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setShareReady }) => {
   const [isWriting, setIsWriting] = useState(false);
@@ -195,8 +196,8 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady, setS
           <TextParagraph>Tap to write your message.</TextParagraph>
         )}
         {lanternImage ? (
-          <GatsbyImage
-            image={lanternImage}
+          <Lantern
+            animalSign={zodiac}
             alt={`${zodiac} lantern`}
             placeholder="blurred"
             layout="fullWidth"

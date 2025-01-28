@@ -31,54 +31,7 @@ export const LanternImageWrapper = styled.div`
   width: 100%;
   height: 70vh;
   z-index: 1;
-
-  .gatsby-image-wrapper {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-height: 70vh;
-    z-index: 1;
-    pointer-events: none;
-    overflow: visible;
-  }
-
-  img {
-    width: auto;
-    height: 100%;
-    margin: auto;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8));
-    transition: filter 0.3s ease-in-out;
-
-    &:hover {
-      filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9));
-      transition: filter 0.3s ease-in-out;
-    }
-  }
-
-  @media (min-width: 1441px) {
-    img {
-      width: auto;
-      height: 90%;
-      margin: auto;
-      filter: drop-shadow(0 0 10px rgba(255, 255, 179, 0.8));
-      transition: filter 0.3s ease-in-out;
-
-      &:hover {
-        filter: drop-shadow(0 0 24px rgba(255, 255, 179, 0.9));
-        transition: filter 0.3s ease-in-out;
-      }
-    }
-    .gatsby-image-wrapper {
-      position: absolute;
-      left: 0;
-      transform: translateX(0);
-      width: 100%;
-      max-height: 80vh;
-      z-index: 1;
-    }
-  }
+  overflow: visible;
 `;
 
 export const TextParagraph = styled.p`

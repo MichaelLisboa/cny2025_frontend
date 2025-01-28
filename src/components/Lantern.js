@@ -91,7 +91,7 @@ const Lantern = forwardRef(({ animalSign }, ref) => {
   const lanternImage = getImageByName(`lantern-${animalSign.toLowerCase()}.png`);
 
   const floatingRef = useRef(null);
-  useFloatingAnimation(floatingRef, { minX: -30, maxX: 30, minY: -60, maxY: 60, minRotation: -3, maxRotation: 3 });
+  useFloatingAnimation(floatingRef, { minX: -20, maxX: 20, minY: -40, maxY: 40, minRotation: -3, maxRotation: 3 });
 
   return (
     <LanternContainer ref={ref}>
