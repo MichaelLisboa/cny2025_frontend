@@ -29,25 +29,24 @@ module.exports = {
     },
     "gatsby-plugin-image",
     {
-      resolve: `gatsby-plugin-offline`,
-      options: {
-        workboxConfig: {
-          globPatterns: ['**/*.{js,css,html,webp,map,png,svg}'],
-        },
-      },
-    },
-    {
       resolve: 'gatsby-plugin-manifest',
       options: {
         name: `Wishes in the Sky`,
         short_name: `Wishes in the Sky`,
-        start_url: `/`,
+        start_url: `/?utm_source=CNY2025_app&utm_medium=app&utm_campaign=CNY2025_app`,
         background_color: `#052352`,
         theme_color: `#052352`,
         display: `standalone`,
-        icon: `./src/images/logo.png`,
+        description: "Share your new year's wish to the sky and join us in welcoming the Year of the Snake.",
+        orientation: "portrait-primary",
+        icon: `./static/web-app-manifest-512x512.png`,
         icons: [
           {
+            "src": "/web-app-manifest-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any"
+          },{
             "src": "/web-app-manifest-144x144.png",
             "sizes": "144x144",
             "type": "image/png",
@@ -57,7 +56,19 @@ module.exports = {
             "src": "/web-app-manifest-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/web-app-manifest-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
             "purpose": "maskable"
+          },
+          {
+            "src": "/web-app-manifest-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
           },
           {
             "src": "/web-app-manifest-512x512.png",
@@ -80,6 +91,15 @@ module.exports = {
           webpOptions: {
             quality: 80, // Quality for WebP format.
           },
+        },
+      },
+    },
+    {
+      resolve: `gatsby-plugin-offline`,
+      options: {
+        workboxConfig: {
+          globPatterns: ['**/*.{js,css,html,webp,map,png,svg}'],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // Set to 5 MB
         },
       },
     },

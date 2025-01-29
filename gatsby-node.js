@@ -1,10 +1,37 @@
-exports.onCreateWebpackConfig = ({ actions, stage }) => {
-    console.log('onCreateWebpackConfig called with stage:', stage);
-    if (stage === 'build-javascript') {
-        console.log('SOURCE-MAP: Building JavaScript', stage);
-        actions.setWebpackConfig({
-            devtool: 'source-map',
-        });
-        console.log('SOURCE-MAP: Webpack config set with source-map for build-javascript stage');
-    }
+const fs = require("fs");
+const path = require("path");
+
+exports.onPostBuild = () => {
+  const manifestPath = path.join(__dirname, "public", "manifest.webmanifest");
+
+  // Read the generated manifest
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+  console.log("Updating manifest with screenshots and form_factor...");
+
+  // Add screenshots with form_factor
+  manifest.screenshots = [
+    {
+      src: "/alliance.png",
+      sizes: "1080x2400",
+      type: "image/png",
+      form_factor: "narrow",
+    },
+    {
+      src: "/result.png",
+      sizes: "1080x2400",
+      type: "image/png",
+      form_factor: "narrow",
+    },
+    {
+      src: "/home-wide.jpg",
+      sizes: "1920x1080",
+      type: "image/jpg",
+      form_factor: "wide",
+    },
+  ];
+
+  // Write back to the manifest file
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  console.log("Manifest updated with screenshots and form_factor.");
 };
