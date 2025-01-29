@@ -112,6 +112,7 @@ const Title = styled.h1`
 
 const FortuneBodySection = styled.div`
   margin: 24px 0;
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -253,7 +254,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
           <p>Zodiac image not found</p>
         )}
       </ZodiacImageWrapper>
-      <div className="container">
+      <div>
         <FortuneBodySection>
           <div className="fortune-body text-medium text-white">
             {currentZodiac.positiveTraits
