@@ -28,8 +28,7 @@ const Content = styled.div`
   box-sizing: border-box;
   z-index: 1;
   overflow-x: hidden;
-  // overflow-y: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
-  overflow-y: auto;
+  overflow-y: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
   margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
   transition: margin-top 0.3s ease;
 `;
@@ -92,8 +91,6 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
   const [isRefreshing, setIsRefreshing] = useState(false);
   const contentRef = useRef(null);
   const navbarRef = useRef(null);
-
-  console.log("SCROLLABLE?", scrollable);
 
   useEffect(() => {
     const navbar = navbarRef.current;
