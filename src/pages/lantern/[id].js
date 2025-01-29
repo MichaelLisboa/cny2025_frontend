@@ -17,17 +17,16 @@ const LanternContainer = styled.div`
     align-items: center;
     flex-direction: column;
     width: 100%;
-    padding: 2vh 0 0 0;
+    padding: 80px 0 0 0;
 `;
 
 export const ButtonContainer = styled.div`
   position: absolute;
   z-index: 10000;
-  bottom: 5vh;
+  bottom: 10vh;
   margin: 4px auto 24px;
   overflow: visible;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   flex-direction: column;
 `;
