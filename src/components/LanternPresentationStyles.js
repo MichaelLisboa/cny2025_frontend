@@ -139,13 +139,13 @@ export const SaveWishButton = styled.div`
 `;
 
 export const ButtonContainer = styled.div`
-  position: absolute;
+  position: relative;
   z-index: 10000;
   bottom: 5vh;
   margin: 4px auto 24px;
   overflow: visible;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   flex-direction: column;
 `;
