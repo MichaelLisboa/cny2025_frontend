@@ -219,8 +219,6 @@ const ZodiacPresentation = ({ zodiac, element }) => {
       (item) => item.slug.toLowerCase() === (zodiac || "").toLowerCase()
     ) || {};
 
-  console.log(currentZodiac)
-
   useEffect(() => {
     const textElements = Array.from(document.querySelectorAll(".fortune-title, .fortune-body"));
     animateRef.current = textElements;
@@ -306,7 +304,7 @@ const FortunePage = () => {
   useEffect(() => {
     if (birthdateExists() && state.zodiac && state.element) {
       setFlowState('done');
-      setIsScrolling(true);  // Set scrolling to true if birthdate exists
+      setIsScrolling(true);
     }
   }, [birthdateExists, state.zodiac, state.element]);
 
@@ -361,6 +359,7 @@ const FortunePage = () => {
           opacity: 1,
           duration: 2,
           ease: "power3.out",
+          clearProps: "transform",
           onComplete: () => { 
             setFlowState('done');
             setIsScrolling(true);
@@ -372,8 +371,6 @@ const FortunePage = () => {
   }, [flowState]);
 
   const alignImage = flowState === 'done' ? "top" : "bottom";
-
-  console.log("IS SCROLLING", isScrolling);
 
   return (
     <Layout
