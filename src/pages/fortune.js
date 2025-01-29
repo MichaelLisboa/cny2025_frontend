@@ -218,7 +218,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
       (item) => item.slug.toLowerCase() === (zodiac || "").toLowerCase()
     ) || {};
 
-    console.log(currentZodiac)
+  console.log(currentZodiac)
 
   useEffect(() => {
     const textElements = Array.from(document.querySelectorAll(".fortune-title, .fortune-body"));
@@ -258,10 +258,10 @@ const ZodiacPresentation = ({ zodiac, element }) => {
           <div className="fortune-body text-medium text-white">
             {currentZodiac.positiveTraits
               ? currentZodiac.positiveTraits.split(",").map((trait, index) => (
-                  <PositiveTraitPill key={index}>
-                    {trait.trim()}
-                  </PositiveTraitPill>
-                ))
+                <PositiveTraitPill key={index}>
+                  {trait.trim()}
+                </PositiveTraitPill>
+              ))
               : "No positive traits available."}
           </div>
         </FortuneBodySection>
@@ -344,6 +344,7 @@ const FortunePage = () => {
           dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
           dispatch({ type: "SET_ZODIAC", payload: localZodiac });
           dispatch({ type: "SET_ELEMENT", payload: localElement });
+          setIsScrolling(true);  // Set scrolling to true after transition
         },
       },
         "-=4.5"
