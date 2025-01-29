@@ -103,17 +103,18 @@ module.exports = {
         },
       },
     },
-    {
-      resolve: `gatsby-plugin-netlify`,
-      options: {
-        headers: {
-          "/*.js": [
-            "Content-Type: application/javascript",
-          ],
-          mergeCachingHeaders: true, // Improves SSR caching
-        },
-      },
-    },
+    `gatsby-plugin-netlify`,
+    // {
+    //   resolve: `gatsby-plugin-netlify`,
+    //   options: {
+    //     headers: {
+    //       "/*.js": [
+    //         "Content-Type: application/javascript",
+    //       ],
+    //       mergeCachingHeaders: true, // Improves SSR caching
+    //     },
+    //   },
+    // },
     "gatsby-transformer-sharp", {
       resolve: 'gatsby-source-filesystem',
       options: {
