@@ -91,14 +91,14 @@ const LanternPage = ({ params }) => {
                     )}
 
                 </LanternContainer>
-                <SocialShare
+                {/* <SocialShare
                     wish={lantern.message}
                     isModalOpen={isModalOpen}
                     setIsModalOpen={setIsModalOpen}
                     mode="share"
                     lanternId={id}
                     simple={true} // Pass the simple prop to render only social media buttons
-                />
+                /> */}
             </Layout>
         </>
     );

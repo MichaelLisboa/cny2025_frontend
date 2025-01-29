@@ -140,7 +140,7 @@ export const SaveWishButton = styled.div`
 
 export const ButtonContainer = styled.div`
   position: relative;
-  z-index: 10000;
+  z-index: 999;
   bottom: 5vh;
   margin: 4px auto 24px;
   overflow: visible;

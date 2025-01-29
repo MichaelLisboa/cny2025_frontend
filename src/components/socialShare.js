@@ -5,19 +5,18 @@ import {
   LinkedinShareButton,
   FacebookShareButton,
   WhatsappShareButton,
-  EmailShareButton,
-  TwitterShareButton, // Corrected import
+  TwitterShareButton,
   LinkedinIcon,
   FacebookIcon,
   WhatsappIcon,
-  EmailIcon,
-  TwitterIcon, // Corrected import
+  XIcon,
 } from 'react-share';
 import Button from './button';
 import useAppState from '../hooks/useAppState'; // Import useAppState
 import useLanternsApi from '../hooks/useLanternsApi'; // Import useLanternsApi
 import { navigate } from "gatsby";
 
+// Styled components
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -80,44 +79,6 @@ const Form = styled.form`
   }
 `;
 
-const SocialIcons = styled.div`
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  margin: 24px auto;
-
-  svg {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-
-    &:hover {
-      opacity: 0.7;
-    }
-
-    @media (min-width: 768px) {
-      width: 50px;
-      height: 50px;
-    }
-
-    @media (min-width: 1024px) {
-      width: 60px;
-      height: 60px;
-    }
-  }
-
-  .selected {
-    transform: scale(1.2);
-  }
-
-  .dimmed {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-`;
-
 const ErrorBanner = styled.div`
   background: #f8d7da;
   color: #721c24;
@@ -135,12 +96,9 @@ const Input = styled.input`
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid ${({ error }) => (error ? 'rgba(212, 2, 2, 1) !important' : '#f8f8f8')} 
-  border-radius: 16px;
+  border-bottom: 1px solid ${({ error }) => (error ? 'rgba(212, 2, 2, 1) !important' : '#ccc')};
   font-size: 1rem;
-  box-shadow: ${({ error }) => (error ? '0 0 4px rgba(212, 2, 2, 0.5)' : 'none')};
   outline: none; /* Remove the default focus outline */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
   @media (min-width: 768px) {
     padding: 12px;
@@ -157,30 +115,103 @@ const SubmitButton = styled.div`
   font-size: 0.75em;
 `;
 
-const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lanternId = null, simple = false }) => {
-  const { dispatch, state } = useAppState(); // Use the useAppState hook
-  const { createLantern } = useLanternsApi(); // Use the useLanternsApi hook
-  const [selectedIcon, setSelectedIcon] = useState(null);
+const SharePanel = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 640px;
+  background: rgba(255, 255, 255, 0.85);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0 24px 48px 24px;
+  z-index: 10002;
+  display: flex;
+  flex-direction: column; /* Stack title and icons */
+  align-items: center;
+  backdrop-filter: blur(10px);
+`;
+
+const ShareTitle = styled.h3`
+  text-align: center;
+  margin-bottom: 32px;
+  color: #333;
+`;
+
+const SocialGrid = styled.div`
+  display: flex; /* Use flexbox for a row layout */
+  justify-content: space-around; /* Spread buttons evenly across the width */
+  align-items: center; /* Center buttons vertically */
+  width: 100%; /* Ensure it spans the full panel width */
+  padding: 0 16px; /* Add some padding for spacing */
+
+  @media (min-width: 768px) {
+    justify-content: space-evenly; /* Better spacing on larger screens */
+  }
+`;
+
+const SocialItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    svg {
+      width: 60px;
+      height: 60px;
+    }
+  }
+`;
+
+const SocialLabel = styled.span`
+  margin-top: 8px;
+  font-size: 1rem;
+`;
+
+const ShareOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10001; // Ensure this is lower than SharePanel
+  pointer-events: all; /* Blocks interaction */
+  backdrop-filter: blur(10px);
+`;
+
+// Main Component
+const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => {
+  const { dispatch } = useAppState();
+  const { createLantern } = useLanternsApi();
   const [formData, setFormData] = useState({ name: '', email: '' });
-  const [formTouched, setFormTouched] = useState(false);
-  const [error, setError] = useState('');
-  const [nameError, setNameError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [shouldShare, setShouldShare] = useState(false); // State to track if sharing should be triggered
+  const [errors, setErrors] = useState([]);
+  const [isSharingPanelOpen, setIsSharingPanelOpen] = useState(false);
+  const [lanternId, setLanternId] = useState(null);
+  const [isLanternSubmitted, setIsLanternSubmitted] = useState(false);
+
   const overlayRef = useRef(null);
   const modalRef = useRef(null);
+  const sharePanelRef = useRef(null);
 
-  const shareRefs = {
-    linkedin: useRef(null),
-    facebook: useRef(null),
-    twitter: useRef(null), // Corrected key
-    whatsapp: useRef(null),
-    email: useRef(null),
-  };
-
-  // const shareUrl = window.location.href;
-  // const title = `Check this out!`;
-
+  // Handle modal animations
   useEffect(() => {
     if (isModalOpen) {
       gsap.to(overlayRef.current, { opacity: 1, duration: 0.5 });
@@ -188,25 +219,16 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
     }
   }, [isModalOpen]);
 
+  // Handle share panel animations
   useEffect(() => {
-    if (shouldShare && shareRefs[selectedIcon]?.current) {
-      console.log(`Triggering share for ${selectedIcon}`); // Debugging statement
-      shareRefs[selectedIcon].current.click();
-      setShouldShare(false); // Reset the flag
+    if (isSharingPanelOpen) {
+      gsap.fromTo(sharePanelRef.current, { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: "power2.inOut" });
     }
-  }, [shouldShare, selectedIcon]);
+  }, [isSharingPanelOpen]);
 
   const closeModal = () => {
     gsap.to(modalRef.current, { opacity: 0, duration: 0.5 });
     gsap.to(overlayRef.current, { opacity: 0, duration: 0.5, delay: 0.3, onComplete: () => setIsModalOpen(false) });
-  };
-
-  const handleIconClick = (icon) => {
-    setSelectedIcon(icon === selectedIcon ? null : icon);
-    if (simple && shareRefs[icon]?.current) {
-      console.log(`Triggering share for ${icon}`); // Debugging statement
-      shareRefs[icon].current.click();
-    }
   };
 
   const handleOverlayClick = (e) => {
@@ -219,84 +241,65 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === 'name' && value.trim() !== '') {
-      setNameError(false); // Clear name error
-    }
-
-    if (name === 'email') {
-      if (value.trim() === '' || !/\S+@\S+\.\S+/.test(value)) {
-        setEmailError(false); // Only clear the error when valid
+    setErrors((prevErrors) => {
+      const newErrors = [...prevErrors];
+      if (name === 'name') {
+        if (value.trim() !== '') {
+          return newErrors.filter((err) => !err.startsWith('name'));
+        } else if (!newErrors.some((err) => err.startsWith('name'))) {
+          newErrors.push('name: Name is required.');
+        }
       }
-    }
-  };
-
-  // Helper function to replace or add an error
-  const replaceOrAddError = (errorsArray, oldError, newError) => {
-    const errorIndex = errorsArray.indexOf(oldError);
-    if (errorIndex > -1) {
-      errorsArray[errorIndex] = newError; // Replace the error
-    } else if (!errorsArray.includes(newError)) {
-      errorsArray.push(newError); // Add the new error if not already present
-    }
-    return errorsArray;
+      if (name === 'email') {
+        if (value.trim() !== '' && /\S+@\S+\.\S+/.test(value)) {
+          return newErrors.filter((err) => !err.startsWith('email'));
+        } else if (!newErrors.some((err) => err.startsWith('email'))) {
+          newErrors.push('email: Valid email is required.');
+        }
+      }
+      return newErrors;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormTouched(true);
 
-    // Validation
-    const errors = [];
-    if (!formData.name) errors.push('Name is required.');
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) errors.push('Valid email is required.');
-    if (!selectedIcon) errors.push('Please select a platform to share.');
+    const validationErrors = [];
+    if (!formData.name) validationErrors.push('name: Name is required.');
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) validationErrors.push('email: Valid email is required.');
 
-    if (errors.length) {
-      setError(errors.join('\n'));
+    if (validationErrors.length) {
+      setErrors(validationErrors);
       return;
     }
 
-    if (mode === "create") {
-      // Get state data from localStorage
-      const savedData = JSON.parse(localStorage.getItem('appState'));
-      console.log('Saved Data from localStorage:', savedData);
-
-      // Map fields to match backend requirements
+    try {
+      const savedData = JSON.parse(localStorage.getItem('appState') || '{}');
       const backendData = {
-        name: savedData?.userData?.name || formData.name,
-        email: savedData?.userData?.email || formData.email,
-        birthdate: savedData?.birthdate || '', // Map birthdate
-        animal_sign: savedData?.zodiac || '', // Map zodiac to animal_sign
-        element: savedData?.element || '', // Map element
-        message: wish || savedData?.wishes?.[0]?.wish, // Use first wish message
+        name: formData.name,
+        email: formData.email,
+        birthdate: savedData?.birthdate || '',
+        animal_sign: savedData?.zodiac || '',
+        element: savedData?.element || '',
+        message: wish,
       };
 
-      // POST to backend
-      try {
-        const newLantern = await createLantern(backendData);
-        console.log('New Lantern:', newLantern); // Debugging statement
-        if (newLantern?.id) {
-          // Update app state and local storage
-          dispatch({ type: "SET_USER_DATA", payload: { name: formData.name, email: formData.email } });
-          console.log('Navigating to:', `/lantern/${newLantern.id}`); // Debugging statement
-          navigate(`/lantern/${newLantern.id}`);
-          setShouldShare(true); // Set the flag to trigger sharing
-        } else {
-          console.error('New Lantern does not have an ID:', newLantern); // Debugging statement
-        }
-      } catch (err) {
-        setError("Something went wrong. Please try again later.");
-        console.error('Error posting to API:', err); // Debugging statement
+      const newLantern = await createLantern(backendData);
+
+      if (newLantern?.id) {
+        setLanternId(newLantern.id);
+        dispatch({ type: 'SET_USER_DATA', payload: { name: formData.name, email: formData.email } });
+        closeModal();
+        setIsSharingPanelOpen(true);
+        setIsLanternSubmitted(true);
       }
-    } else if (mode === "share" && lanternId) {
-      // Trigger sharing for existing lantern
-      if (shareRefs[selectedIcon]?.current) {
-        console.log(`Triggering share for ${selectedIcon}`); // Debugging statement
-        shareRefs[selectedIcon].current.click();
-      } else {
-        alert('Sharing platform not configured correctly.');
-      }
+    } catch (err) {
+      setErrors(['api: Something went wrong. Please try again later.']);
     }
+  };
+
+  const handleNavigate = () => {
+    navigate(`/lantern/${lanternId}`);
   };
 
   return (
@@ -305,86 +308,87 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
         <Overlay ref={overlayRef} onClick={handleOverlayClick}>
           <Modal ref={modalRef}>
             <ModalContent>
-              {!simple && (
-                <>
-                  <p style={{lineHeight: 1, marginBottom: "24px", width: "80%"}} className='text-medium text-center'><strong>Enter your name and email to share your lantern!</strong></p>
-                  {error && <ErrorBanner>{error}</ErrorBanner>}
-                  <Form onSubmit={handleSubmit}>
-                    <Input
-                      type="text"
-                      name="name"
-                      placeholder="Your Name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      {...(nameError ? { error: true } : {})}
-                    />
-
-                    <Input
-                      type="email"
-                      name="email"
-                      placeholder="Your Email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      {...(emailError ? { error: true } : {})}
-                    />
-                  </Form>
-                </>
-              )}
-              <SocialIcons>
-                {['linkedin', 'facebook', 'twitter', 'whatsapp', 'email'].map((platform) => {
-                  const IconComponent = {
-                    linkedin: LinkedinIcon,
-                    facebook: FacebookIcon,
-                    twitter: TwitterIcon, // Corrected key
-                    whatsapp: WhatsappIcon,
-                    email: EmailIcon,
-                  }[platform];
-
-                  return (
-                    <IconComponent
-                      key={platform}
-                      className={selectedIcon === platform ? 'selected' : selectedIcon ? 'dimmed' : ''}
-                      onClick={() => handleIconClick(platform)}
-                    />
-                  );
-                })}
-              </SocialIcons>
-              <div style={{ opacity: 0, pointerEvents: 'none', position: 'absolute' }}>
-                <LinkedinShareButton
-                  ref={shareRefs.linkedin}
-                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
-                  title={`Check this out! Shared by ${formData.name}`}
+              <p>Enter your name and email to create your lantern!</p>
+              {errors.length > 0 && <ErrorBanner>{errors.map((err) => err.split(': ')[1]).join('\n')}</ErrorBanner>}
+              <Form onSubmit={handleSubmit}>
+                <Input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  error={errors.some((err) => err.startsWith('name'))}
                 />
-                <FacebookShareButton
-                  ref={shareRefs.facebook}
-                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
-                  quote={`Check this out! Shared by ${formData.name}`}
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  error={errors.some((err) => err.startsWith('email'))}
                 />
-                <TwitterShareButton // Corrected component
-                  ref={shareRefs.twitter}
-                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
-                  title={`Check this out! Shared by ${formData.name}`}
-                />
-                <WhatsappShareButton
-                  ref={shareRefs.whatsapp}
-                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
-                  title={`Check this out! Shared by ${formData.name}`}
-                />
-                <EmailShareButton
-                  ref={shareRefs.email}
-                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
-                  subject={`Check this out!`}
-                  body={`Hi there, check this out: https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
-                />
-              </div>
-              {!simple && (
                 <SubmitButton>
                   <Button variant="primary" text="Share your lantern" onClick={handleSubmit} />
                 </SubmitButton>
-              )}
+              </Form>
             </ModalContent>
           </Modal>
         </Overlay>
+      )}
+
+      {isSharingPanelOpen && (
+        <>
+          <ShareOverlay />
+          <SharePanel ref={sharePanelRef}>
+            <ShareTitle>Share Your Lantern</ShareTitle>
+            <SocialGrid>
+              {!isLanternSubmitted && (
+                <>
+                  <SocialItem>
+                    <LinkedinShareButton
+                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                      title={`Check this out! Shared by ${formData.name}`}
+                      onShareWindowClose={handleNavigate}
+                    >
+                      <LinkedinIcon size={40} round />
+                    </LinkedinShareButton>
+                    <SocialLabel>LinkedIn</SocialLabel>
+                  </SocialItem>
+                  <SocialItem>
+                    <FacebookShareButton
+                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                      quote={`Check this out! Shared by ${formData.name}`}
+                      onShareWindowClose={handleNavigate}
+                    >
+                      <FacebookIcon size={40} round />
+                    </FacebookShareButton>
+                    <SocialLabel>Facebook</SocialLabel>
+                  </SocialItem>
+                  <SocialItem>
+                    <TwitterShareButton
+                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                      title={`Check this out! Shared by ${formData.name}`}
+                      onShareWindowClose={handleNavigate}
+                    >
+                      <XIcon size={40} round />
+                    </TwitterShareButton>
+                    <SocialLabel>X</SocialLabel>
+                  </SocialItem>
+                  <SocialItem>
+                    <WhatsappShareButton
+                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                      title={`Check this out! Shared by ${formData.name}`}
+                      onShareWindowClose={handleNavigate}
+                    >
+                      <WhatsappIcon size={40} round />
+                    </WhatsappShareButton>
+                    <SocialLabel>Whatsapp</SocialLabel>
+                  </SocialItem>
+                </>
+              )}
+            </SocialGrid>
+          </SharePanel>
+        </>
       )}
     </div>
   );
