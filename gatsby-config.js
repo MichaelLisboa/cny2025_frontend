@@ -29,8 +29,8 @@ module.exports = {
         name: `Wishes in the Sky`,
         short_name: `Wishes in the Sky`,
         start_url: `/`,
-        background_color: `#AE504F`,
-        theme_color: `#AE504F`,
+        background_color: `#052352`,
+        theme_color: `#052352`,
         display: `standalone`,
         icon: `./src/images/logo.png`,
         icons: [
