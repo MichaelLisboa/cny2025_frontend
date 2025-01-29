@@ -29,9 +29,10 @@
     "three": "^0.172.0"
   },
   "devDependencies": {
-    "prettier": "^2.8.8",
-    "@netlify/plugin-gatsby": "^1.0.3",
-    "netlify-plugin-gatsby": "^1.0.3"
+    "prettier": "^2.8.8"
+  },
+  "overrides": {
+    "react-server-dom-webpack": "0.0.0-experimental-c8b778b7f-20220825"
   },
   "keywords": [
     "gatsby"
