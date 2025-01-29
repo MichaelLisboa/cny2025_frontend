@@ -26,6 +26,7 @@ const variants = {
   primary: css`
     background: #C0560E;
     color: #ffffff;
+    padding: 12px 24px;
     transition: background 0.5s ease-in-out, transform 0.5s ease-in-out;
 
     &:hover {
@@ -37,10 +38,10 @@ const variants = {
     background: transparent;
     color: #ffffff;
     font-size: 0.8rem;
-    transition: background 0.5s ease-in-out, transform 0.5s ease-in-out;
+    padding: 0 8px !important;
+    transition: transform 0.5s ease-in-out;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.05);
       transform: scale(1.05);
     }
   `,

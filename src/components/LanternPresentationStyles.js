@@ -138,11 +138,11 @@ export const SaveWishButton = styled.div`
   display: display: ${(props) => (props.$visible ? "block" : "none")};
 `;
 
-export const ButtonContainer = styled.div`
-  position: relative;
+export const ButtonsContainer = styled.div`
+  position: absolute;
   z-index: 999;
-  bottom: 5vh;
-  margin: 4px auto 24px;
+  bottom: 8vh;
+  margin: 0 auto 24px;
   overflow: visible;
   display: flex;
   justify-content: flex-end;

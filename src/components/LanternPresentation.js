@@ -12,11 +12,16 @@ import {
   TextAreaContainer,
   TextArea,
   CloseButton,
-  ButtonContainer,
+  ButtonsContainer,
   SaveWishButton,
 } from "./LanternPresentationStyles"; // Import styled components
 import { truncateWish } from "../utils/helpers"; // Import truncateWish
 import Lantern from "./Lantern"; // Import Lantern component
+import styled from "styled-components";
+
+const ShareButton = styled(Button)`
+ margin: 132px !important;
+`;
 
 const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) => {
   const [isWriting, setIsWriting] = useState(false);
@@ -199,10 +204,10 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
         )}
       </div>
       {shareReady && (
-        <ButtonContainer>
-          <Button variant="glow" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
-          <Button variant="secondary" to="/fortune" text="Or Get your Fortune" />
-        </ButtonContainer>
+        <ButtonsContainer>
+          <ShareButton variant="glow" onClick={() => setIsModalOpen(true)} text="Share Your Wish" />
+          <ShareButton variant="secondary" to="/fortune" text="Or Get your Fortune" />
+        </ButtonsContainer>
       )}
       <SocialShare wish={wish} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </LanternContainer>
