@@ -11,13 +11,13 @@ export const LanternContainer = styled.div.attrs({
     align-items: center;
     flex-direction: column;
     width: 100%;
-    padding: 8vh 0 0 0;
+    padding: 40px 0 0 0;
 
     .lantern-wrapper {
       position: relative;
       display: inline-block;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       flex-direction: column;
       width: 100vw;
@@ -141,7 +141,7 @@ export const SaveWishButton = styled.div`
 export const ButtonsContainer = styled.div`
   position: absolute;
   z-index: 999;
-  bottom: 8vh;
+  bottom: 10vh;
   margin: 0 auto 24px;
   overflow: visible;
   display: flex;
