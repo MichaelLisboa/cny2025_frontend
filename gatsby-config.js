@@ -2,7 +2,7 @@ module.exports = {
   siteMetadata: {
     title: 'Welcome to the Year of the Snake',
     description: 'The Snake symbolizes transformation and change.',
-    image: '/web-app-manifest-512x512.png',
+    image: '/og-meta.jpg',
     siteUrl: 'https://cny2025.michaellisboa.com'
   },
   plugins: [
