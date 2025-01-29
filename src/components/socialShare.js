@@ -9,7 +9,7 @@ import {
   LinkedinIcon,
   FacebookIcon,
   WhatsappIcon,
-  XIcon,
+  TwitterIcon, // Replace XIcon with TwitterIcon
 } from 'react-share';
 import Button from './button';
 import useAppState from '../hooks/useAppState'; // Import useAppState
@@ -96,9 +96,9 @@ const Input = styled.input`
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid ${({ error }) => (error ? 'rgba(212, 2, 2, 1) !important' : '#ccc')};
+  border-bottom: 1px solid ${({ $error }) => ($error === 'true' ? 'rgba(212, 2, 2, 1) !important' : '#ccc')};
   font-size: 1rem;
-  outline: none; /* Remove the default focus outline */
+  outline: none;
 
   @media (min-width: 768px) {
     padding: 12px;
@@ -217,12 +217,12 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
       gsap.to(overlayRef.current, { opacity: 1, duration: 0.5 });
       gsap.to(modalRef.current, { opacity: 1, duration: 0.5, delay: 0.3 });
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, overlayRef, modalRef]);
 
   // Handle share panel animations
   useEffect(() => {
     if (isSharingPanelOpen) {
-      gsap.fromTo(sharePanelRef.current, { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: "power2.inOut" });
+      gsap.fromTo(sharePanelRef.current, { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: "power2.inOut", });
     }
   }, [isSharingPanelOpen]);
 
@@ -239,24 +239,32 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Update form data
     setFormData({ ...formData, [name]: value });
 
+    // Handle individual validation
     setErrors((prevErrors) => {
       const newErrors = [...prevErrors];
+
       if (name === 'name') {
+        // Clear name error if valid
         if (value.trim() !== '') {
           return newErrors.filter((err) => !err.startsWith('name'));
         } else if (!newErrors.some((err) => err.startsWith('name'))) {
           newErrors.push('name: Name is required.');
         }
       }
+
       if (name === 'email') {
+        // Only clear email error when format is valid
         if (value.trim() !== '' && /\S+@\S+\.\S+/.test(value)) {
           return newErrors.filter((err) => !err.startsWith('email'));
         } else if (!newErrors.some((err) => err.startsWith('email'))) {
           newErrors.push('email: Valid email is required.');
         }
       }
+
       return newErrors;
     });
   };
@@ -287,11 +295,11 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
       const newLantern = await createLantern(backendData);
 
       if (newLantern?.id) {
-        setLanternId(newLantern.id);
+        setLanternId(newLantern.id); // Save the lantern ID
         dispatch({ type: 'SET_USER_DATA', payload: { name: formData.name, email: formData.email } });
-        closeModal();
-        setIsSharingPanelOpen(true);
-        setIsLanternSubmitted(true);
+        setIsLanternSubmitted(true); // Mark lantern as submitted
+        closeModal(); // Close the modal
+        setIsSharingPanelOpen(true); // Open the sharing panel
       }
     } catch (err) {
       setErrors(['api: Something went wrong. Please try again later.']);
@@ -299,6 +307,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
   };
 
   const handleNavigate = () => {
+    // Add any pre-navigation logic here
     navigate(`/lantern/${lanternId}`);
   };
 
@@ -317,7 +326,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  error={errors.some((err) => err.startsWith('name'))}
+                  $error={errors.some((err) => err.startsWith('name')) ? 'true' : 'false'} // Pass as string explicitly
                 />
                 <Input
                   type="email"
@@ -325,7 +334,7 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
                   placeholder="Your Email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  error={errors.some((err) => err.startsWith('email'))}
+                  $error={errors.some((err) => err.startsWith('email')) ? 'true' : 'false'} // Pass as string explicitly
                 />
                 <SubmitButton>
                   <Button variant="primary" text="Share your lantern" onClick={handleSubmit} />
@@ -338,54 +347,50 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
 
       {isSharingPanelOpen && (
         <>
-          <ShareOverlay />
+          <ShareOverlay /> {/* Ensure ShareOverlay is rendered */}
           <SharePanel ref={sharePanelRef}>
             <ShareTitle>Share Your Lantern</ShareTitle>
             <SocialGrid>
-              {!isLanternSubmitted && (
-                <>
-                  <SocialItem>
-                    <LinkedinShareButton
-                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                      title={`Check this out! Shared by ${formData.name}`}
-                      onShareWindowClose={handleNavigate}
-                    >
-                      <LinkedinIcon size={40} round />
-                    </LinkedinShareButton>
-                    <SocialLabel>LinkedIn</SocialLabel>
-                  </SocialItem>
-                  <SocialItem>
-                    <FacebookShareButton
-                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                      quote={`Check this out! Shared by ${formData.name}`}
-                      onShareWindowClose={handleNavigate}
-                    >
-                      <FacebookIcon size={40} round />
-                    </FacebookShareButton>
-                    <SocialLabel>Facebook</SocialLabel>
-                  </SocialItem>
-                  <SocialItem>
-                    <TwitterShareButton
-                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                      title={`Check this out! Shared by ${formData.name}`}
-                      onShareWindowClose={handleNavigate}
-                    >
-                      <XIcon size={40} round />
-                    </TwitterShareButton>
-                    <SocialLabel>X</SocialLabel>
-                  </SocialItem>
-                  <SocialItem>
-                    <WhatsappShareButton
-                      url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                      title={`Check this out! Shared by ${formData.name}`}
-                      onShareWindowClose={handleNavigate}
-                    >
-                      <WhatsappIcon size={40} round />
-                    </WhatsappShareButton>
-                    <SocialLabel>Whatsapp</SocialLabel>
-                  </SocialItem>
-                </>
-              )}
+              <SocialItem>
+                <LinkedinShareButton
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                  title={`Check this out! Shared by ${formData.name}`}
+                  onShareWindowClose={handleNavigate}
+                >
+                  <LinkedinIcon size={40} round />
+                </LinkedinShareButton>
+                <SocialLabel>LinkedIn</SocialLabel>
+              </SocialItem>
+              <SocialItem>
+                <FacebookShareButton
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                  quote={`Check this out! Shared by ${formData.name}`}
+                  onShareWindowClose={handleNavigate}
+                >
+                  <FacebookIcon size={40} round />
+                </FacebookShareButton>
+                <SocialLabel>Facebook</SocialLabel>
+              </SocialItem>
+              <SocialItem>
+                <TwitterShareButton
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                  title={`Check this out! Shared by ${formData.name}`}
+                  onShareWindowClose={handleNavigate}
+                >
+                  <TwitterIcon size={40} round />
+                </TwitterShareButton>
+                <SocialLabel>Twitter</SocialLabel>
+              </SocialItem>
+              <SocialItem>
+                <WhatsappShareButton
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
+                  title={`Check this out! Shared by ${formData.name}`}
+                  onShareWindowClose={handleNavigate}
+                >
+                  <WhatsappIcon size={40} round />
+                </WhatsappShareButton>
+                <SocialLabel>Whatsapp</SocialLabel>
+              </SocialItem>
             </SocialGrid>
           </SharePanel>
         </>
