@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Layout from "../components/layout";
 import SEO from "../components/seo"; // Ensure correct import
 import { zodiacData } from "../data/fortune-data";
@@ -47,7 +47,7 @@ const ElementImageWrapper = styled.div`
   height: 100%;
   max-height: 55vh;
   z-index: 1;
-  opacity: 0.25;
+  opacity: 0.5;
   // color filter to make the image look more like a watermark
   filter: grayscale(100%) brightness(0.5);
 
@@ -62,39 +62,47 @@ const ElementImageWrapper = styled.div`
   }
 `;
 
+const pulse = keyframes`
+  0% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.5));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(255, 255, 179, 0.4));
+    transform: scale(1.01);
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.5));
+    transform: scale(1);
+  }
+`;
+
 const ZodiacImageWrapper = styled.div`
   position: relative;
-  top: 0;
+  width: 75%;
+  max-height: 65vh;
+  aspect-ratio: 3 / 4; /* Keeps the shape proportional */
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  max-height: 65vh;
+
   margin-bottom: 32px;
   z-index: 2;
 
-  // add a media query to set max-height to 75vh for larger screens
-  @media (min-width: 1441px) {
-    max-height: 75vh;
-  }
-
   .gatsby-image-wrapper {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100%;
-    height: 100%;
+    height: 100%; /* Ensure it fills the vertical space */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers the image horizontally */
+    overflow: visible;
   }
 
-  img {
+  .gatsby-image-wrapper img {
+    height: 100%; /* Scale proportionally */
     width: auto;
-    height: 100%;
-    display: inline-block;
-    margin: auto;
-    max-width: 100%;
-    max-height: 100%;
+    object-fit: contain;
+    margin: auto; /* Backup in case Flexbox alignment fails */
+    animation: ${pulse} 5s infinite ease-in-out; /* Add the pulsing animation with easing */
   }
 `;
 
@@ -153,7 +161,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
           node {
             relativePath
             childImageSharp {
-              gatsbyImageData(layout: FULL_WIDTH, placeholder: BLURRED)
+              gatsbyImageData(layout: CONSTRAINED, placeholder: BLURRED)
             }
           }
         }
@@ -221,7 +229,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
             image={zodiacImage}
             alt={`${zodiac} zodiac`}
             placeholder="blurred"
-            layout="fullWidth"
+            layout="constrained"
           />
         ) : (
           <p>Zodiac image not found</p>
