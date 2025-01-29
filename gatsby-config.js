@@ -35,6 +35,12 @@ module.exports = {
         icon: `./src/images/logo.png`,
         icons: [
           {
+            "src": "/web-app-manifest-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable"
+          },
+          {
             "src": "/web-app-manifest-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
