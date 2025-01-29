@@ -352,29 +352,29 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = "create", lante
               <div style={{ opacity: 0, pointerEvents: 'none', position: 'absolute' }}>
                 <LinkedinShareButton
                   ref={shareRefs.linkedin}
-                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
                   title={`Check this out! Shared by ${formData.name}`}
                 />
                 <FacebookShareButton
                   ref={shareRefs.facebook}
-                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
                   quote={`Check this out! Shared by ${formData.name}`}
                 />
                 <TwitterShareButton // Corrected component
                   ref={shareRefs.twitter}
-                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
                   title={`Check this out! Shared by ${formData.name}`}
                 />
                 <WhatsappShareButton
                   ref={shareRefs.whatsapp}
-                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
                   title={`Check this out! Shared by ${formData.name}`}
                 />
                 <EmailShareButton
                   ref={shareRefs.email}
-                  url={`https://example.com/lantern/${lanternId || formData.name}`}
+                  url={`https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
                   subject={`Check this out!`}
-                  body={`Hi there, check this out: https://example.com/lantern/${lanternId || formData.name}`}
+                  body={`Hi there, check this out: https://cny2025.michaellisboa.com/lantern/${lanternId || formData.name}`}
                 />
               </div>
               {!simple && (
