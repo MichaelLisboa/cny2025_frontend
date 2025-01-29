@@ -345,7 +345,6 @@ const FortunePage = () => {
           dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
           dispatch({ type: "SET_ZODIAC", payload: localZodiac });
           dispatch({ type: "SET_ELEMENT", payload: localElement });
-          setIsScrolling(true);  // Set scrolling to true after transition
         },
       },
         "-=4.5"
@@ -361,17 +360,20 @@ const FortunePage = () => {
           y: "0%",
           opacity: 1,
           duration: 2,
-          ease: "power3.out"
+          ease: "power3.out",
+          onComplete: () => { 
+            setFlowState('done');
+            setIsScrolling(true);
+          }
         },
         "-=2"
-      ).add(() => {
-        setFlowState('done');
-        setIsScrolling(true);  // Set scrolling to true after transition
-      });
+      );
     }
-  }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
+  }, [flowState]);
 
   const alignImage = flowState === 'done' ? "top" : "bottom";
+
+  console.log("IS SCROLLING", isScrolling);
 
   return (
     <Layout

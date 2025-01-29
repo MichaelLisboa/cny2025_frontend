@@ -24,7 +24,7 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   box-sizing: border-box;
   z-index: 1;
   overflow-x: hidden;
@@ -41,7 +41,7 @@ const ParallaxImageContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   overflow: hidden;
-  z-index: -1;
+  z-index: -10;
 
   @media (min-width: 1440px) {
     width: 175%;
@@ -91,6 +91,8 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
   const [isRefreshing, setIsRefreshing] = useState(false);
   const contentRef = useRef(null);
   const navbarRef = useRef(null);
+
+  console.log("SCROLLABLE?", scrollable);
 
   useEffect(() => {
     const navbar = navbarRef.current;
