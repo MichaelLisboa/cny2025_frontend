@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheetManager } from "styled-components";
+import { StyleSheetManager, ServerStyleSheet } from "styled-components";
 
 export const wrapRootElement = ({ element }) => (
   <StyleSheetManager shouldForwardProp={(prop) => !prop.startsWith("$")}>
@@ -8,6 +8,8 @@ export const wrapRootElement = ({ element }) => (
 );
 
 export const onRenderBody = ({ setHeadComponents, setHtmlAttributes }) => {
+  setHtmlAttributes({ lang: `en` });
+
   setHeadComponents([
     <link
       rel="preload"
@@ -18,5 +20,19 @@ export const onRenderBody = ({ setHeadComponents, setHtmlAttributes }) => {
       key="HoganBrushFont"
     />,
   ]);
-  setHtmlAttributes({ lang: `en` });
+};
+
+// 🛠 Ensure styled-components SSR works properly
+export const replaceRenderer = ({ bodyComponent, replaceBodyHTMLString, setHeadComponents }) => {
+  const sheet = new ServerStyleSheet();
+
+  try {
+    const bodyHTML = sheet.collectStyles(bodyComponent);
+    replaceBodyHTMLString(bodyHTML);
+    setHeadComponents([sheet.getStyleElement()]);
+  } catch (error) {
+    console.error("SSR Error with styled-components:", error);
+  } finally {
+    sheet.seal();
+  }
 };
