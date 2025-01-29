@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: 'Welcome to the Year of the Snake',
-    description: 'The Snake symbolizes transformation and change.',
+    description: "The Snake symbolizes transformation and change. Share your new year's wish to the sky and join us in welcoming in the Year of the Snake.",
     image: '/og-meta.jpg',
     siteUrl: 'https://cny2025.michaellisboa.com'
   },
