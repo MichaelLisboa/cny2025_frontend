@@ -104,18 +104,18 @@ const DaysGrid = styled.div`
 `;
 
 const Day = styled.button`
+  color: ${({ $isSelected, $isFuture }) => ($isSelected ? '#FFFFFF' : $isFuture ? '#C7C6BD' : '#101113')};
+  background-color: ${({ $isSelected }) => ($isSelected ? 'rgba(192, 86, 14, 1)' : 'transparent')};
+  pointer-events: ${({ $isFuture }) => ($isFuture ? 'none' : 'auto')};
   text-align: center;
   border: none;
   width: 40px;
   height: 40px;
   cursor: pointer;
-  color: ${(props) => (props.isSelected ? '#FFFFFF' : props.isFuture ? '#C7C6BD' : '#101113')};
   border-radius: 50%;
   font-size: 1rem;
   // don't wrap text
   white-space: nowrap;
-  background-color: ${(props) => (props.isSelected ? 'rgba(192, 86, 14, 1)' : 'transparent')};
-  pointer-events: ${(props) => (props.isFuture ? 'none' : 'auto')};
 
   @media (min-width: 768px) {
     width: 50px;
@@ -192,8 +192,8 @@ const DatePicker = ({ onDateSelected, birthdateExists, handleNextClick, title, p
       days.push(
         <Day
           key={i}
-          isFuture={isFuture}
-          isSelected={isSelected}
+          $isFuture={isFuture}
+          $isSelected={isSelected}
           onClick={() => {
             if (!isFuture) {
               const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;

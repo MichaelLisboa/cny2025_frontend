@@ -47,6 +47,9 @@ const ElementImageWrapper = styled.div`
   height: 100%;
   max-height: 55vh;
   z-index: 1;
+  opacity: 0.25;
+  // color filter to make the image look more like a watermark
+  filter: grayscale(100%) brightness(0.5);
 
   .gatsby-image-wrapper {
     width: 100%;
@@ -96,21 +99,21 @@ const ZodiacImageWrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  margin-top: 0;
+  margin: 0 auto;
   text-align: center;
   color: white;
 `;
 
 const FortuneTitle = styled.h3`
-  opacity: 0;
-  display: none;
+  // opacity: 0;
+  // display: none;
   transition: opacity 0.5s ease-in-out;
 `;
 
 const FortuneBody = styled.p`
-  opacity: 0;
-  display: none;
-  transition: opacity 0.5s ease-in-out;
+  // opacity: 0;
+  // display: none;
+  // transition: opacity 0.5s ease-in-out;
 `;
 
 const DatePickerContainer = styled.div`
@@ -178,10 +181,6 @@ const ZodiacPresentation = ({ zodiac, element }) => {
 
   const fortunes = [
     {
-      title: "Your Yearly Outlook",
-      body: currentZodiac.story || "No story available."
-    },
-    {
       title: "Career",
       body: currentZodiac.careerDescription || "No career info available."
     },
@@ -202,6 +201,8 @@ const ZodiacPresentation = ({ zodiac, element }) => {
 
   return (
     <FortuneContainer>
+      <Title className="fortune-title">{`${element || "Unknown Element"} ${zodiac || "Unknown Zodiac"}`}</Title>
+      <p className="fortune-body text-medium text-white text-center">{currentZodiac.story}</p>
       <ElementImageWrapper>
         {elementImage ? (
           <GatsbyImage
@@ -227,7 +228,6 @@ const ZodiacPresentation = ({ zodiac, element }) => {
         )}
       </ZodiacImageWrapper>
       <div className="container">
-        <Title>{`${element || "Unknown Element"} ${zodiac || "Unknown Zodiac"}`}</Title>
         {fortunes.map((fortune, index) => (
           <div key={index}>
             <FortuneTitle className="fortune-title inline-header text-white">
@@ -249,6 +249,7 @@ const FortunePage = () => {
   const [localBirthdate, setLocalBirthdate] = useState(null);
   const [localZodiac, setLocalZodiac] = useState(null);
   const [localElement, setLocalElement] = useState(null);
+  const [isScrolling, setIsScrolling] = useState(false);  // Add state to track scrolling
 
   useEffect(() => {
     if (birthdateExists() && state.zodiac && state.element) {
@@ -306,13 +307,13 @@ const FortunePage = () => {
           y: "0%",
           opacity: 1,
           duration: 2,
-          ease: "power3.out",
-          onComplete: () => {
-            setFlowState('done');
-          },
+          ease: "power3.out"
         },
         "-=2"
-      );
+      ).add(() => {
+        setFlowState('done');
+        setIsScrolling(true);  // Set scrolling to true after transition
+      });
     }
   }, [flowState, localBirthdate, localZodiac, localElement, dispatch]);
 
@@ -322,7 +323,7 @@ const FortunePage = () => {
     <Layout
       image="background-zodiac-sky.jpg"
       alignImage={alignImage}
-      scrollable="true"
+      scrollable={isScrolling}
     >
       {flowState !== 'done' && (
         <DatePickerContainer className="date-picker">

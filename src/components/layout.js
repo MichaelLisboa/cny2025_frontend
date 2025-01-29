@@ -29,16 +29,15 @@ const Content = styled.div`
   box-sizing: border-box;
   z-index: 1;
   overflow-x: hidden;
-  overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
-
+  overflow-y: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
   margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
   transition: margin-top 0.3s ease;
 `;
 
 const ParallaxImageContainer = styled.div`
   position: absolute;
-  bottom: ${({ alignImage }) => (alignImage === 'bottom' ? '0' : 'auto')};
-  top: ${({ alignImage }) => (alignImage === 'top' ? '0' : 'auto')};
+  bottom: ${({ $alignImage }) => ($alignImage === 'bottom' ? '0' : 'auto')};
+  top: ${({ $alignImage }) => ($alignImage === 'top' ? '0' : 'auto')};
   left: 0;
   right: 0;
   width: 200%; // Ensures it's wide enough for parallax
@@ -92,7 +91,6 @@ const RefreshIndicator = styled.div`
 
 const Layout = ({ children, image, scrollable, contentContainerStyles, alignImage }) => {
   const backgroundImageRef = useRef(null);
-
   const [isRefreshing, setIsRefreshing] = useState(false);
   const contentRef = useRef(null);
   const navbarRef = useRef(null);
@@ -248,12 +246,12 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
           <ParallaxImageContainer
             ref={backgroundImageRef}
             className="background-image"
-            alignImage={alignImage}
+            $alignImage={alignImage}
           >
             <GatsbyImage image={backgroundImage} alt="Background Image" />
           </ParallaxImageContainer>
         )}
-        <Content style={contentContainerStyles} scrollable={scrollable}>
+        <Content style={contentContainerStyles} $scrollable={scrollable}>
           {children}
         </Content>
       </Container>
