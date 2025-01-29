@@ -67,44 +67,42 @@ const LanternPage = ({ params }) => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <Layout
-            image="background-zodiac-sky.jpg"
-            alignImage="top"
-            scrollable={false}
-        >
-            <SEO title={`${lantern.name} has sent you a lantern ${lantern.message}`} />
-            <LanternContainer>
-                <Lantern animalSign={lantern.animal_sign} name={lantern.name} text={lantern.message} />
-                {isSameUser ? (
-                    <ButtonContainer>
-                        <Button variant='glow' text="Share this lantern" onClick={() => setIsModalOpen(true)} />
-                        <Button variant='secondary' to="/create-lantern" text="Create a new lantern" />
-                    </ButtonContainer>
-                ) : (
-                    <ButtonContainer>
-                        <Button variant='glow' to="/create-lantern" text="Create your own lantern" />
-                    </ButtonContainer>
-                )}
-
-            </LanternContainer>
-            <SocialShare
-                wish={lantern.message}
-                isModalOpen={isModalOpen}
-                setIsModalOpen={setIsModalOpen}
-                mode="share"
-                lanternId={id}
-                simple={true} // Pass the simple prop to render only social media buttons
+        <>
+            <SEO
+                title={`${lantern.name} has sent you a lantern ${lantern.message}`}
+                description="Create and share your own lanterns with your friends and family."
+                image="og-meta.png"
             />
-        </Layout>
+            <Layout
+                image="background-zodiac-sky.jpg"
+                alignImage="top"
+                scrollable={false}
+            >
+                <LanternContainer>
+                    <Lantern animalSign={lantern.animal_sign} name={lantern.name} text={lantern.message} />
+                    {isSameUser ? (
+                        <ButtonContainer>
+                            <Button variant='glow' text="Share this lantern" onClick={() => setIsModalOpen(true)} />
+                            <Button variant='secondary' to="/create-lantern" text="Create a new lantern" />
+                        </ButtonContainer>
+                    ) : (
+                        <ButtonContainer>
+                            <Button variant='glow' to="/create-lantern" text="Create your own lantern" />
+                        </ButtonContainer>
+                    )}
+
+                </LanternContainer>
+                <SocialShare
+                    wish={lantern.message}
+                    isModalOpen={isModalOpen}
+                    setIsModalOpen={setIsModalOpen}
+                    mode="share"
+                    lanternId={id}
+                    simple={true} // Pass the simple prop to render only social media buttons
+                />
+            </Layout>
+        </>
     );
 };
 
 export default LanternPage;
-
-export const Head = () => (
-    // Add the meta tags for social sharing
-    <SEO
-        description="Create and share your own lanterns with your friends and family."
-        image="lantern-share.png"
-    />
-);
