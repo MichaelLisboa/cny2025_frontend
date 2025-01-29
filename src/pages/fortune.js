@@ -85,8 +85,6 @@ const ZodiacImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  margin-bottom: 32px;
   z-index: 2;
 
   .gatsby-image-wrapper {
@@ -110,6 +108,15 @@ const Title = styled.h1`
   margin: 0 auto;
   text-align: center;
   color: white;
+`;
+
+const FortuneBodySection = styled.div`
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 `;
 
 const FortuneTitle = styled.h3`
@@ -146,6 +153,30 @@ const DatePickerContainer = styled.div`
   }
 `;
 
+const PositiveTraitPill = styled.div`
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0 8px;
+  border-radius: 9999px;
+  background-color:rgba(255, 249, 190, 0.6);
+  color: rgba(69, 22, 0, 0.8);
+  font-size: 1rem;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.6);
+  animation: ${pulse} 3s infinite ease-in-out;
+
+  @media (min-width: 768px) {
+    padding: 8px 16px;
+    margin: 8px 16px;
+    font-size: 1.25rem;
+  }
+
+  @media (min-width: 1440px) {
+    padding: 12px 24px;
+    margin: 12px 24px;
+    font-size: 1.5rem;
+  }
+`;
+
 const ZodiacPresentation = ({ zodiac, element }) => {
 
   const animateRef = useAnimateTextSequence({
@@ -153,7 +184,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
     fadeDuration: 0.25,
     startDelay: 0.5
   });
-  
+
   const data = useStaticQuery(graphql`
     query {
       allFile {
@@ -187,20 +218,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
       (item) => item.slug.toLowerCase() === (zodiac || "").toLowerCase()
     ) || {};
 
-  const fortunes = [
-    {
-      title: "Career",
-      body: currentZodiac.careerDescription || "No career info available."
-    },
-    {
-      title: "Health",
-      body: currentZodiac.healthDescription || "No health info available."
-    },
-    {
-      title: "Relationships",
-      body: currentZodiac.relationshipDescription || "No relationship info available."
-    }
-  ];
+    console.log(currentZodiac)
 
   useEffect(() => {
     const textElements = Array.from(document.querySelectorAll(".fortune-title, .fortune-body"));
@@ -236,16 +254,41 @@ const ZodiacPresentation = ({ zodiac, element }) => {
         )}
       </ZodiacImageWrapper>
       <div className="container">
-        {fortunes.map((fortune, index) => (
-          <div key={index}>
-            <FortuneTitle className="fortune-title inline-header text-white">
-              {fortune.title}
-            </FortuneTitle>
-            <FortuneBody className="fortune-body text-medium text-white">
-              {fortune.body}
-            </FortuneBody>
+        <FortuneBodySection>
+          <div className="fortune-body text-medium text-white">
+            {currentZodiac.positiveTraits
+              ? currentZodiac.positiveTraits.split(",").map((trait, index) => (
+                  <PositiveTraitPill key={index}>
+                    {trait.trim()}
+                  </PositiveTraitPill>
+                ))
+              : "No positive traits available."}
           </div>
-        ))}
+        </FortuneBodySection>
+        <FortuneBodySection>
+          <FortuneTitle className="fortune-title inline-header text-white">
+            Career
+          </FortuneTitle>
+          <FortuneBody className="fortune-body text-medium text-white">
+            {currentZodiac.careerDescription || "No career info available."}
+          </FortuneBody>
+        </FortuneBodySection>
+        <FortuneBodySection>
+          <FortuneTitle className="fortune-title inline-header text-white">
+            Health
+          </FortuneTitle>
+          <FortuneBody className="fortune-body text-medium text-white">
+            {currentZodiac.healthDescription || "No health info available."}
+          </FortuneBody>
+        </FortuneBodySection>
+        <FortuneBodySection>
+          <FortuneTitle className="fortune-title inline-header text-white">
+            Relationships
+          </FortuneTitle>
+          <FortuneBody className="fortune-body text-medium text-white">
+            {currentZodiac.relationshipDescription || "No relationship info available."}
+          </FortuneBody>
+        </FortuneBodySection>
       </div>
     </FortuneContainer>
   );
@@ -262,6 +305,7 @@ const FortunePage = () => {
   useEffect(() => {
     if (birthdateExists() && state.zodiac && state.element) {
       setFlowState('done');
+      setIsScrolling(true);  // Set scrolling to true if birthdate exists
     }
   }, [birthdateExists, state.zodiac, state.element]);
 
