@@ -11,7 +11,7 @@ export const LanternContainer = styled.div.attrs({
     align-items: center;
     flex-direction: column;
     width: 100%;
-    padding: 8vh 0 0 0;
+    margin: 8vh 0 0 0;
 
     .lantern-wrapper {
       position: relative;
@@ -20,7 +20,7 @@ export const LanternContainer = styled.div.attrs({
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      width: 80vw;
+      width: 100vw;
     }
 `;
 

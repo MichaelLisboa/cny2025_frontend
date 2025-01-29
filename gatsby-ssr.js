@@ -1,4 +1,11 @@
 import * as React from "react";
+import { StyleSheetManager } from "styled-components";
+
+export const wrapRootElement = ({ element }) => (
+  <StyleSheetManager shouldForwardProp={(prop) => !prop.startsWith("$")}>
+    {element}
+  </StyleSheetManager>
+);
 
 export const onRenderBody = ({ setHeadComponents, setHtmlAttributes }) => {
   setHeadComponents([

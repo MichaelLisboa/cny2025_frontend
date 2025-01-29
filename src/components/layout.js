@@ -13,7 +13,6 @@ const Container = styled.div.attrs({ className: "container" })`
   height: 100vh;
   width: 100vw;
   box-sizing: border-box;
-  position: relative;
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -24,6 +23,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;
@@ -36,11 +36,9 @@ const Content = styled.div`
 
 const ParallaxImageContainer = styled.div`
   position: absolute;
+  width: 200%; // Ensures it's wide enough for parallax
   bottom: ${({ $alignImage }) => ($alignImage === 'bottom' ? '0' : 'auto')};
   top: ${({ $alignImage }) => ($alignImage === 'top' ? '0' : 'auto')};
-  left: 0;
-  right: 0;
-  width: 200%; // Ensures it's wide enough for parallax
   left: 50%;
   transform: translateX(-50%);
   overflow: hidden;
