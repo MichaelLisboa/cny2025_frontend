@@ -6,6 +6,7 @@ import Lantern from '../../components/Lantern';
 import Button from '../../components/button';
 import useAppState from '../../hooks/useAppState'; // Import useAppState
 import SocialShare from "../../components/socialShare";
+import SEO from "../../components/seo"; // Import SEO component
 
 const LanternContainer = styled.div`
     position: relative;
@@ -71,6 +72,7 @@ const LanternPage = ({ params }) => {
             alignImage="top"
             scrollable={false}
         >
+            <SEO title={`${lantern.name} has sent you a lantern ${lantern.message}`} />
             <LanternContainer>
                 <Lantern animalSign={lantern.animal_sign} name={lantern.name} text={lantern.message} />
                 {isSameUser ? (
@@ -98,3 +100,11 @@ const LanternPage = ({ params }) => {
 };
 
 export default LanternPage;
+
+export const Head = () => (
+    // Add the meta tags for social sharing
+    <SEO
+        description="Create and share your own lanterns with your friends and family."
+        image="lantern-share.png"
+    />
+);
