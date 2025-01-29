@@ -103,16 +103,17 @@ module.exports = {
         },
       },
     },
-    // {
-    //   resolve: `gatsby-plugin-netlify`,
-    //   options: {
-    //     headers: {
-    //       "/*.js": [
-    //         "Content-Type: application/javascript",
-    //       ],
-    //     },
-    //   },
-    // },
+    {
+      resolve: `gatsby-plugin-netlify`,
+      options: {
+        headers: {
+          "/*.js": [
+            "Content-Type: application/javascript",
+          ],
+          mergeCachingHeaders: true, // Improves SSR caching
+        },
+      },
+    },
     // {
     //   resolve: `gatsby-plugin-netlify`,
     //   options: {
@@ -131,5 +132,9 @@ module.exports = {
         "path": "./src/images/"
       },
       __key: "images"
-    }]
+    }],
+    flags: {
+      FAST_DEV: true,
+      PRESERVE_WEBPACK_CACHE: true,
+    },
 };
