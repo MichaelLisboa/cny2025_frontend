@@ -39,8 +39,10 @@ export async function getServerData({ params }) {
                 headers: { "X-API-Key": process.env.GATSBY_API_KEY },
             }
         );
+        console.log("Fetched data:", params.id, data);
         return { props: { lantern: data || null } }; // Ensure lantern is never undefined
     } catch (error) {
+        console.error("Failed to load lantern:", error, error.message);
         return {
             status: 500,
             props: { error: "Failed to load lantern. Please try again later." },
