@@ -139,29 +139,29 @@ const Lantern = forwardRef(({ animalSign, text, name }, ref) => {
   useFloatingAnimation(floatingRef, { minX: -20, maxX: 20, minY: -40, maxY: 40, minRotation: -3, maxRotation: 3 });
 
   return (
-      <LanternImageWrapper ref={floatingRef}>
-        {glowImage && (
+    <LanternImageWrapper ref={floatingRef}>
+      {/* {glowImage && (
         <StyledGlowImage
           image={glowImage}
           alt="Glowing effect"
           className="glow"
         />
+      )} */}
+      {(text || name) && (
+        <TextOverlay>
+          {name && <p className="name">From {name}</p>}
+          {text && <p className="message">{text}</p>}
+        </TextOverlay>
       )}
-        {(text || name) && (
-          <TextOverlay>
-            {name && <p className="name">From {name}</p>}
-            {text && <p className="message">{text}</p>}
-          </TextOverlay>
-        )}
-        {lanternImage ? (
-          <StyledImage
-            image={lanternImage}
-            alt={`${animalSign} lantern`}
-          />
-        ) : (
-          <p>Lantern image not found</p>
-        )}
-      </LanternImageWrapper>
+      {lanternImage ? (
+        <StyledImage
+          image={lanternImage}
+          alt={`${animalSign} lantern`}
+        />
+      ) : (
+        <p>Lantern image not found</p>
+      )}
+    </LanternImageWrapper>
   );
 });
 
