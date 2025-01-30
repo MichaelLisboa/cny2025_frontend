@@ -1,10 +1,4 @@
-const adapter = require("gatsby-adapter-netlify").default
-
 module.exports = {
-  adapter: adapter({
-    excludeDatastoreFromEngineFunction: false,
-    imageCDN: false,
-  }),
   siteMetadata: {
     title: 'Welcome to the Year of the Snake',
     description: "The Snake symbolizes transformation and change. Share your new year's wish to the sky and join us in welcoming in the Year of the Snake.",
