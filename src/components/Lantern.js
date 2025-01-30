@@ -140,13 +140,13 @@ const Lantern = forwardRef(({ animalSign, text, name }, ref) => {
 
   return (
     <LanternImageWrapper ref={floatingRef}>
-      {glowImage && (
+      {/* {glowImage && (
         <StyledGlowImage
           image={glowImage}
           alt="Glowing effect"
           className="glow"
         />
-      )}
+      )} */}
       {(text || name) && (
         <TextOverlay>
           {name && <p className="name">From {name}</p>}
