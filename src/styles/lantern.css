@@ -1,0 +1,148 @@
+.lantern-image-wrapper {
+    position: relative;
+    width: 100%;
+    /* Increase width for dominance */
+    /* height: calc(100vw * 4 / 3); */
+    /* Maintain aspect ratio */
+    max-height: 70vh;
+    /* Limit height for smaller screens */
+    overflow: hidden;
+    margin: 0 auto;
+    /* Center the lantern */
+}
+
+.lantern-image-wrapper .gatsby-image-wrapper {
+    height: 100%;
+    /* Ensure it fills the vertical space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Centers the image horizontally */
+    width: 100%;
+    /* Prevent shrink-to-fit */
+    overflow: visible;
+}
+
+.lantern-image-wrapper .gatsby-image-wrapper img {
+    height: 100%;
+    /* Scale proportionally */
+    width: auto;
+    object-fit: contain;
+    margin: auto;
+    /* Backup in case Flexbox alignment fails */
+}
+
+@keyframes glowPulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.3);
+    }
+
+    100% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+
+.styled-image {
+    height: 100%;
+    width: auto;
+    position: relative;
+    z-index: 2;
+    /* Ensure it is above the glow image */
+}
+
+.styled-glow-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    /* Slightly larger to create the aura */
+    height: 200%;
+    animation: glowPulse 5s infinite ease-in-out;
+}
+
+.styled-image,
+.styled-glow-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    /* Default width relative to lantern */
+    font-size: calc(1vw + 10px);
+    /* Scale text with viewport width */
+    text-align: center;
+    line-height: 1;
+    color: rgb(224, 119, 0);
+    /* Adjust color to match lantern glow */
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6), -1px -1px 1px rgba(152, 103, 4, 0.4);
+    /* Add glow effect */
+    mix-blend-mode: multiply;
+    /* Add multiply effect */
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .text-overlay {
+        width: 60%;
+        /* Expand width for smaller screens */
+        font-size: calc(2vw + 12px);
+        /* Adjust font size for small screens */
+    }
+}
+
+@media (min-width: 768px) {
+    .text-overlay {
+        width: 30%;
+        /* Shrink width for large screens */
+        font-size: calc(1vw + 16px);
+        /* Fine-tune for large displays */
+    }
+}
+
+@media (min-width: 1200px) {
+    .text-overlay {
+        width: 20%;
+        /* Shrink width for large screens */
+        font-size: calc(1.5vw + 12px);
+        /* Fine-tune for large displays */
+    }
+}
+
+@media (min-width: 1920px) {
+    .text-overlay {
+        width: 15%;
+        /* Shrink width for large screens */
+        font-size: calc(1vw + 12px);
+        /* Fine-tune for large displays */
+    }
+}
+
+.text-overlay p.large-text {
+    font-size: 0.7em;
+    font-weight: 800;
+}
+
+.text-overlay p.name {
+    font-size: 0.7em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.text-overlay p.message {
+    font-weight: 700;
+    line-height: 1;
+}

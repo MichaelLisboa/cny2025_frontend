@@ -1,5 +1,5 @@
 /* import variables.css */
-@import url('variables.css');
+/* @import url('variables.css'); */
 @import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap');
 @font-face {
   font-family: 'HoganBrush'; /* Custom font name */
@@ -44,3 +44,5 @@ div {
   position: absolute;
   transform-origin: center;
 }
+
+
