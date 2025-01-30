@@ -3,10 +3,16 @@
   publish = "public"
 
 [[redirects]]
+# Preserve dynamic routes for server-side rendering
+from = "/lantern/*"
+to = "/lantern/:splat"
+status = 200
+force = false
+
+# Fallback for all other routes
 from = "/*"
 to = "/index.html"
 status = 200
-force = true
 
 [[headers]]
 for = "/*.js"
