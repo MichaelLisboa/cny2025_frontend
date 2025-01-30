@@ -4,21 +4,6 @@ import { graphql, useStaticQuery } from "gatsby";
 import styled, { keyframes } from "styled-components";
 import useFloatingAnimation from '../hooks/useFloatingAnimation';
 
-const pulse = keyframes`
-  0% {
-    filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.8));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 40px rgba(255, 255, 179, 0.6));
-    transform: scale(1.01);
-  }
-  100% {
-    filter: drop-shadow(0 0 16px rgba(255, 255, 179, 0.8));
-    transform: scale(1);
-  }
-`;
-
 const LanternImageWrapper = styled.div`
   position: relative;
   width: 75%; /* Scale with viewport or parent */
@@ -45,6 +30,25 @@ const LanternImageWrapper = styled.div`
   }
 `;
 
+const glowPulse = keyframes`
+  0% { opacity: 0.45; transform: translate(-50%, -50%) scale(1.05); }
+  50% { opacity: 0.55; transform: translate(-50%, -50%) scale(1.08); }
+  100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1.05); }
+`;
+
+const StyledGlowImage = styled(GatsbyImage)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 110%; /* Slightly bigger than the main image */
+  opacity: 0.3; /* Initial glow intensity */
+  animation: ${glowPulse} 56s infinite ease-in-out;
+  filter: blur(10px);
+  z-index: 0; /* Behind the main lantern */
+  will-change: transform, opacity; /* Optimize for animation */
+`;
+
 const TextOverlay = styled.div`
   position: absolute;
   top: 50%;
@@ -56,12 +60,8 @@ const TextOverlay = styled.div`
   line-height: 1;
   color: rgb(224, 119, 0); /* Adjust color to match lantern glow */
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6), -1px -1px 1px rgba(152, 103, 4, 0.4); /* Add glow effect */
-  font-size: 2vw; /* Responsive font-size for standard viewports */
   mix-blend-mode: multiply; /* Add multiply effect */
   z-index: 1;
-
-
-
 
   @media (max-width: 768px) {
     width: 60%; /* Expand width for smaller screens */
@@ -83,7 +83,6 @@ const TextOverlay = styled.div`
     font-size: calc(1vw + 12px); /* Fine-tune for large displays */
   }
 
-
   p.large-text {
     font-size: 0.7em;
     font-weight: 800;
@@ -92,7 +91,7 @@ const TextOverlay = styled.div`
   p.name {
     font-size: 0.7em;
     font-weight: 600;
-    text-wrap: nowrap;
+    white-space: nowrap;
   }
 
   p.message {
@@ -133,12 +132,20 @@ const Lantern = forwardRef(({ animalSign, text, name }, ref) => {
   }, [data]);
 
   const lanternImage = getImageByName(`lantern-${animalSign.toLowerCase()}.png`);
+  const glowImage = getImageByName(`lantern-empty.png`); // 🚀 Fetch glow image
 
   const floatingRef = useRef(null);
   useFloatingAnimation(floatingRef, { minX: -20, maxX: 20, minY: -40, maxY: 40, minRotation: -3, maxRotation: 3 });
 
   return (
       <LanternImageWrapper ref={floatingRef}>
+        {glowImage && (
+        <StyledGlowImage
+          image={glowImage}
+          alt="Glowing effect"
+          className="glow"
+        />
+      )}
         {(text || name) && (
           <TextOverlay>
             {name && <p className="name">From {name}</p>}
