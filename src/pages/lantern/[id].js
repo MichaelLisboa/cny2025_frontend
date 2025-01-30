@@ -53,22 +53,22 @@ export async function getServerData({ params }) {
 export function Head({ serverData }) {
     const lantern = serverData.lantern || { name: "A Friend", id: "unknown", message: "Happy New Year!" };
     const description = "Create and share your own lanterns with your friends and family.";
-    const url = `https://cny2025.com/lantern/${lantern.id}`;
-    const image = "og-meta.jpg";
+    const url = `https://cny2025.michaellisboa.com/lantern/${lantern.id}`;
+    const image = "https://cny2025.michaellisboa.com/og-meta.jpg";
 
     return (
         <>
-            <title>{`${lantern.name} has sent you a lantern`}</title>
+            <title>{`${lantern.name} said ${lantern.message}`}</title>
             <meta name="description" content={description} />
 
             {/* Twitter Meta Tags */}
-            <meta name="twitter:title" content={`${lantern.name} has sent you a lantern`} />
+            <meta name="twitter:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
             <meta name="twitter:card" content="summary_large_image" />
 
             {/* Open Graph Meta Tags */}
-            <meta property="og:title" content={`${lantern.name} has sent you a lantern`} />
+            <meta property="og:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
             <meta property="og:url" content={url} />
