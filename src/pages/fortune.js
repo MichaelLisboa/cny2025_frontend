@@ -48,7 +48,6 @@ const ElementImageWrapper = styled.div`
   max-height: 55vh;
   z-index: 1;
   opacity: 0.5;
-  // color filter to make the image look more like a watermark
   filter: grayscale(100%) brightness(0.5);
 
   .gatsby-image-wrapper {
@@ -100,7 +99,6 @@ const ZodiacImageWrapper = styled.div`
     width: auto;
     object-fit: contain;
     margin: auto; /* Backup in case Flexbox alignment fails */
-    animation: ${pulse} 5s infinite ease-in-out; /* Add the pulsing animation with easing */
   }
 `;
 
@@ -163,7 +161,6 @@ const PositiveTraitPill = styled.div`
   color: rgba(69, 22, 0, 0.8);
   font-size: 1rem;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.6);
-  animation: ${pulse} 3s infinite ease-in-out;
 
   @media (min-width: 768px) {
     padding: 8px 16px;

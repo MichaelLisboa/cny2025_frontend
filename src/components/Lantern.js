@@ -42,7 +42,6 @@ const LanternImageWrapper = styled.div`
     width: auto;
     object-fit: contain;
     margin: auto; /* Backup in case Flexbox alignment fails */
-    animation: ${pulse} 5s infinite ease-in-out; /* Add the pulsing animation with easing */
   }
 `;
 
