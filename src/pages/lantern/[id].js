@@ -78,18 +78,24 @@ const LanternPage = ({ serverData }) => {
     return (
         <>
             <SEO
-                title={`${lantern.name} has sent you a lantern ${lantern.message}`}
-                description="Create and share your own lanterns with your friends and family."
-                image="og-meta.png"
-                twitter:title={`${lantern.name} has sent you a lantern ${lantern.message}`}
-                twitter:description="Create and share your own lanterns with your friends and family."
-                twitter:image="og-meta.png"
-                og:type="website"
-                og:title={`${lantern.name} has sent you a lantern ${lantern.message}`}
-                og:description="Create and share your own lanterns with your friends and family."
-                og:image="og-meta.png"
-                og:url={`https://cny2025.com/lantern/${lantern.id}`}
-            />
+  title={`${lantern.name} has sent you a lantern ${lantern.message}`}
+  description="Create and share your own lanterns with your friends and family."
+  image="og-meta.png"
+  pathname={`/lantern/${lantern.id}`}
+>
+  {/* Add custom Twitter meta tags */}
+  <meta name="twitter:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
+  <meta name="twitter:description" content="Create and share your own lanterns with your friends and family." />
+  <meta name="twitter:image" content="og-meta.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  {/* Add custom Open Graph meta tags */}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
+  <meta property="og:description" content="Create and share your own lanterns with your friends and family." />
+  <meta property="og:image" content="og-meta.png" />
+  <meta property="og:url" content={`https://cny2025.com/lantern/${lantern.id}`} />
+</SEO>
 
             <Layout
                 image="background-zodiac-sky.jpg"
