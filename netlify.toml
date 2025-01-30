@@ -22,10 +22,3 @@ Content-Type = "application/manifest+json"
 for = "/*.css"
 [headers.values]
 Content-Type = "text/css"
-
-[[plugins]]
-  package = "@netlify/plugin-gatsby"
-
-[[edge_functions]]
-  function = "ssr"
-  path = "/lantern/*"
