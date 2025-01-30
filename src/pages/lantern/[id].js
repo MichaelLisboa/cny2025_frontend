@@ -54,7 +54,7 @@ export function Head({ serverData }) {
     const lantern = serverData.lantern || { name: "A Friend", id: "unknown", message: "Happy New Year!" };
     const description = "Create and share your own lanterns with your friends and family.";
     const url = `https://cny2025.com/lantern/${lantern.id}`;
-    const image = "og-meta.png";
+    const image = "og-meta.jpg";
 
     return (
         <>
