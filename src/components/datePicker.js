@@ -4,18 +4,14 @@ import { gsap } from 'gsap';
 import Button from './button';
 
 const DatePickerWrapper = styled.div`
-  position: absolute;
-  top: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
   max-width: 600px;
   height: 100vh;
-  width: 100%;
-  margin: 16px auto;
-  padding: 16px;
+  padding: 0 16px;
   text-align: center;
 `;
 
@@ -28,26 +24,6 @@ const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
   display: none;
-`;
-
-const InputField = styled.input`
-  width: 100%;
-  padding: 12px;
-  font-size: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  outline: none;
-  cursor: pointer;
-
-  @media (min-width: 768px) {
-    font-size: 1.75rem;
-  }
-
-  @media (min-width: 1024px) {
-    font-size: 2rem;
-  }
 `;
 
 const DatePickerContainer = styled.div`
@@ -131,7 +107,7 @@ const Day = styled.button`
 `;
 
 const HeaderText = styled.h1`
-  margin: 0;
+  margin-bottom: 24px;
   padding: 0;
 
   @media (min-width: 768px) {
@@ -144,8 +120,7 @@ const HeaderText = styled.h1`
 `;
 
 const TextParagraph = styled.p`
-  margin-top: 20px;
-  padding: 8px 24px;
+  
   text-align: center;
 
   @media (min-width: 768px) {
@@ -154,6 +129,26 @@ const TextParagraph = styled.p`
 
   @media (min-width: 1024px) {
     font-size: 1.5rem;
+  }
+`;
+
+const InputField = styled.input`
+  padding: 12px;
+  font-size: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  outline: none;
+  cursor: pointer;
+  margin: 24px 0 0 0;
+
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
+  }
+
+  @media (min-width: 1024px) {
+    font-size: 2rem;
   }
 `;
 
@@ -297,7 +292,7 @@ const DatePicker = ({ onDateSelected, birthdateExists, handleNextClick, title, p
         </DaysGrid>
       </DatePickerContainer>
       {birthdateExists && (
-        <Button text={buttonLabel} onClick={handleNextClick} />
+        <Button variant='primary' text={buttonLabel} onClick={handleNextClick} />
       )}
     </DatePickerWrapper>
   );

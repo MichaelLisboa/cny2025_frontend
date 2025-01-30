@@ -51,10 +51,11 @@ export async function getServerData({ params }) {
 }
 
 export function Head({ serverData }) {
+    const baseUrl = "https://cny2025.michaellisboa.com";
     const lantern = serverData.lantern || { name: "A Friend", id: "unknown", message: "Happy New Year!" };
     const description = "Create and share your own lanterns with your friends and family.";
-    const url = `https://cny2025.michaellisboa.com/lantern/${lantern.id}`;
-    const image = "https://cny2025.michaellisboa.com/og-meta.jpg";
+    const url = `${baseUrl}/lantern/${lantern.id}`;
+    const image = `${baseUrl}/og-meta.jpg`;
 
     return (
         <>
