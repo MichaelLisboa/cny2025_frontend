@@ -7,6 +7,7 @@ import Button from "../../components/button";
 import useAppState from "../../hooks/useAppState"; // Keep client-side logic
 import SocialShare from "../../components/socialShare"; // Social share modal
 import SEO from "../../components/seo"; // SEO metadata
+import { Helmet } from "react-helmet";
 
 const LanternContainer = styled.div`
     position: relative;
@@ -77,7 +78,7 @@ const LanternPage = ({ serverData }) => {
 
     return (
         <>
-            <SEO
+            <Helmet
                 title={`${lantern.name} has sent you a lantern ${lantern.message}`}
                 description="Create and share your own lanterns with your friends and family."
                 image="og-meta.png"
@@ -95,7 +96,7 @@ const LanternPage = ({ serverData }) => {
                 <meta property="og:description" content="Create and share your own lanterns with your friends and family." />
                 <meta property="og:image" content="og-meta.png" />
                 <meta property="og:url" content={`https://cny2025.com/lantern/${lantern.id}`} />
-            </SEO>
+            </Helmet>
 
             <Layout
                 image="background-zodiac-sky.jpg"
