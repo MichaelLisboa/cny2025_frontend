@@ -31,9 +31,9 @@ const LanternImageWrapper = styled.div`
 `;
 
 const glowPulse = keyframes`
-  0% { opacity: 0.45; transform: translate(-50%, -50%) scale(1.05); }
-  50% { opacity: 0.55; transform: translate(-50%, -50%) scale(1.08); }
-  100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1.05); }
+  0% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.05); }
+  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.05); }
 `;
 
 const StyledGlowImage = styled(GatsbyImage)`
@@ -41,11 +41,12 @@ const StyledGlowImage = styled(GatsbyImage)`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 110%; /* Slightly bigger than the main image */
+  width: 100%; /* Slightly bigger than the main image */
   opacity: 0.3; /* Initial glow intensity */
-  animation: ${glowPulse} 56s infinite ease-in-out;
-  filter: blur(10px);
+  animation: ${glowPulse} 3s infinite ease-in-out;
+  filter: blur(15px);
   z-index: 0; /* Behind the main lantern */
+  mix-blend-mode: screen; /* Additive blending mode */
   will-change: transform, opacity; /* Optimize for animation */
 `;
 
