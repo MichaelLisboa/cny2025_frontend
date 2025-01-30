@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "cny2025-wishes-in-the-sky",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
+  "description": "Welcome to the Year of the Snake",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "Michael Lisboa",
   "dependencies": {
     "axios": "^1.7.9",
     "babel-plugin-styled-components": "^2.1.4",
