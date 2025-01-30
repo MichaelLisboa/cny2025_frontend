@@ -22,3 +22,7 @@ Content-Type = "application/manifest+json"
 for = "/*.css"
 [headers.values]
 Content-Type = "text/css"
+
+[[edge_functions]]
+  function = "ssr"
+  path = "/lantern/*"
