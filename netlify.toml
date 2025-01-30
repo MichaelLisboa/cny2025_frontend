@@ -1,5 +1,5 @@
 [build]
-  command = "netlify build"
+  command = "gatsby build"
   publish = "public"
 
 [[redirects]]
