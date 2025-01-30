@@ -31,6 +31,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
   const textAreaRef = useRef(null);
   const textAreaInputRef = useRef(null);
   const paragraphRef = useRef(null);
+  const saveWishButtonRef = useRef(null);
   const { state, dispatch } = useAppState();
 
   const data = useStaticQuery(graphql`
@@ -48,16 +49,14 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
     }
   `);
 
-  const getImageByName = useMemo(() => {
-    return (name) => {
-      const image = data.allFile.edges.find(({ node }) =>
-        node.relativePath.includes(name)
-      );
-      return image ? getImage(image.node.childImageSharp) : null;
-    };
+  const imageMap = useMemo(() => {
+    return data.allFile.edges.reduce((map, { node }) => {
+      map[node.relativePath] = getImage(node.childImageSharp);
+      return map;
+    }, {});
   }, [data]);
 
-  const lanternImage = zodiac ? getImageByName(`lantern-${zodiac.toLowerCase()}.png`) : null;
+  const lanternImage = imageMap[`lantern-${zodiac?.toLowerCase()}.png`];
 
   const handleInput = (e) => {
     const textarea = e.target;
@@ -80,11 +79,14 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     if (isWriting) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -97,9 +99,8 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
   }, [isWriting]);
 
   const handleWrapperClick = (e) => {
-    if (!isWriting) {
-      setIsWriting(true);
-    }
+    if (isWriting === "locked") return; // Prevent interaction when locked
+    setIsWriting(true);
   };
 
   const stopPropagation = (e) => {
@@ -110,28 +111,31 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
     setWish("");
   };
 
+  const generateWish = () => ({
+    id: uuidv4(),
+    wish,
+  });
+
   const handleWishSubmit = () => {
-    if (!wish.trim() || flowState !== "writing") return; 
-  
-    textAreaInputRef.current.blur();
-  
-    const newWish = { id: uuidv4(), wish };
+    if (!wish.trim() || flowState !== "writing") return;
+
+    const newWish = generateWish();
     const updatedWishes = [...(state.wishes || []), newWish];
     dispatch({ type: "SET_WISHES", payload: updatedWishes });
-  
+
     const timeline = gsap.timeline({
       onComplete: () => {
         setIsWriting("locked");
         setFlowState("transitioning2"); // Move to "transitioning2" after submission
       },
     });
-  
-    timeline.to([textAreaRef.current, ".save-wish-button"], {
+
+    timeline.to([textAreaRef.current, saveWishButtonRef.current], {
       opacity: 0,
       duration: 1,
       ease: "power2.out",
     });
-  
+
     if (paragraphRef.current) {
       gsap.set(paragraphRef.current, { opacity: 0, scale: 0.8 });
       timeline.to(
@@ -142,7 +146,7 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
           duration: 1.5,
           ease: "power2.out",
         },
-        "-=0.5"
+        "-=0.5" // Overlap with textarea fade-out
       );
     }
   };
@@ -182,22 +186,29 @@ const LanternPresentation = ({ zodiac, flowState, setFlowState, shareReady }) =>
                 onChange={handleInput}
                 maxLength={maxCharacters}
                 onInput={handleInput}
-                style={{ pointerEvents: flowState === "done" ? "none" : "auto" }}
+                disabled={isWriting === "locked"}
+                style={{
+                  pointerEvents: isWriting === "locked" ? "none" : "auto",
+                  opacity: isWriting === "locked" ? 0.5 : 1,
+                }}
               />
               <div style={{ marginTop: "10px", fontSize: "14px", color: "#999" }}>
                 {characterCount}/{maxCharacters}
               </div>
             </TextAreaContainer>
-            <SaveWishButton className="save-wish-button" $visible={wish.trim().length > 0}>
-              <Button variant="primary" onClick={handleWishSubmit} text="Save Your Wish" />
-            </SaveWishButton>
+              <SaveWishButton
+                ref={saveWishButtonRef}
+                $visible={wish.trim().length > 0}
+              >
+                <Button variant="primary" onClick={handleWishSubmit} text="Save Your Wish" />
+              </SaveWishButton>
           </FormContainer>
         )}
         {lanternImage ? (
           <Lantern
             animalSign={zodiac}
             name={null}
-            text={wish.length ? isWriting === "locked" && truncateWish(wish) : !isWriting && "Tap to write a wish."}
+            text={wish.length && isWriting === "locked" ? truncateWish(wish) : "Tap to write a wish."}
           />
         ) : (
           <p>Lantern image not found</p>

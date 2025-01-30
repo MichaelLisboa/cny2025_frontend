@@ -2,9 +2,14 @@ import { useReducer, useEffect } from 'react';
 
 // Helper to get state from localStorage
 const getState = () => {
-    if (typeof window === "undefined") return {}; // Avoid errors during SSR
-    const state = typeof window !== "undefined" ? localStorage.getItem('appState') : null;
-    return state ? JSON.parse(state) : {}; // Return parsed state or default empty object
+    if (typeof window === "undefined") return {
+        birthdate: null,
+        zodiac: null,
+        element: null,
+        wishes: []
+    }; // Define a static default state
+    const state = localStorage.getItem('appState');
+    return state ? JSON.parse(state) : {};
 };
 
 // Helper to update state in localStorage
@@ -39,16 +44,23 @@ const reducer = (state, action) => {
 
 // Custom hook to manage app state
 const useAppState = (initialState = {}) => {
-    const [state, dispatch] = useReducer(reducer, initialState, getState);
+    const [state, dispatch] = useReducer(reducer, initialState);
+    useEffect(() => {
+        const savedState = getState();
+        dispatch({ type: 'SET_USER_DATA', payload: savedState });
+    }, []);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            updateState(state);
+        if (typeof window !== "undefined" && state) {
+          updateState(state);
         }
-    }, [state]);
+      }, [state]);
 
-    // Helper functions
-    const birthdateExists = () => !!state.birthdate;
+    // Helper functions to check if birthdate exists
+    const birthdateExists = () => {
+        if (typeof window === "undefined") return false; // Always return false during SSR
+        return !!state.birthdate;
+      };
 
     return { state, dispatch, birthdateExists };
 };

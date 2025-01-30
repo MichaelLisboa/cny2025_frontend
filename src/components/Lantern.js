@@ -1,8 +1,7 @@
-import React, { forwardRef, useMemo, useRef, useEffect, useState } from 'react';
+import React, { forwardRef, useMemo, useRef, useEffect } from 'react';
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql, useStaticQuery } from "gatsby";
 import useFloatingAnimation from '../hooks/useFloatingAnimation';
-import '../styles/lantern.css';
 
 const Lantern = forwardRef(({ animalSign, text, name }, ref) => {
   const data = useStaticQuery(graphql`
@@ -20,37 +19,33 @@ const Lantern = forwardRef(({ animalSign, text, name }, ref) => {
     }
   `);
 
-  const getImageByName = useMemo(() => {
-    return (name) => {
-      const image = data.allFile.edges.find(({ node }) =>
-        node.relativePath.includes(name)
-      );
-      return image ? getImage(image.node.childImageSharp) : null;
-    };
+  const imageMap = useMemo(() => {
+    return data.allFile.edges.reduce((map, { node }) => {
+      map[node.relativePath] = getImage(node.childImageSharp);
+      return map;
+    }, {});
   }, [data]);
 
-  const lanternImage = getImageByName(`lantern-${animalSign.toLowerCase()}.png`);
-  const glowImage = getImageByName(`lantern-glow.png`); // 🚀 Fetch glow image
+  const lanternImage = imageMap[`lantern-${animalSign.toLowerCase()}.png`];
+  const glowImage = imageMap[`lantern-glow.png`];
 
-  const floatingRef = useRef(null);
-  useFloatingAnimation(floatingRef, { minX: -20, maxX: 20, minY: -40, maxY: 40, minRotation: -3, maxRotation: 3 });
+  const wrapperRef = useRef(null);
+  const glowRef = useRef(null);
+  useFloatingAnimation(ref || wrapperRef, { minX: -20, maxX: 20, minY: -40, maxY: 40, minRotation: -3, maxRotation: 3 });
 
   useEffect(() => {
-    const wrapper = document.querySelector('.lantern-image-wrapper');
-    const glow = document.querySelector('.styled-glow-image');
-    console.log('Wrapper dimensions:', wrapper.offsetWidth, wrapper.offsetHeight);
-    console.log('Glow dimensions:', glow.offsetWidth, glow.offsetHeight);
-    console.log('Hydration complete');
+    if (wrapperRef.current && glowRef.current) {
+      console.log('Wrapper dimensions:', wrapperRef.current.offsetWidth, wrapperRef.current.offsetHeight);
+      console.log('Glow dimensions:', glowRef.current.offsetWidth, glowRef.current.offsetHeight);
+    }
   }, []);
 
   return (
-    <div className="lantern-image-wrapper" ref={floatingRef}>
-      {(text || name) && (
-        <div className="text-overlay">
-          {name && <p className="name">From {name}</p>}
-          {text && <p className="message">{text}</p>}
-        </div>
-      )}
+    <div className="lantern-image-wrapper" ref={ref || wrapperRef}>
+      <div className="text-overlay">
+        <p className="name">{name || ' '}</p>
+        <p className="message">{text || ' '}</p>
+      </div>
       {lanternImage && (
         <GatsbyImage
           image={lanternImage}
