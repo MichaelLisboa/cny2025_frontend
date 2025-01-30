@@ -31,6 +31,7 @@ export const ButtonContainer = styled.div`
 `;
 
 export async function getServerData({ params }) {
+    console.log("Fetching data for ID:", params.id);
     try {
         const { data } = await axios.get(
             `https://cny2025backend-production.up.railway.app/lanterns/${params.id}`,

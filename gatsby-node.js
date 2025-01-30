@@ -1,6 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 
+exports.onCreatePage = ({ page, actions }) => {
+  const { createPage } = actions;
+
+  if (page.path.match(/^\/lantern\/[^/]+/)) {
+    page.matchPath = "/lantern/:id"; // Tell Gatsby to match dynamic routes
+    createPage(page);
+  }
+};
+
 exports.onPostBuild = () => {
   const manifestPath = path.join(__dirname, "public", "manifest.webmanifest");
 
