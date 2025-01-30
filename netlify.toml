@@ -1,3 +1,9 @@
 [build]
   command = "gatsby build"
   publish = "public"
+
+[[redirects]]
+  from = "/lantern/*"
+  to = "/lantern/:splat"
+  status = 200
+  force = false
