@@ -6,7 +6,6 @@ import Lantern from "../../components/Lantern";
 import Button from "../../components/button";
 import useAppState from "../../hooks/useAppState"; // Keep client-side logic
 import SocialShare from "../../components/socialShare"; // Social share modal
-import SEO from "../../components/seo"; // SEO metadata
 import { Helmet } from "react-helmet";
 
 const LanternContainer = styled.div`
@@ -78,24 +77,30 @@ const LanternPage = ({ serverData }) => {
 
     return (
         <>
-            <Helmet
-                title={`${lantern.name} has sent you a lantern ${lantern.message}`}
-                description="Create and share your own lanterns with your friends and family."
-                image="og-meta.png"
-                pathname={`/lantern/${lantern.id}`}
-            >
-                {/* Add custom Twitter meta tags */}
-                <meta name="twitter:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
-                <meta name="twitter:description" content="Create and share your own lanterns with your friends and family." />
+            <Helmet>
+                <title>{`${lantern.name} has sent you a lantern`}</title>
+                <meta
+                    name="description"
+                    content="Create and share your own lanterns with your friends and family."
+                />
+                {/* Twitter Meta Tags */}
+                <meta
+                    name="twitter:title"
+                    content={`${lantern.name} has sent you a lantern`}
+                />
+                <meta
+                    name="twitter:description"
+                    content="Create and share your own lanterns with your friends and family."
+                />
                 <meta name="twitter:image" content="og-meta.png" />
                 <meta name="twitter:card" content="summary_large_image" />
 
-                {/* Add custom Open Graph meta tags */}
-                <meta property="og:type" content="website" />
-                <meta property="og:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
+                {/* Open Graph Meta Tags */}
+                <meta property="og:title" content={`${lantern.name} has sent you a lantern`} />
                 <meta property="og:description" content="Create and share your own lanterns with your friends and family." />
                 <meta property="og:image" content="og-meta.png" />
-                <meta property="og:url" content={`https://cny2025.com/lantern/${lantern.id}`} />
+                <meta property="og:url" content={`https://yourdomain.com/lantern/${lantern.id}`} />
+                <meta property="og:type" content="website" />
             </Helmet>
 
             <Layout
