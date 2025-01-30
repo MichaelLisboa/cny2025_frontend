@@ -50,6 +50,33 @@ export async function getServerData({ params }) {
     }
 }
 
+export function Head({ serverData }) {
+    const lantern = serverData.lantern || { name: "A Friend", id: "unknown", message: "Happy New Year!" };
+    const description = "Create and share your own lanterns with your friends and family.";
+    const url = `https://cny2025.com/lantern/${lantern.id}`;
+    const image = "og-meta.png";
+
+    return (
+        <>
+            <title>{`${lantern.name} has sent you a lantern`}</title>
+            <meta name="description" content={description} />
+
+            {/* Twitter Meta Tags */}
+            <meta name="twitter:title" content={`${lantern.name} has sent you a lantern`} />
+            <meta name="twitter:description" content={description} />
+            <meta name="twitter:image" content={image} />
+            <meta name="twitter:card" content="summary_large_image" />
+
+            {/* Open Graph Meta Tags */}
+            <meta property="og:title" content={`${lantern.name} has sent you a lantern`} />
+            <meta property="og:description" content={description} />
+            <meta property="og:image" content={image} />
+            <meta property="og:url" content={url} />
+            <meta property="og:type" content="website" />
+        </>
+    );
+}
+
 const LanternPage = ({ serverData }) => {
     const { state } = useAppState(); // Keep client-side user state
     const [isSameUser, setIsSameUser] = useState(false); // Client-side user check
@@ -99,7 +126,7 @@ const LanternPage = ({ serverData }) => {
                 <meta property="og:title" content={`${lantern.name} has sent you a lantern`} />
                 <meta property="og:description" content="Create and share your own lanterns with your friends and family." />
                 <meta property="og:image" content="og-meta.png" />
-                <meta property="og:url" content={`https://yourdomain.com/lantern/${lantern.id}`} />
+                <meta property="og:url" content={`https://cny2025.com/lantern/${lantern.id}`} />
                 <meta property="og:type" content="website" />
             </Helmet>
 
