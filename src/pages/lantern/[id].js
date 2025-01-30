@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import useLanternsApi from '../../hooks/useLanternsApi';
-import Layout from '../../components/layout';
-import Lantern from '../../components/Lantern';
-import Button from '../../components/button';
-import useAppState from '../../hooks/useAppState'; // Import useAppState
-import SocialShare from "../../components/socialShare";
-import SEO from "../../components/seo"; // Import SEO component
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import styled from "styled-components";
+import Layout from "../../components/layout";
+import Lantern from "../../components/Lantern";
+import Button from "../../components/button";
+import useAppState from "../../hooks/useAppState"; // Keep client-side logic
+import SocialShare from "../../components/socialShare"; // Social share modal
+import SEO from "../../components/seo"; // SEO metadata
 
 const LanternContainer = styled.div`
     position: relative;
-    display: inline-block;
+    display: flex; // Changed from inline-block to flex
     height: 100vh;
-    display: flex;
     justify-content: flex-start;
     align-items: center;
     flex-direction: column;
@@ -31,39 +30,43 @@ export const ButtonContainer = styled.div`
   flex-direction: column;
 `;
 
-const LanternPage = ({ params }) => {
-    const { id } = params;
-    const { getLanternById } = useLanternsApi();
-    const { state } = useAppState(); // Use the useAppState hook
-    const [lantern, setLantern] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [isSameUser, setIsSameUser] = useState(false); // State to track if the user is the same
-    const [isModalOpen, setIsModalOpen] = useState(false);
+export async function getServerData({ params }) {
+    try {
+        const { data } = await axios.get(`https://cny2025backend-production.up.railway.app/lanterns/${params.id}`, {
+            headers: { "X-API-Key": process.env.GATSBY_API_KEY },
+        });
+
+        console.log("SSR Fetch Success:", data);
+
+        return { props: { lantern: data } };
+    } catch (error) {
+        console.error("SSR Fetch Error:", {
+            message: error.message,
+            response: error.response?.data, // Logs full API response if available
+            config: error.config, // Logs request config for debugging
+        });
+        return { status: 500, props: { error: "Failed to load lantern. Please try again later." } };
+    }
+}
+
+const LanternPage = ({ serverData }) => {
+    const { state } = useAppState(); // Keep client-side user state
+    const [isSameUser, setIsSameUser] = useState(false); // Client-side user check
+    const [isModalOpen, setIsModalOpen] = useState(false); // Social share modal
 
     useEffect(() => {
-        const fetchLantern = async () => {
-            try {
-                const data = await getLanternById(id);
-                setLantern(data);
+        if (serverData.error || !serverData.lantern) return; // Prevent crashes
+        if (state.userData && state.userData.email === serverData.lantern.email) {
+            setIsSameUser(true);
+        }
+    }, [state.userData, serverData.lantern]); // Ensures hook order stays the same
 
-                // Check if the current user is the same as the one who created the lantern
-                const savedUserData = state.userData;
-                if (savedUserData && savedUserData.email === data.email) {
-                    setIsSameUser(true);
-                }
-            } catch (err) {
-                setError(err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Now safe to conditionally render based on serverData
+    if (serverData.error || !serverData.lantern) {
+        return <div>Error: {serverData.error || "Lantern data is missing"}</div>;
+    }
 
-        fetchLantern();
-    }, [id, state.userData]);
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    const lantern = serverData.lantern;
 
     return (
         <>
@@ -95,7 +98,7 @@ const LanternPage = ({ params }) => {
                     wish={lantern.message}
                     isModalOpen={isModalOpen}
                     setIsModalOpen={setIsModalOpen}
-                    lanternId={id}
+                    lanternId={lantern.id}
                 />
             </Layout>
         </>
