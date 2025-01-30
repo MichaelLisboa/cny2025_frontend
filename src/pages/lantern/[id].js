@@ -81,7 +81,16 @@ const LanternPage = ({ serverData }) => {
                 title={`${lantern.name} has sent you a lantern ${lantern.message}`}
                 description="Create and share your own lanterns with your friends and family."
                 image="og-meta.png"
+                twitter:title={`${lantern.name} has sent you a lantern ${lantern.message}`}
+                twitter:description="Create and share your own lanterns with your friends and family."
+                twitter:image="og-meta.png"
+                og:type="website"
+                og:title={`${lantern.name} has sent you a lantern ${lantern.message}`}
+                og:description="Create and share your own lanterns with your friends and family."
+                og:image="og-meta.png"
+                og:url={`https://cny2025.com/lantern/${lantern.id}`}
             />
+
             <Layout
                 image="background-zodiac-sky.jpg"
                 alignImage="top"
