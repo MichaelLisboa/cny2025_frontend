@@ -292,7 +292,7 @@ const DatePicker = ({ onDateSelected, birthdateExists, handleNextClick, title, p
         </DaysGrid>
       </DatePickerContainer>
       {birthdateExists && (
-        <Button variant='primary' text={buttonLabel} onClick={handleNextClick} />
+        <Button text={buttonLabel} onClick={handleNextClick} />
       )}
     </DatePickerWrapper>
   );

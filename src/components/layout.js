@@ -6,84 +6,15 @@ import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import Navbar from "../components/navbar"; // Import Navbar
 import "./layout.css";
 
-// Styled-components
-const Container = styled.div.attrs({ className: "container" })`
-  position: absolute;
-  top: 0;
-  height: 100vh;
-  width: 100vw;
-  box-sizing: border-box;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-`;
 
-const Content = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100vw;
-  min-height: 100vh;
-  box-sizing: border-box;
-  z-index: 1;
-  overflow-x: hidden;
+const Content = styled.div.attrs({ className: "layout-content" })`
   overflow-y: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
   margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
-  transition: margin-top 0.3s ease;
 `;
 
-const ParallaxImageContainer = styled.div`
-  position: absolute;
-  width: 200%; // Ensures it's wide enough for parallax
+const ParallaxImageContainer = styled.div.attrs({ className: "background-image" })`
   bottom: ${({ $alignImage }) => ($alignImage === 'bottom' ? '0' : 'auto')};
   top: ${({ $alignImage }) => ($alignImage === 'top' ? '0' : 'auto')};
-  left: 50%;
-  transform: translateX(-50%);
-  overflow: hidden;
-  z-index: -10;
-
-  @media (min-width: 1440px) {
-    width: 175%;
-  }
-
-  @media (min-width: 1920px) {
-    width: 125%;
-  }
-
-  @media (min-width: 3840px) {
-    width: 110%;
-  }
-`;
-
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const RefreshIndicator = styled.div`
-  position: fixed;
-  top: 96px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48px;
-  height: 48px;
-  background-color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10001;
-
-  @media (min-width: 768px) {
-    top: 120px;
-  }
-
-  svg {
-    width: 100%;
-    height: 100%;
-    animation: ${spin} 1s linear infinite;
-  }
 `;
 
 const Layout = ({ children, image, scrollable, contentContainerStyles, alignImage }) => {
@@ -224,7 +155,7 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
     <>
       <Navbar ref={navbarRef} /> {/* Add Navbar component */}
       {isRefreshing && (
-        <RefreshIndicator>
+        <div className="refresh-indicator">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" style={{ display: "block", margin: "auto" }}>
             {/* Outer Circle */}
             <circle cx="50" cy="50" r="50" fill="#d40202" />
@@ -236,9 +167,9 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
               strokeLinecap="round"
             />
           </svg>
-        </RefreshIndicator>
+        </div>
       )}
-      <Container>
+      <div className="layout-container">
         {backgroundImage && (
           <ParallaxImageContainer
             ref={backgroundImageRef}
@@ -248,10 +179,10 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
             <GatsbyImage image={backgroundImage} alt="Background Image" />
           </ParallaxImageContainer>
         )}
-        <Content style={contentContainerStyles} $scrollable={scrollable}>
+        <Content className="layout-content" style={contentContainerStyles} $scrollable={scrollable}>
           {children}
         </Content>
-      </Container>
+      </div>
     </>
   );
 }

@@ -9,7 +9,9 @@ import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import LanternPresentation from "../components/LanternPresentation";
 import SocialShare from "../components/socialShare";
 
-const DatePickerContainer = styled.div`
+const DatePickerContainer = styled.div.attrs({
+  className: "date-picker",
+})`
   position: absolute;
   top: 0;
   display: flex;
@@ -33,12 +35,14 @@ const DatePickerContainer = styled.div`
 
 const CreateLanternPage = () => {
   const { state, dispatch, birthdateExists } = useAppState();
-  const [flowState, setFlowState] = useState('idle');
+  const [flowState, setFlowState] = useState(null);
   const [localBirthdate, setLocalBirthdate] = useState(null);
   const [localZodiac, setLocalZodiac] = useState(null);
   const [localElement, setLocalElement] = useState(null);
-  const [shareReady, setShareReady] = useState(false); // State to control the visibility of the share button
+  const [showNextButton, setShowNextButton] = useState(false);
+  const [shareReady, setShareReady] = useState(false);
 
+  // Update flow state safely
   const updateFlowState = (newState) => {
     if (flowState !== newState) {
       setFlowState(newState);
@@ -46,54 +50,13 @@ const CreateLanternPage = () => {
   };
 
   useEffect(() => {
-    const isBirthdateAvailable = birthdateExists();
-    if (isBirthdateAvailable && state.zodiac && flowState === 'idle') {
-      // updateFlowState('done');
-      updateFlowState("writing");
+    if (birthdateExists()) {
+      dispatch({ type: "SET_BIRTHDATE", payload: state.birthdate });
+      // updateFlowState("writing");
+    } else {
+      updateFlowState("idle");
     }
-  }, [state.zodiac, flowState]);
-
-  const handleNextClick = () => {
-    updateFlowState('transitioning1');
-  };
-
-  useEffect(() => {
-    if (flowState === "transitioning1") {
-      const timeline = gsap.timeline();
-
-      timeline.to(".date-picker", {
-        y: "350%",
-        opacity: 0,
-        duration: 1.5,
-        ease: "power2.inOut",
-        onComplete: () => {
-          dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
-          dispatch({ type: "SET_ZODIAC", payload: localZodiac });
-          dispatch({ type: "SET_ELEMENT", payload: localElement });
-        },
-      });
-
-      timeline.fromTo(
-        ".lantern-container",
-        { y: "-100%", opacity: 0 },
-        { y: "0%", opacity: 1, duration: 2, ease: "power3.out" },
-        "-=0.5"
-      ).add(() => updateFlowState("writing")); // Ensure "writing" is set here
-    }
-
-    if (flowState === "transitioning2") {
-      const timeline = gsap.timeline();
-
-      timeline.to(".background-image", {
-        top: 0,
-        duration: 8,
-        ease: "power2.inOut",
-      }).add(() => {
-        updateFlowState("done"); // Ensure "done" state is reached
-        setShareReady(true);
-      });
-    }
-  }, [flowState]);
+  }, [birthdateExists]);
 
   const handleDateSelected = (selectedDate) => {
     setLocalBirthdate(selectedDate);
@@ -101,11 +64,48 @@ const CreateLanternPage = () => {
     const { animal, element } = determineZodiacAnimalAndElement(selectedDate);
     setLocalZodiac(animal);
     setLocalElement(element);
+
+    setShowNextButton(true);
   };
 
+  const handleNextClick = () => {
+    updateFlowState("transitioning1");
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && flowState === "transitioning1") {
+      setTimeout(() => {
+        console.log("Starting GSAP animation for .date-picker");
+        const timeline = gsap.timeline();
+
+        timeline.to(".date-picker", {
+          y: "350%",
+          opacity: 0,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onComplete: () => {
+            console.log("GSAP animation complete");
+            dispatch({ type: "SET_BIRTHDATE", payload: localBirthdate });
+            dispatch({ type: "SET_ZODIAC", payload: localZodiac });
+            dispatch({ type: "SET_ELEMENT", payload: localElement });
+          },
+        });
+
+        timeline.fromTo(
+          ".lantern-container",
+          { y: "-100%", opacity: 0 },
+          { y: "0%", opacity: 1, duration: 2, ease: "power3.out" },
+          "-=0.5"
+        ).add(() => updateFlowState("writing"));
+      }, 100); // Small delay to ensure DOM readiness
+    }
+  }, [flowState]);
+
+  if (flowState === null) return null;
+
   const renderDatePicker = () => {
-    if (flowState !== "idle" && flowState !== "transitioning1") return null;
-    if (birthdateExists()) return null; // Prevent rendering if birthdate is already set
+    if (flowState !== "idle") return null;
+
     return (
       <DatePickerContainer className="date-picker">
         <DatePicker
@@ -115,6 +115,7 @@ const CreateLanternPage = () => {
           title="Enter Your Birthdate"
           paragraphText="Discover your fortune for the new year!"
           buttonLabel="Next"
+          showNextButton={showNextButton}
         />
       </DatePickerContainer>
     );
@@ -122,11 +123,11 @@ const CreateLanternPage = () => {
 
   const renderLantern = () => {
     if (flowState === "idle") return null;
-    console.log(state, localZodiac, localElement);
+
     return (
       <LanternPresentation
-        zodiac={state && state.zodiac}
-        element={state && state.element}
+        zodiac={state?.zodiac}
+        element={state?.element}
         flowState={flowState}
         setFlowState={updateFlowState}
         shareReady={shareReady}
