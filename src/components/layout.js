@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { gsap } from "gsap";
 import { graphql, useStaticQuery } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
-import Navbar from "../components/navbar"; // Import Navbar
+import Navbar from "../components/navbar";
 import "./layout.css";
 
 
@@ -12,10 +12,20 @@ const Content = styled.div.attrs({ className: "layout-content" })`
   margin-top: ${({ isRefreshing }) => (isRefreshing ? "64px" : "0")};
 `;
 
-const ParallaxImageContainer = styled.div.attrs({ className: "background-image" })`
-  bottom: ${({ $alignImage }) => ($alignImage === 'bottom' ? '0' : 'auto')};
-  top: ${({ $alignImage }) => ($alignImage === 'top' ? '0' : 'auto')};
-`;
+const ParallaxImageContainer = ({ alignImage, backgroundImageRef, children }) => {
+  return (
+    <div
+      ref={backgroundImageRef}
+      className="background-image"
+      style={{
+        top: alignImage === "top" ? "0" : "auto",
+        bottom: alignImage === "bottom" ? "0" : "auto",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const Layout = ({ children, image, scrollable, contentContainerStyles, alignImage }) => {
   const backgroundImageRef = useRef(null);
@@ -98,56 +108,64 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
   const backgroundImage = image ? getImage(data.allFile.nodes.find(node => node.relativePath === image)) : null;
 
   useEffect(() => {
-    // Ensure this runs only in the browser
-    if (typeof window === 'undefined' || !backgroundImageRef.current || !backgroundImage) return;
-
+    if (typeof window === "undefined" || !backgroundImageRef.current || !backgroundImage) return;
+  
+    const imgElement = backgroundImageRef.current;
+    const imageWidth = imgElement.scrollWidth || imgElement.offsetWidth || 0;
+    const viewportWidth = window.innerWidth;
+  
+    if (!imageWidth || !viewportWidth) return;
+  
+    const maxMoveX = imageWidth - viewportWidth;
+  
+    // Center the image initially once
+    gsap.set(imgElement, { x: 0 });
+  
     const handleBackgroundMovement = (moveX) => {
-      const maxMoveX = (backgroundImageRef.current.scrollWidth - window.innerWidth) / 2;
-      const constrainedMoveX = Math.max(-maxMoveX, Math.min(maxMoveX, moveX));
-      gsap.to(backgroundImageRef.current, {
-        x: constrainedMoveX,
-        duration: 0.5,
-        ease: 'power2.out',
+      const constrainedMoveX = Math.max(0, Math.min(maxMoveX, moveX));
+  
+      gsap.to(imgElement, {
+        x: -constrainedMoveX,
+        duration: 0.3,
+        ease: "power2.out",
       });
     };
-
+  
     const handleMouseMove = (event) => {
-      const { clientX } = event;
-      const moveX = ((clientX / window.innerWidth) - 0.5) * (backgroundImageRef.current.scrollWidth - window.innerWidth) * 0.05;
+      const moveX = (event.clientX / viewportWidth) * maxMoveX;
       handleBackgroundMovement(moveX);
     };
-
-    const handleDeviceOrientation = (event) => {
-      const { gamma } = event;
-      const moveX = (gamma / 45) * (backgroundImageRef.current.scrollWidth - window.innerWidth) / 8;
-      handleBackgroundMovement(moveX);
-    };
-
-    let touchStartX = 0;
-    const handleTouchStart = (event) => {
-      touchStartX = event.touches[0].clientX;
-    };
-
+  
+    let touchMoveRAF;
     const handleTouchMove = (event) => {
-      const touchMoveX = event.touches[0].clientX;
-      const moveX = ((touchMoveX - touchStartX) / window.innerWidth) * (backgroundImageRef.current.scrollWidth - window.innerWidth) * 0.1;
-      handleBackgroundMovement(moveX);
+      if (touchMoveRAF) return;
+  
+      touchMoveRAF = requestAnimationFrame(() => {
+        const touch = event.touches[0];
+        const moveX = (touch.clientX / viewportWidth) * maxMoveX;
+        handleBackgroundMovement(moveX);
+        touchMoveRAF = null;
+      });
     };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('deviceorientation', handleDeviceOrientation);
-    if (backgroundImageRef.current) {
-      backgroundImageRef.current.addEventListener('touchstart', handleTouchStart);
-      backgroundImageRef.current.addEventListener('touchmove', handleTouchMove);
-    }
-
+  
+    let orientationTimeout;
+    const handleDeviceOrientation = (event) => {
+      clearTimeout(orientationTimeout);
+      orientationTimeout = setTimeout(() => {
+        const gamma = Math.max(-90, Math.min(90, event.gamma));
+        const moveX = ((gamma + 90) / 180) * maxMoveX;
+        handleBackgroundMovement(moveX);
+      }, 16);
+    };
+  
+    document.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("deviceorientation", handleDeviceOrientation, { passive: true });
+  
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('deviceorientation', handleDeviceOrientation);
-      if (backgroundImageRef.current) {
-        backgroundImageRef.current.removeEventListener('touchstart', handleTouchStart);
-        backgroundImageRef.current.removeEventListener('touchmove', handleTouchMove);
-      }
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("deviceorientation", handleDeviceOrientation);
     };
   }, [backgroundImage]);
 
@@ -171,11 +189,7 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
       )}
       <div className="layout-container">
         {backgroundImage && (
-          <ParallaxImageContainer
-            ref={backgroundImageRef}
-            className="background-image"
-            $alignImage={alignImage}
-          >
+          <ParallaxImageContainer alignImage={alignImage} backgroundImageRef={backgroundImageRef}>
             <GatsbyImage image={backgroundImage} alt="Background Image" />
           </ParallaxImageContainer>
         )}

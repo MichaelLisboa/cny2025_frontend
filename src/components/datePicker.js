@@ -152,7 +152,15 @@ const InputField = styled.input`
   }
 `;
 
-const DatePicker = ({ onDateSelected, birthdateExists, handleNextClick, title, paragraphText, buttonLabel }) => {
+const DatePicker = ({
+  onDateSelected,
+  birthdateExists,
+  handleNextClick,
+  title,
+  paragraphText,
+  buttonLabel,
+  showNextButton, // Accept showNextButton from the hook
+}) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -291,9 +299,9 @@ const DatePicker = ({ onDateSelected, birthdateExists, handleNextClick, title, p
           {updateDays()}
         </DaysGrid>
       </DatePickerContainer>
-      {birthdateExists && (
-        <Button text={buttonLabel} onClick={handleNextClick} />
-      )}
+      {(birthdateExists || showNextButton) && (
+  <Button text={buttonLabel} onClick={handleNextClick} />
+)}
     </DatePickerWrapper>
   );
 };

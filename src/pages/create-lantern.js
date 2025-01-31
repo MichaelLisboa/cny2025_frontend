@@ -52,7 +52,7 @@ const CreateLanternPage = () => {
   useEffect(() => {
     if (birthdateExists()) {
       dispatch({ type: "SET_BIRTHDATE", payload: state.birthdate });
-      // updateFlowState("writing");
+      updateFlowState("writing");
     } else {
       updateFlowState("idle");
     }
