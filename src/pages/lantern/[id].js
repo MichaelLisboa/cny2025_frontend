@@ -80,16 +80,11 @@ export function Head({ serverData }) {
 
 const LanternPage = ({ serverData }) => {
     const { state } = useAppState(); // Keep client-side user state
-    const [isSameUser, setIsSameUser] = useState(false); // Client-side user check
-    const [isModalOpen, setIsModalOpen] = useState(false); // Social share modal
+    // const [isSameUser, setIsSameUser] = useState(false); // Client-side user check
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useEffect(() => {
-        if (typeof window === "undefined" || serverData.error || !serverData.lantern) return;
-
-        if (state.userData?.email === serverData.lantern.email) {
-            setIsSameUser(true);
-        }
-    }, [state.userData, serverData.lantern]);
+    const isSameUser = state.userData?.email && state.userData.email === serverData.lantern.email;
+    console.log("Same user?", isSameUser);
 
     // Now safe to conditionally render based on serverData
     if (serverData.error || !serverData.lantern) {
@@ -150,12 +145,15 @@ const LanternPage = ({ serverData }) => {
                     )}
 
                 </LanternContainer>
-                <SocialShare
-                    wish={lantern.message || ""}
-                    isModalOpen={isModalOpen}
-                    setIsModalOpen={setIsModalOpen}
-                    lanternId={lantern?.id || ""}
-                />
+                {isModalOpen && (
+                    <SocialShare
+                        wish={lantern.message || ""}
+                        isModalOpen={isModalOpen}
+                        setIsModalOpen={setIsModalOpen}
+                        lanternId={lantern?.id || ""}
+                    />
+                )}
+
             </Layout>
         </>
     );

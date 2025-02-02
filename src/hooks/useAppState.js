@@ -1,27 +1,48 @@
+// useAppState.js
+
 import { useReducer, useEffect } from 'react';
 
-// Helper to get state from localStorage
-const getState = () => {
-    if (typeof window === "undefined") return {
-        birthdate: null,
-        zodiac: null,
-        element: null,
-        wishes: []
-    }; // Define a static default state
-    const state = localStorage.getItem('appState');
-    return state ? JSON.parse(state) : {};
+const defaultState = {
+    birthdate: null,
+    zodiac: null,
+    element: null,
+    wishes: [],
+    userData: {
+        name: null,
+        email: null,
+    },
 };
 
-// Helper to update state in localStorage
+const getState = () => {
+    if (typeof window === "undefined") return defaultState;
+    const storedState = localStorage.getItem('appState');
+    return storedState ? { ...defaultState, ...JSON.parse(storedState) } : defaultState;
+};
+
+// Merge the new state with the existing state from localStorage before saving.
 const updateState = (newState) => {
     if (typeof window !== "undefined") {
-        const existingState = getState();
-        const mergedState = { ...existingState, ...newState };
+        const storedState = localStorage.getItem('appState');
+        const currentState = storedState ? JSON.parse(storedState) : defaultState;
+
+        // **Fix: Properly deduplicate wishes by comparing wish content, not object references**
+        const mergedWishes = [...currentState.wishes, ...newState.wishes].reduce((unique, wish) => {
+            if (!unique.some(w => w.wish === wish.wish)) unique.push(wish);
+            return unique;
+        }, []);
+
+        const mergedState = { 
+            ...currentState, 
+            ...Object.fromEntries(
+                Object.entries(newState).filter(([key, value]) => value !== null && key !== "wishes")
+            ),
+            wishes: mergedWishes
+        };
+
         localStorage.setItem('appState', JSON.stringify(mergedState));
     }
 };
 
-// Reducer function to handle state transitions
 const reducer = (state, action) => {
     switch (action.type) {
         case 'SET_BIRTHDATE':
@@ -31,36 +52,46 @@ const reducer = (state, action) => {
         case 'SET_ELEMENT':
             return { ...state, element: action.payload };
         case 'SET_WISHES':
-            return { ...state, ...{ wishes: action.payload } };
+            return {
+                ...state,
+                wishes: [
+                    // **Fix: Prevent duplicates in state before dispatching**
+                    ...state.wishes.filter(w => !action.payload.some(nw => nw.wish === w.wish)), 
+                    ...action.payload 
+                ]
+            };
         case 'SET_USER_DATA':
-            return { ...state, userData: action.payload };
+            return { ...state, userData: { ...state.userData, ...action.payload } };
         case 'CLEAR':
-            return {}; // Clear all state
+            return { ...defaultState }; // Reset properly, don't return empty object
         default:
             console.error(`Unknown action type: ${action.type}`);
-            return state; // Return current state if action type is unknown
+            return state;
     }
 };
 
-// Custom hook to manage app state
 const useAppState = (initialState = {}) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
-    useEffect(() => {
-        const savedState = getState();
-        dispatch({ type: 'SET_USER_DATA', payload: savedState });
-    }, []);
+    // Initialize once with saved state merged with any provided initialState.
+    const [state, dispatch] = useReducer(reducer, { ...getState(), ...initialState });
 
     useEffect(() => {
-        if (typeof window !== "undefined" && state) {
-          updateState(state);
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem('appState');
+            const currentState = storedState ? JSON.parse(storedState) : defaultState;
+
+            // **Fix: Only update localStorage if the state actually changed**
+            const mergedState = {
+                ...currentState,
+                ...state
+            };
+
+            if (JSON.stringify(currentState) !== JSON.stringify(mergedState)) {
+                updateState(mergedState);
+            }
         }
-      }, [state]);
+    }, [state]); 
 
-    // Helper functions to check if birthdate exists
-    const birthdateExists = () => {
-        if (typeof window === "undefined") return false; // Always return false during SSR
-        return !!state.birthdate;
-      };
+    const birthdateExists = () => !!state.birthdate;
 
     return { state, dispatch, birthdateExists };
 };

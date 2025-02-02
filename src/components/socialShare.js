@@ -1,3 +1,5 @@
+// socialShare.js
+
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { gsap } from 'gsap';
@@ -126,7 +128,7 @@ const SharePanel = styled.div`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  padding: 0 24px 48px 24px;
+  padding: 0 24px 144px 24px;
   z-index: 10002;
   display: flex;
   flex-direction: column; /* Stack title and icons */
@@ -198,22 +200,62 @@ const ShareOverlay = styled.div`
 `;
 
 // Main Component
-const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => {
-  const { dispatch } = useAppState();
+
+const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
+  const { state, dispatch } = useAppState();
   const { createLantern } = useLanternsApi();
+
+  // Get email from state
+  const userEmail = state?.userData?.email || null; // Check if email exists in state
+
+  // State for modal and share panel visibility
+  const [isModalOpen, setIsModalOpen] = useState(!userEmail); // Open modal if no email
+  const [isSharingPanelOpen, setIsSharingPanelOpen] = useState(!!userEmail); // Open share panel if email exists
+  const [lanternId, setLanternId] = useState(initialLanternId || null); // Set initial lantern ID
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [errors, setErrors] = useState([]);
-  const [isSharingPanelOpen, setIsSharingPanelOpen] = useState(false);
-  const [lanternId, setLanternId] = useState(null);
   const [isLanternSubmitted, setIsLanternSubmitted] = useState(false);
 
   const overlayRef = useRef(null);
   const modalRef = useRef(null);
   const sharePanelRef = useRef(null);
 
+  useEffect(() => {
+    console.log('isModalOpen:', isModalOpen, 'isSharingPanelOpen:', isSharingPanelOpen);
+  }, [isModalOpen, isSharingPanelOpen]);
+
+  // **Prevent modal from opening if email exists**
+  useEffect(() => {
+    if (userEmail) {
+      setIsModalOpen(false); // Close the modal
+      setIsSharingPanelOpen(true); // Open the share panel
+  
+      if (!lanternId) {
+        // If no lanternId exists, create one
+        const backendData = {
+          name: state.userData.name,
+          email: userEmail,
+          birthdate: state?.birthdate || '',
+          animal_sign: state?.zodiac || '',
+          element: state?.element || '',
+          message: wish,
+        };
+  
+        createLantern(backendData).then((newLantern) => {
+          if (newLantern?.id) {
+            setLanternId(newLantern.id);
+            setIsLanternSubmitted(true);
+          }
+        }).catch(() => {
+          console.error("Failed to create lantern.");
+        });
+      }
+    }
+  }, [userEmail]);
+
   // Handle modal animations
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen && !userEmail) {  // Only animate if email does NOT exist
       gsap.to(overlayRef.current, { opacity: 1, duration: 0.5 });
       gsap.to(modalRef.current, { opacity: 1, duration: 0.5, delay: 0.3 });
     }
@@ -222,7 +264,12 @@ const SocialShare = ({ wish, isModalOpen, setIsModalOpen, mode = 'create' }) => 
   // Handle share panel animations
   useEffect(() => {
     if (isSharingPanelOpen) {
-      gsap.fromTo(sharePanelRef.current, { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: "power2.inOut", });
+      console.log('Animating SharePanel', sharePanelRef.current);
+      gsap.fromTo(
+        sharePanelRef.current,
+        { y: '100%', opacity: 0 },
+        { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }
+      );
     }
   }, [isSharingPanelOpen]);
 

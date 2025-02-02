@@ -1,3 +1,19 @@
+// fortune.js
+// This is the final version of the Fortune page. It includes the following:
+// - A DatePicker component that allows users to enter their birthdate
+// - A ZodiacPresentation component that displays the user's zodiac sign and fortune
+// - Logic to transition between the DatePicker and ZodiacPresentation components
+// - Styling to create a visually appealing user experience
+// - Animation effects to enhance the transition between components
+// - A background image that sets the mood for the page
+// - A layout component that provides a consistent design across the site
+// - SEO metadata to improve search engine visibility
+// - A hook to manage the application state
+// - A utility function to determine the user's zodiac sign based on their birthdate
+// - A data file containing information about zodiac signs and their fortunes
+// - A hook to animate text sequences
+// - A hook to handle user interactions with the DatePicker component
+
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Layout from "../components/layout";
 import SEO from "../components/seo"; // Ensure correct import

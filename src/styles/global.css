@@ -1,5 +1,6 @@
-/* import variables.css */
-/* @import url('variables.css'); */
+/* GLOBAL CSS */
+
+
 @import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap');
 @font-face {
   font-family: 'HoganBrush'; /* Custom font name */
@@ -44,6 +45,173 @@ div {
   position: absolute;
   transform-origin: center;
 } */
+
+
+
+
+
+
+/* CREATE LANTERN PRESENTATION */
+
+.lantern-container {
+  position: relative;
+  display: inline-block;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 40px 0 0 0;
+  transform: translateY(-100%);
+}
+
+.lantern-container .lantern-wrapper {
+  position: relative;
+  display: inline-block;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.form-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+.text-area-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  border-radius: 50px;
+  z-index: 3;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.text-area-container:focus {
+  box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 50px rgba(255, 255, 255, 0.9);
+}
+
+@media (min-width: 1441px) {
+  .text-area-container {
+    width: 30%;
+  }
+}
+
+.text-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: auto;
+  max-width: 400px;
+  font-size: 16px;
+  font-weight: 800;
+  color: rgba(226, 127, 12, 1);
+  padding: 32px;
+  border-radius: 32px;
+  border: none;
+  background: white;
+  outline: none;
+  text-align: center;
+  background: none;
+  resize: none;
+  overflow: hidden;
+}
+
+.text-area::placeholder {
+  color: rgba(226, 127, 12, 0.65);
+  text-align: center;
+}
+
+.text-area:focus::placeholder {
+  color: transparent;
+}
+
+@media (min-width: 768px) {
+  .text-area {
+    font-size: 1.75em;
+    width: 100%;
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .text-area {
+    font-size: 2em;
+    width: 100%;
+    max-width: 640px;
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.close-button svg {
+  fill: #999;
+  transition: fill 0.2s ease;
+  width: 100%;
+  height: 100%;
+}
+
+.close-button:hover svg {
+  fill: #e27f0c;
+}
+
+.save-wish-button {
+  position: relative;
+  z-index: 1000;
+  margin: 4px auto 24px;
+  overflow: visible;
+  display: none;
+}
+
+.save-wish-button.visible {
+  display: block;
+}
+
+.buttons-container {
+  position: absolute;
+  z-index: 999;
+  bottom: 10vh;
+  margin: 0 auto 24px;
+  overflow: visible;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+}
+
 
 
 /* FORTUNE */

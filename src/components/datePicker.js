@@ -35,7 +35,7 @@ const DatePickerContainer = styled.div`
   border-radius: 1.5rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   z-index: 1000;
-  display: none; // Initially hidden
+  display: none; /* Initially hidden */
   padding: 16px;
   text-align: center;
   width: 80vw;
@@ -65,7 +65,6 @@ const Dropdown = styled.select`
   @media (min-width: 768px) {
     font-size: 1.75rem;
   }
-
   @media (min-width: 1024px) {
     font-size: 2rem;
   }
@@ -90,7 +89,6 @@ const Day = styled.button`
   cursor: pointer;
   border-radius: 50%;
   font-size: 1rem;
-  // don't wrap text
   white-space: nowrap;
 
   @media (min-width: 768px) {
@@ -98,7 +96,6 @@ const Day = styled.button`
     height: 50px;
     font-size: 1.5rem;
   }
-
   @media (min-width: 1024px) {
     width: 60px;
     height: 60px;
@@ -109,24 +106,19 @@ const Day = styled.button`
 const HeaderText = styled.h1`
   margin-bottom: 24px;
   padding: 0;
-
   @media (min-width: 768px) {
     font-size: 2rem;
   }
-
   @media (min-width: 1024px) {
     font-size: 2.5rem;
   }
 `;
 
 const TextParagraph = styled.p`
-  
   text-align: center;
-
   @media (min-width: 768px) {
     font-size: 1.25rem;
   }
-
   @media (min-width: 1024px) {
     font-size: 1.5rem;
   }
@@ -142,11 +134,9 @@ const InputField = styled.input`
   outline: none;
   cursor: pointer;
   margin: 24px 0 0 0;
-
   @media (min-width: 768px) {
     font-size: 1.75rem;
   }
-
   @media (min-width: 1024px) {
     font-size: 2rem;
   }
@@ -159,7 +149,7 @@ const DatePicker = ({
   title,
   paragraphText,
   buttonLabel,
-  showNextButton, // Accept showNextButton from the hook
+  showNextButton,
 }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -185,10 +175,6 @@ const DatePicker = ({
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
-      const isToday =
-        i === today.getDate() &&
-        currentMonth === today.getMonth() &&
-        currentYear === today.getFullYear();
       const isSelected = i === highlightedDate && currentMonth === today.getMonth() && currentYear === today.getFullYear();
       const isFuture = new Date(currentYear, currentMonth, i) > today;
 
@@ -215,28 +201,42 @@ const DatePicker = ({
   };
 
   const showPicker = () => {
-    overlayRef.current.style.display = 'block';
-    datePickerRef.current.style.display = 'flex'; // Change to flex when shown
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo(datePickerRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+    if (overlayRef.current && datePickerRef.current) {
+      overlayRef.current.style.display = 'block';
+      datePickerRef.current.style.display = 'flex';
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+      gsap.fromTo(datePickerRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+    }
   };
 
   const hidePicker = () => {
-    gsap.to(datePickerRef.current, {
-      opacity: 0, duration: 0.3, onComplete: () => {
-        datePickerRef.current.style.display = 'none';
-      }
-    });
-    gsap.to(overlayRef.current, {
-      opacity: 0, duration: 0.5, onComplete: () => {
-        overlayRef.current.style.display = 'none';
-      }
-    });
+    if (datePickerRef.current) {
+      gsap.to(datePickerRef.current, {
+        opacity: 0,
+        duration: 0.3,
+        onComplete: () => {
+          if (datePickerRef.current) {
+            datePickerRef.current.style.display = 'none';
+          }
+        },
+      });
+    }
+    if (overlayRef.current) {
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          if (overlayRef.current) {
+            overlayRef.current.style.display = 'none';
+          }
+        },
+      });
+    }
   };
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (event.target === overlayRef.current) {
+      if (overlayRef.current && event.target === overlayRef.current) {
         hidePicker();
       }
     };
@@ -255,53 +255,39 @@ const DatePicker = ({
   return (
     <DatePickerWrapper>
       <HeaderText>{title}</HeaderText>
-      <TextParagraph className="text-white text-medium">
-        {paragraphText}
-      </TextParagraph>
-      <InputField
-        value={selectedDate}
-        onClick={showPicker}
-        placeholder="Enter your birthdate"
-        readOnly
-      />
+      <TextParagraph className="text-white text-medium">{paragraphText}</TextParagraph>
+      <InputField value={selectedDate} onClick={showPicker} placeholder="Enter your birthdate" readOnly />
       <Overlay ref={overlayRef} />
       <DatePickerContainer ref={datePickerRef}>
         <Header>
-          <Dropdown
-            value={currentMonth}
-            onChange={(e) => setCurrentMonth(Number(e.target.value))}
-          >
+          <Dropdown value={currentMonth} onChange={(e) => setCurrentMonth(Number(e.target.value))}>
             {months.map((month, index) => (
-              <option key={index} value={index}>
-                {month}
-              </option>
+              <option key={index} value={index}>{month}</option>
             ))}
           </Dropdown>
-          <Dropdown
-            value={currentYear}
-            onChange={(e) => setCurrentYear(Number(e.target.value))}
-          >
-            {Array.from({ length: new Date().getFullYear() - 1899 }, (_, i) => 1900 + i).map(
-              (year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              )
-            )}
+          <Dropdown value={currentYear} onChange={(e) => setCurrentYear(Number(e.target.value))}>
+            {Array.from({ length: new Date().getFullYear() - 1899 }, (_, i) => 1900 + i).map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
           </Dropdown>
         </Header>
         <DaysGrid>
           {daysOfWeek.map((day) => (
-            <div key={day} style={{ textAlign: 'center', fontWeight: 'bold' }}>
-              {day}
-            </div>
+            <div key={day} style={{ textAlign: 'center', fontWeight: 'bold' }}>{day}</div>
           ))}
           {updateDays()}
         </DaysGrid>
       </DatePickerContainer>
       {(birthdateExists || showNextButton) && (
-  <Button text={buttonLabel} onClick={handleNextClick} />
-)}
+        <Button
+          text={buttonLabel}
+          onClick={(e) => {
+            console.log("Button clicked!");
+            e.stopPropagation();
+            handleNextClick();
+          }}
+        />
+      )}
     </DatePickerWrapper>
   );
 };
