@@ -18,14 +18,14 @@ const LanternContainer = styled.div`
     align-items: center;
     flex-direction: column;
     width: 100%;
-    padding: 80px 0 0 0;
+    padding: 36px 0 0 0;
 `;
 
 export const ButtonContainer = styled.div`
-  position: absolute;
+  position: relative;
   z-index: 10000;
-  bottom: 10vh;
-  margin: 4px auto 24px;
+  bottom: 5vh;
+//   margin: 4px auto 24px;
   overflow: visible;
   display: flex;
   align-items: center;
