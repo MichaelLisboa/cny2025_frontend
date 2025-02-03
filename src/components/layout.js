@@ -4,6 +4,8 @@ import { gsap } from "gsap";
 import { graphql, useStaticQuery } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import Navbar from "../components/navbar";
+import OrientationOverlay from "../utils/orientation";
+// import DeviceOrientationPermission from "../utils/requestIosPermissions";
 import "./layout.css";
 
 
@@ -171,6 +173,7 @@ const Layout = ({ children, image, scrollable, contentContainerStyles, alignImag
 
   return (
     <>
+      <OrientationOverlay />
       <Navbar ref={navbarRef} /> {/* Add Navbar component */}
       {isRefreshing && (
         <div className="refresh-indicator">
