@@ -157,6 +157,7 @@ const LanternPresentation = forwardRef(({ zodiac, flowState, setFlowState, share
   const [isWriting, setIsWriting] = useState(false);
   const [wish, setWish] = useState("");
   const [showSocialShare, setShowSocialShare] = useState(false); // Ensure it's false by default
+  const [isWishSaved, setIsWishSaved] = useState(false);
   const maxCharacters = 150;
   const textAreaRef = useRef(null);
   const textAreaInputRef = useRef(null);
@@ -227,9 +228,9 @@ const LanternPresentation = forwardRef(({ zodiac, flowState, setFlowState, share
   }, [isWriting]);
 
   const handleWrapperClick = (e) => {
-    // When tapped, begin writing: set isWriting true and clear lantern text by showing empty text
-    !shareReady &&
-    setIsWriting(true);
+    if (!isWishSaved && !shareReady) {
+      setIsWriting(true);
+    }
   };
 
   const stopPropagation = (e) => {
@@ -254,6 +255,8 @@ const LanternPresentation = forwardRef(({ zodiac, flowState, setFlowState, share
         console.warn("Duplicate wish detected, skipping...");
         return; 
     }
+    setIsWriting(false);
+    setIsWishSaved(true); // Disable handleWrapperClick
 
     dispatch({
         type: "SET_WISHES",
@@ -290,7 +293,7 @@ const LanternPresentation = forwardRef(({ zodiac, flowState, setFlowState, share
 
   const characterCount = wish.length;
 
-  console.log('shareReady:', shareReady, 'showSocialShare:', showSocialShare);
+  console.log('shareReady:', shareReady, 'showSocialShare:', showSocialShare, "isWriting:", isWriting);
 
   return (
     <LanternContainer ref={ref}>
@@ -319,7 +322,7 @@ const LanternPresentation = forwardRef(({ zodiac, flowState, setFlowState, share
                 disabled={!isWriting}
                 style={{
                   pointerEvents: !isWriting ? "none" : "auto",
-                  opacity: !isWriting ? 0.5 : 1,
+                  opacity: !isWriting ? 0 : 1,
                 }}
               />
               <div style={{ marginTop: "10px", fontSize: "14px", color: "#999" }}>
