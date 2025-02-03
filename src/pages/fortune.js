@@ -150,7 +150,7 @@ const FortunePage = () => {
   const [localBirthdate, setLocalBirthdate] = useState(null);
   const [localZodiac, setLocalZodiac] = useState(null);
   const [localElement, setLocalElement] = useState(null);
-  const [isScrolling, setIsScrolling] = useState(false);  // Add state to track scrolling
+  const [isScrolling, setIsScrolling] = useState(true);  // Add state to track scrolling
 
   useEffect(() => {
     if (birthdateExists() && state.zodiac && state.element) {

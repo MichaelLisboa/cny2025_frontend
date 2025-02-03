@@ -58,7 +58,7 @@ div {
   display: inline-block;
   height: 100vh;
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
   flex-direction: column;
   width: 100%;
@@ -225,8 +225,8 @@ div {
   justify-content: center;
   box-sizing: border-box;
   max-width: 600px;
-  padding: 96px 0 72px 0;
-  margin-bottom: 72px;
+  padding: 96px 0 48px 0;
+  margin-bottom: 128px;
 }
 
 @media (min-width: 1441px) {

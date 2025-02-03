@@ -8,7 +8,6 @@ import Lantern from "../../components/Lantern";
 import Button from "../../components/button";
 import useAppState from "../../hooks/useAppState"; // Keep client-side logic
 import SocialShare from "../../components/socialShare"; // Social share modal
-import { Helmet } from "react-helmet";
 
 const LanternContainer = styled.div`
     position: relative;
