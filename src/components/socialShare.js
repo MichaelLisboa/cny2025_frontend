@@ -194,8 +194,8 @@ const ShareOverlay = styled.div`
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 10001; // Ensure this is lower than SharePanel
-  pointer-events: all; /* Blocks interaction */
+  z-index: 10001;
+  pointer-events: ${({ isVisible }) => (isVisible ? 'all' : 'none')}; /* Fix */
   backdrop-filter: blur(10px);
 `;
 
@@ -271,6 +271,24 @@ const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
         { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }
       );
     }
+  }, [isSharingPanelOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sharePanelRef.current && !sharePanelRef.current.contains(event.target)) {
+        closeSharePanel();
+      }
+    };
+
+    if (isSharingPanelOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isSharingPanelOpen]);
 
   const closeModal = () => {
@@ -355,8 +373,59 @@ const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
 
   const handleNavigate = () => {
     // Add any pre-navigation logic here
+    setIsSharingPanelOpen(true);
     navigate(`/lantern/${lanternId}`);
   };
+
+  const closeSharePanel = () => {
+    gsap.to(sharePanelRef.current, { 
+      y: '100%', 
+      opacity: 0, 
+      duration: 0.5, 
+      ease: 'power2.inOut', 
+      onComplete: () => {
+        setIsSharingPanelOpen(false);
+        setFormData({ name: '', email: '' }); // ← This clears entered data too
+        setErrors([]); // ← Clearing errors
+      }
+    });
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sharePanelRef.current && !sharePanelRef.current.contains(event.target)) {
+        closeSharePanel();
+      }
+    };
+  
+    let touchStartY = 0;
+    const handleTouchStart = (event) => {
+      touchStartY = event.touches[0].clientY;
+    };
+  
+    const handleTouchMove = (event) => {
+      const touchEndY = event.touches[0].clientY;
+      if (touchEndY - touchStartY > 50) { // 50px swipe down threshold
+        closeSharePanel();
+      }
+    };
+  
+    if (isSharingPanelOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleTouchStart);
+      document.addEventListener('touchmove', handleTouchMove);
+    }
+  
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isSharingPanelOpen]);
+
+  console.log("Lantern ID:", lanternId);
+
+  const SocialTitleText = `✨ ${state.userData.name} just released a wishing lantern! "${wish}" 🌟 Tap to open!`;
 
   return (
     <div>
@@ -394,14 +463,14 @@ const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
 
       {isSharingPanelOpen && (
         <>
-          <ShareOverlay /> {/* Ensure ShareOverlay is rendered */}
+          <ShareOverlay isVisible={isSharingPanelOpen} /> {/* Ensure ShareOverlay is rendered */}
           <SharePanel ref={sharePanelRef}>
             <ShareTitle>Share Your Lantern</ShareTitle>
             <SocialGrid>
               <SocialItem>
                 <LinkedinShareButton
                   url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                  title={`Check this out! Shared by ${formData.name}`}
+                  title={SocialTitleText}
                   onShareWindowClose={handleNavigate}
                 >
                   <LinkedinIcon size={40} round />
@@ -411,7 +480,7 @@ const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
               <SocialItem>
                 <FacebookShareButton
                   url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                  quote={`Check this out! Shared by ${formData.name}`}
+                  quote={SocialTitleText}
                   onShareWindowClose={handleNavigate}
                 >
                   <FacebookIcon size={40} round />
@@ -421,7 +490,7 @@ const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
               <SocialItem>
                 <TwitterShareButton
                   url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                  title={`Check this out! Shared by ${formData.name}`}
+                  title={SocialTitleText}
                   onShareWindowClose={handleNavigate}
                 >
                   <TwitterIcon size={40} round />
@@ -431,7 +500,7 @@ const SocialShare = ({ wish, lanternId: initialLanternId, isOwner }) => {
               <SocialItem>
                 <WhatsappShareButton
                   url={`https://cny2025.michaellisboa.com/lantern/${lanternId}`}
-                  title={`Check this out! Shared by ${formData.name}`}
+                  title={SocialTitleText}
                   onShareWindowClose={handleNavigate}
                 >
                   <WhatsappIcon size={40} round />

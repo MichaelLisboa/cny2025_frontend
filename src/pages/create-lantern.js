@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect, useMemo } from "react";
+import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import styled from "styled-components";
 import Layout from "../components/layout";
 import SEO from "../components/seo";
@@ -7,7 +7,6 @@ import DatePicker from "../components/datePicker";
 import useAppState from "../hooks/useAppState";
 import { determineZodiacAnimalAndElement } from "../utils/getZodiacAnimal";
 import LanternPresentation from "../components/LanternPresentation";
-import SocialShare from "../components/socialShare";
 
 const DatePickerContainer = styled.div.attrs({ className: "date-picker" })`
   position: absolute;

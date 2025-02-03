@@ -247,14 +247,13 @@ const LanternPresentation = forwardRef(({ zodiac, flowState, setFlowState, share
 
   const handleWishSubmit = () => {
     if (!wish.trim() || flowState !== "writing") return;
+    const newWish = generateWish();
 
     const isDuplicate = state.wishes.some(w => w.wish === newWish.wish);
     if (isDuplicate) {
         console.warn("Duplicate wish detected, skipping...");
         return; 
     }
-
-    const newWish = generateWish();
 
     dispatch({
         type: "SET_WISHES",

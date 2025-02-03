@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+// [id].js
+
+import React, { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import Layout from "../../components/layout";
@@ -53,23 +55,25 @@ export async function getServerData({ params }) {
 export function Head({ serverData }) {
     const baseUrl = "https://cny2025.michaellisboa.com";
     const lantern = serverData.lantern || { name: "A Friend", id: "unknown", message: "Happy New Year!" };
-    const description = "Create and share your own lanterns with your friends and family.";
+    const description = "Create lanterns to share with colleagues, friends and family.";
     const url = `${baseUrl}/lantern/${lantern.id}`;
     const image = `${baseUrl}/og-meta.jpg`;
 
+    const SocialTitleText = `${serverData.lantern.name} released a wishing lantern! "${serverData.lantern.message}" `;
+
     return (
         <>
-            <title>{`${lantern.name} said ${lantern.message}`}</title>
+            <title>{SocialTitleText}</title>
             <meta name="description" content={description} />
 
             {/* Twitter Meta Tags */}
-            <meta name="twitter:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
+            <meta name="twitter:title" content={SocialTitleText} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
             <meta name="twitter:card" content="summary_large_image" />
 
             {/* Open Graph Meta Tags */}
-            <meta property="og:title" content={`${lantern.name} has sent you a lantern ${lantern.message}`} />
+            <meta property="og:title" content={SocialTitleText} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
             <meta property="og:url" content={url} />
@@ -100,31 +104,7 @@ const LanternPage = ({ serverData }) => {
 
     return (
         <>
-            <Helmet>
-                <title>{`${lantern.name} has sent you a lantern`}</title>
-                <meta
-                    name="description"
-                    content="Create and share your own lanterns with your friends and family."
-                />
-                {/* Twitter Meta Tags */}
-                <meta
-                    name="twitter:title"
-                    content={`${lantern.name} has sent you a lantern`}
-                />
-                <meta
-                    name="twitter:description"
-                    content="Create and share your own lanterns with your friends and family."
-                />
-                <meta name="twitter:image" content="og-meta.png" />
-                <meta name="twitter:card" content="summary_large_image" />
-
-                {/* Open Graph Meta Tags */}
-                <meta property="og:title" content={`${lantern.name} has sent you a lantern`} />
-                <meta property="og:description" content="Create and share your own lanterns with your friends and family." />
-                <meta property="og:image" content="og-meta.png" />
-                <meta property="og:url" content={`https://cny2025.com/lantern/${lantern.id}`} />
-                <meta property="og:type" content="website" />
-            </Helmet>
+        
 
             <Layout
                 image="background-zodiac-sky.jpg"
