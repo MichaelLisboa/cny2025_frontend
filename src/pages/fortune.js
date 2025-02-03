@@ -106,7 +106,7 @@ const ZodiacPresentation = ({ zodiac, element }) => {
         )}
       </div>
       <div className="fortune-body-section">
-        <div className="fortune-body text-medium text-white">
+        <div className="positive-traits">
           {currentZodiac.positiveTraits
             ? currentZodiac.positiveTraits.split(",").map((trait, index) => (
               <div className="positive-trait-pill" key={index}>

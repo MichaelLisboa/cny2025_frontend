@@ -225,8 +225,7 @@ div {
   justify-content: center;
   box-sizing: border-box;
   max-width: 600px;
-  padding: 96px 0 48px 0;
-  margin-bottom: 128px;
+  padding: 96px 0 144px 0;
 }
 
 @media (min-width: 1441px) {
@@ -349,6 +348,14 @@ div {
 
 .date-picker-container.date-picker {
   transition: transform 2s ease, opacity 2s ease;
+}
+
+.positive-traits {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 32px;
 }
 
 .positive-trait-pill {
