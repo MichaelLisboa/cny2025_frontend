@@ -1,13 +1,12 @@
 .lantern-image-wrapper {
     position: relative;
     width: 100%;
+    height: auto;
     /* Increase width for dominance */
     /* height: calc(100vw * 4 / 3); */
     /* Maintain aspect ratio */
     max-height: 70vh;
     /* Limit height for smaller screens */
-    overflow: hidden;
-    margin: 0 auto;
     /* Center the lantern */
 }
 
@@ -49,24 +48,30 @@
     }
 }
 
-
-.styled-image {
-    height: 100%;
-    width: auto;
-    position: relative;
-    z-index: 2;
-    /* Ensure it is above the glow image */
-}
-
 .styled-glow-image {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 200%;
-    /* Slightly larger to create the aura */
-    height: 200%;
+    /* Position it absolutely within the wrapper */
+    top: 50%;
+    /* Center vertically */
+    left: 50%;
+    /* Center horizontally */
+    transform: translate(-50%, -50%) scale(1.2);
+    /* Center it and slightly enlarge */
+    z-index: -1;
+    /* Ensure it appears behind the lantern image */
+    pointer-events: none;
+    /* Prevent interaction issues */
     animation: glowPulse 5s infinite ease-in-out;
 }
+
+.styled-image {
+    position: relative;
+    /* Ensure it layers above the glow image */
+    z-index: 1;
+    /* Higher stacking context than the glow */
+}
+
+
 
 .styled-image,
 .styled-glow-image {
